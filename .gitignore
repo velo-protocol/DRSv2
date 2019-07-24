@@ -1,0 +1,14 @@
+vendor
+tmp/
+gate/tmp
+facilitator/tmp
+coverage.out
+.coverage*
+resources/docker/postgres/db
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+app/smart-contracts/\.env\.bash

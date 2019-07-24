@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package gate;
+
+message DepositRequest {
+    string hashLock = 1;
+    string drsAddress = 2;
+    string stellarAddress = 3;
+    string amount = 4;
+    string assetCode = 5;
+    string assetIssuer = 6;
+}
+
+message SubmitDepositResponse {
+    string depositAddress = 1;
+    string refundTxeB64 = 2;
+    string deleteTxeB64 = 3;
+}
+
+message CommitDepositRequest {
+    string signedTx = 1;
+    string smartContractChainAddress = 2;
+}
+
+message CommitDepositResponse {
+    string stellarTxHash = 1;
+    string SmartContractTxHash = 2;
+}
+
+service Gate {
+    rpc SubmitDepositRequest(DepositRequest)
+        returns (SubmitDepositResponse) {}
+
+    rpc CommitDeposit(CommitDepositRequest)
+        returns (CommitDepositResponse) {}
+}

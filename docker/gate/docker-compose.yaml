@@ -1,0 +1,24 @@
+version: "3.4"
+services:
+  gate:
+    build:
+      context: ../..
+      dockerfile: docker/gate/gate.Dockerfile
+      target: builder
+    container_name: gate
+    command: "sh -c \"cd gate && fresh\" "
+    volumes:
+      - ../../gate:/go/src/gitlab.com/velo-lab/core/gate
+    ports:
+      - "8080:8080"
+    environment:
+      VELO_ISSUER_ADDRESS: "GD5ZEDPHHSBYW4SS6YDSLZH7TTUXYKKEUTFL2GS5MYJRGQWIKB7XGKIL"
+      PORT: "8080"
+      HORIZON_URL: "https://horizon-testnet.stellar.org"
+      NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
+      GATE_STELLAR_ADDRESS: "GDXS35YJWXVM4O3J6ACRKSP3NP3YQ6ZXYQOG3Q53DUMYEQLVXGXYXLM6"
+      GATE_STELLAR_SECRET_KEY: "SC5DZYTO2PECWMGN4D4GSHWCMBLOYEV4UM7DIB5TY5QYCPJQLCSL2L7V"
+      LOCK_UP_STELLAR_ADDRESS: "GCLWDS42SFJWXFA2TAUKKU6P2I6OAFL6J3UYGZP5IGN2VS56YNOX44TK"
+      WARP_CONTRACT_ADDRESS: "0xBfc15f814295C50B22f5F896cD7B7D04822ff462"
+      GATE_ETH_PRIVATE_KEY: "CDAAC34D74F4CC371A1A23A754E749D3CF60D0B916F7CC3350BBAA99BC663B95"
+      ETH_NODE: "http://ec2-13-250-122-92.ap-southeast-1.compute.amazonaws.com:8501"
