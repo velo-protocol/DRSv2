@@ -5,6 +5,10 @@ facilitator/tmp
 coverage.out
 .coverage*
 resources/docker/postgres/db
+smart_contract/build
+smart_contract/node_modules
+init/build
+init/node_modules
 
 # IntelliJ project files
 .idea
