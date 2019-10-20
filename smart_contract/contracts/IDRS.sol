@@ -15,7 +15,8 @@ interface IDRS {
     ) external payable returns(bool);
 
     function redeem(
+        address creditOwner,
         uint256 amount,
-        bytes32 assetCode
+        string calldata assetCode
     ) external returns(bool);
 }

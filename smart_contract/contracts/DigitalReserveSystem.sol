@@ -28,6 +28,19 @@ contract DigitalReserveSystem is IDRS, WhitelistAdminRole {
 
     PriceFeeders priceFeedersContract;
 
+    event Setup(
+        string indexed assetCode,
+        address indexed assetAddress
+    );
+
+    event Mint(
+        string indexed assetCode,
+        uint256 mintAmount,
+        address indexed assetAddress,
+        bytes32 indexed collateralAssetCode,
+        uint256 collateralAmount
+    );
+
     constructor(address priceFeedersAddress) public {
         priceFeedersContract = PriceFeeders(priceFeedersAddress);
     }
@@ -39,25 +52,30 @@ contract DigitalReserveSystem is IDRS, WhitelistAdminRole {
         bytes32 peggedCurrency
     ) external returns(address) {
         bytes32 stableCreditId = keccak256(abi.encodePacked(msg.sender, assetCode));
+        address collateralAddress = address(collateralAssets[collateralAssetCode]);
 
-        require(address(collateralAssets[collateralAssetCode]) != address(0x0), "collateralAssetCode has not been whitelisted");
+        require(collateralAddress != address(0x0), "collateralAssetCode has not been whitelisted");
         require(ownedStableCredits[stableCreditId] == false, "trusted partner cannot setup the same asset code");
         require(trustedPartners[msg.sender], "only trusted partner can setup the stable credit");
 
         bytes32 linkId = keccak256(abi.encodePacked(collateralAssetCode, peggedCurrency));
-        uint256 medPrice = priceFeedersContract.medianPrices(linkId);
-        require(medPrice > 0, "collateralAssetCode must has value more than 0");
+
+        require(priceFeedersContract.medianPrices(linkId) > 0, "collateralAssetCode must has value more than 0");
 
         StableCredit newStableCredit = new StableCredit(
+            msg.sender,
             assetCode,
             assetCode,
-            7,
             peggedValue,
-            peggedCurrency
+            peggedCurrency,
+            collateralAddress,
+            collateralAssetCode
         );
 
         stableCredits[stableCreditId] = newStableCredit;
         ownedStableCredits[stableCreditId] = true;
+
+        emit Setup(assetCode, address(newStableCredit));
 
         return address(newStableCredit);
     }
@@ -75,27 +93,48 @@ contract DigitalReserveSystem is IDRS, WhitelistAdminRole {
         StableCredit credit = stableCredits[stableCreditId];
         bytes32 linkId = keccak256(abi.encodePacked(collateralAssetCode, credit.getPeggedCurrency()));
 
-        (uint256 mintAmount, uint256 fee) = _calMintStableCredit(
-                credit.getPeggedValue(), credit.getPeggedCurrency(), collateralAssetCode, collateralAmount);
+        (uint256 mintAmount, uint256 fee) = _calMintStableCredit(credit, linkId, collateralAmount);
 
+        require(collateralAssets[collateralAssetCode] == credit.collateral(), "collateralAsset must be the same");
         require(priceFeedersContract.medianPrices(linkId) != 0, "median price ref mut not be zero");
         require(mintAmount > 0, "mint amount must not be 0");
         require(collateralAssets[collateralAssetCode].balanceOf(msg.sender) > collateralAmount, "not enough collateral balance in Trusted Partner account");
         require(collateralAssets[collateralAssetCode].allowance(msg.sender, address(this)) > collateralAmount, "not enough allowance");
 
-        collateralAssets[collateralAssetCode].transferFrom(msg.sender, address(this), collateralAmount);
+        collateralAssets[collateralAssetCode].transferFrom(msg.sender, address(this), fee);
+        collateralAssets[collateralAssetCode].transferFrom(msg.sender, address(credit), collateralAmount.sub(fee));
 
         credit.mint(msg.sender, mintAmount);
 
         _collectFee(fee, collateralAssetCode);
 
+        emit Mint(
+            assetCode,
+            mintAmount,
+            address(credit),
+            collateralAssetCode,
+            collateralAmount
+        );
+
         return true;
     }
 
     function redeem(
+        address creditOwner,
         uint256 amount,
-        bytes32 assetCode
+        string calldata assetCode
     ) external returns(bool) {
+        bytes32 stableCreditId = keccak256(abi.encodePacked(creditOwner, assetCode));
+
+        require(address(stableCredits[stableCreditId]) != address(0x0), "stableCredit not existed");
+
+        StableCredit credit = stableCredits[stableCreditId];
+        bytes32 linkId = keccak256(abi.encodePacked(credit.getCollateralAssetCode(), credit.getPeggedCurrency()));
+
+        uint256 returnAmount = _calRedeem(credit, linkId, amount);
+
+        credit.redeem(msg.sender, amount, returnAmount);
+
         return true;
     }
 
@@ -113,14 +152,18 @@ contract DigitalReserveSystem is IDRS, WhitelistAdminRole {
         collectedFee[collateralAssetCode] = collectedFee[collateralAssetCode].add(fee);
     }
 
-    function _calMintStableCredit(uint256 peggedValue, bytes32 peggedCurrency, bytes32 collateralAssetCode, uint256 collateralAmount) private view returns (uint256, uint256) {
-        bytes32 linkId = keccak256(abi.encodePacked(collateralAssetCode, peggedCurrency));
-
+    function _calMintStableCredit(StableCredit credit, bytes32 linkId, uint256 collateralAmount) private view returns (uint256, uint256) {
         uint256 fee = collateralAmount.mul(creditIssuanceFee).div(10000);
         uint256 collateralAmountAfterFee = collateralAmount.sub(fee);
-        uint256 mintAmount = collateralAmountAfterFee.mul(priceFeedersContract.medianPrices(linkId)).div(peggedValue);
+        uint256 mintAmount = collateralAmountAfterFee.mul(priceFeedersContract.medianPrices(linkId)).div(credit.getPeggedValue());
 
         return (mintAmount, fee);
+    }
+
+    function _calRedeem(StableCredit credit, bytes32 linkId, uint256 redeemAmount) private view returns (uint256) {
+        uint256 returnAmount = redeemAmount.mul(credit.getPeggedValue()).div(priceFeedersContract.medianPrices(linkId));
+
+        return returnAmount;
     }
 
 //    function _calCollateralWithFee(uint256 peggedValue, bytes32 peggedCurrency, uint256 amount) private view returns (uint256, uint256) {
@@ -130,7 +173,7 @@ contract DigitalReserveSystem is IDRS, WhitelistAdminRole {
 //        return (collateral, fee);
 //    }
 
-    function collateralOf(bytes32 assetCode, address creditOwner) public view returns (uint256, bytes32) {
+    function collateralOf(bytes32 assetCode, address creditOwner) public view returns (uint256, address) {
         bytes32 stableCreditId = keccak256(abi.encodePacked(creditOwner, assetCode));
         return stableCredits[stableCreditId].getCollateralDetail();
     }
