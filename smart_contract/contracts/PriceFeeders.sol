@@ -115,4 +115,8 @@ contract PriceFeeders is IPF, WhitelistAdminRole {
         prices[pfId] = price;
         medianPrices[linkId] = price;
     }
+
+    function getMedianPrice(bytes32 linkId) external view returns (uint256) {
+        return medianPrices[linkId];
+    }
 }

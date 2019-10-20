@@ -3,13 +3,13 @@ pragma solidity ^0.5.0;
 interface IDRS {
     function setup(
         string calldata assetCode,
-        bytes32 collateralAssetCode,
-        uint256 peggedValue,
-        bytes32 peggedCurrency
+        bytes12 collateralAssetCode,
+        bytes12 peggedCurrency,
+        uint256 peggedValue
     ) external returns(address);
 
     function mint(
-        bytes32 collateralAssetCode,
+        bytes12 collateralAssetCode,
         uint256 collateralAmount,
         string calldata assetCode
     ) external payable returns(bool);

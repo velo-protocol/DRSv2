@@ -9,4 +9,5 @@ interface IPF {
     function getPriceFeeders(bytes32 linkId) external view returns (address[] memory);
     function removePriceFeeder(bytes32 pfId, uint index) external returns (bool);
     function setPrice(bytes32 assetCode, bytes32 currency, uint256 price) external;
+    function getMedianPrice(bytes32 linkId) external view returns (uint256);
 }
