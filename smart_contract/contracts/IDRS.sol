@@ -19,4 +19,9 @@ interface IDRS {
         uint256 amount,
         string calldata assetCode
     ) external returns(bool);
+
+    function rebalance(
+        address creditOwner,
+        string calldata assetCode
+    ) external returns(bool);
 }

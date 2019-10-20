@@ -105,6 +105,7 @@ contract DigitalReserveSystem is IDRS, WhitelistAdminRole {
         collateralAssets[collateralAssetCode].transferFrom(msg.sender, address(credit), collateralAmount.sub(fee));
 
         credit.mint(msg.sender, mintAmount);
+        credit.approveCollateral();
 
         _collectFee(fee, collateralAssetCode);
 
@@ -131,9 +132,31 @@ contract DigitalReserveSystem is IDRS, WhitelistAdminRole {
         StableCredit credit = stableCredits[stableCreditId];
         bytes32 linkId = keccak256(abi.encodePacked(credit.getCollateralAssetCode(), credit.getPeggedCurrency()));
 
-        uint256 returnAmount = _calRedeem(credit, linkId, amount);
+        uint256 returnAmount = _callCollateral(credit, linkId, amount);
 
         credit.redeem(msg.sender, amount, returnAmount);
+        credit.approveCollateral();
+
+        return true;
+    }
+
+    function rebalance(
+        address creditOwner,
+        string calldata assetCode
+    ) external returns(bool) {
+        bytes32 stableCreditId = keccak256(abi.encodePacked(creditOwner, assetCode));
+
+        StableCredit credit = stableCredits[stableCreditId];
+        bytes32 linkId = keccak256(abi.encodePacked(credit.getCollateralAssetCode(), credit.getPeggedCurrency()));
+
+        uint256 collateralAmount = _callCollateral(credit, linkId, credit.totalSupply());
+
+        if (collateralAmount >= credit.collateral().balanceOf(address(credit))) {
+            // TODO: Inject collateral from reserve manager
+        } else {
+            // TODO: Transfer collateral from StableCredit contract to Reserve Manager
+//            collateralAssets[credit.collateralAssetCode].transferFrom(address(credit), address(reserveManager), amount)
+        }
 
         return true;
     }
@@ -160,10 +183,10 @@ contract DigitalReserveSystem is IDRS, WhitelistAdminRole {
         return (mintAmount, fee);
     }
 
-    function _calRedeem(StableCredit credit, bytes32 linkId, uint256 redeemAmount) private view returns (uint256) {
-        uint256 returnAmount = redeemAmount.mul(credit.getPeggedValue()).div(priceFeedersContract.medianPrices(linkId));
+    function _callCollateral(StableCredit credit, bytes32 linkId, uint256 creditAmount) private view returns (uint256) {
+        uint256 collateralAmount = creditAmount.mul(credit.getPeggedValue()).div(priceFeedersContract.medianPrices(linkId));
 
-        return returnAmount;
+        return collateralAmount;
     }
 
 //    function _calCollateralWithFee(uint256 peggedValue, bytes32 peggedCurrency, uint256 amount) private view returns (uint256, uint256) {

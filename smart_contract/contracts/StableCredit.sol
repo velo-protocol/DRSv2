@@ -42,9 +42,13 @@ contract StableCredit is ERC20, ERC20Detailed, WhitelistAdminRole {
         _burn(tokenOwner, amount);
     }
 
+    function approveCollateral() external onlyWhitelistAdmin {
+        collateral.approve(msg.sender, collateral.balanceOf(address(this)));
+    }
+
     function redeem(address redeemer, uint burnAmount, uint256 returnAmount) external onlyWhitelistAdmin {
-        _burn(redeemer, burnAmount);
         collateral.transfer(redeemer, returnAmount);
+        _burn(redeemer, burnAmount);
     }
 
     function getCollateralDetail() external view returns(uint256, address) {
