@@ -18,8 +18,8 @@ contract Governance is WhitelistAdminRole, IGOV {
         collateralRatios 125 = require collateral 1.25x
         collateralRatios 100 = require collateral 1x
     */
-    mapping(bytes12 => IERC20) public collateralAssets;
-    mapping(bytes12 => uint) public collateralRatios;
+    mapping(bytes32 => IERC20) public collateralAssets;
+    mapping(bytes32 => uint) public collateralRatios;
 
     /*
         creditIssuanceFee is  1/10,000
@@ -27,7 +27,7 @@ contract Governance is WhitelistAdminRole, IGOV {
         creditIssuanceFee 100 = 1% = 0.01x
     */
     uint256 public creditIssuanceFee;
-    mapping(bytes12 => uint256) public collectedFee;
+    mapping(bytes32 => uint256) public collectedFee;
 
     mapping(address => bool) public trustedPartners;
 
@@ -48,21 +48,21 @@ contract Governance is WhitelistAdminRole, IGOV {
         drsAddr = newDrsAddress;
     }
 
-    function setCollateralAsset(bytes12 assetCode, address addr, uint ratio) external onlyWhitelistAdmin {
+    function setCollateralAsset(bytes32 assetCode, address addr, uint ratio) external onlyWhitelistAdmin {
         collateralAssets[assetCode] = IERC20(addr);
         collateralRatios[assetCode] = ratio;
     }
 
-    function getCollateralAsset(bytes12 assetCode) external view returns (IERC20) {
+    function getCollateralAsset(bytes32 assetCode) external view returns (IERC20) {
         return collateralAssets[assetCode];
     }
 
-    function setCollateralRatio(bytes12 assetCode, uint ratio) external onlyWhitelistAdmin {
+    function setCollateralRatio(bytes32 assetCode, uint ratio) external onlyWhitelistAdmin {
         require(address(collateralAssets[assetCode]) != address(0x0), "assetCode has not been added");
         collateralRatios[assetCode] = ratio;
     }
 
-    function getCollateralRatio(bytes12 assetCode) external view returns (uint) {
+    function getCollateralRatio(bytes32 assetCode) external view returns (uint) {
         return collateralRatios[assetCode];
     }
 
@@ -90,12 +90,12 @@ contract Governance is WhitelistAdminRole, IGOV {
         return priceFeeders;
     }
 
-    function collectFee(uint256 fee, bytes12 collateralAssetCode) external {
+    function collectFee(uint256 fee, bytes32 collateralAssetCode) external {
         require(msg.sender == drsAddr, "only DRSSC can update the collected fee");
         collectedFee[collateralAssetCode] = collectedFee[collateralAssetCode].add(fee);
     }
 
-    function getCollectedFee(bytes12 collateralAssetCode) external view returns (uint256) {
+    function getCollectedFee(bytes32 collateralAssetCode) external view returns (uint256) {
         return collectedFee[collateralAssetCode];
     }
 

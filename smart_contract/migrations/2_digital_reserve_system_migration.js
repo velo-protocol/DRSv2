@@ -11,7 +11,7 @@ module.exports = async function (deployer, network) {
     let governanceInstance = await Governance.deployed();
     await deployer.deploy(PriceFeeders);
     let priceFeedersInstance = await PriceFeeders.deployed();
-    await deployer.deploy(DRS, priceFeedersInstance.address);
+    await deployer.deploy(DRS, governanceInstance.address);
     let drsInstance = await DRS.deployed();
     await deployer.deploy(ReserveManager, drsInstance.address, governanceInstance.address);
     let reserveManagerInstance = await ReserveManager.deployed();
@@ -38,6 +38,6 @@ module.exports = async function (deployer, network) {
         await governanceInstance.setCollateralAsset(timTokenAscii, timToken.address, 125);
         await governanceInstance.setTrustedPartner(adminAddress);
 
-        await timToken.approve(drsInstance.address, 100000000);
+        await timToken.approve(drsInstance.address, 10000000000);
     }
 };

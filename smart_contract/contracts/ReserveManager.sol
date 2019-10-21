@@ -22,7 +22,7 @@ contract ReserveManager is IRM {
 
     event InjectCollateral(bytes32 indexed assetCode, uint256 amount);
 
-    function injectCollateral(bytes12 assetCode, address to, uint256 amount) external onlyDRSSC {
+    function injectCollateral(bytes32 assetCode, address to, uint256 amount) external onlyDRSSC {
         gov.getCollateralAsset(assetCode).transfer(to, amount);
 
         emit InjectCollateral(assetCode, amount);

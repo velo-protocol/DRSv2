@@ -2,17 +2,16 @@ pragma solidity ^0.5.0;
 
 import "./openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "./openzeppelin-solidity/contracts/token/ERC20/ERC20Detailed.sol";
-import "./openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 /// @author Velo Team
 /// @title A modified ERC20
 contract StableCredit is ERC20, ERC20Detailed {
 
     IERC20 public collateral;
-    bytes12 public collateralAssetCode;
+    bytes32 public collateralAssetCode;
 
     uint256 public peggedValue;
-    bytes12 public peggedCurrency;
+    bytes32 public peggedCurrency;
 
     address public creditOwner;
     address public drsAddress;
@@ -23,12 +22,12 @@ contract StableCredit is ERC20, ERC20Detailed {
     }
 
     constructor (
+        bytes32 _peggedCurrency,
         address _creditOwner,
-        string memory _code,
-        uint256 _peggedValue,
-        bytes12 _peggedCurrency,
+        bytes32 _collateralAssetCode,
         address _collateralAddress,
-        bytes12 _collateralAssetCode
+        string memory _code,
+        uint256 _peggedValue
     )
     public ERC20Detailed(_code, _code, 7) {
         drsAddress = msg.sender;

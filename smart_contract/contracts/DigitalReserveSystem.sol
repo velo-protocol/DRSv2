@@ -13,7 +13,7 @@ contract DigitalReserveSystem is IDRS {
     */
     mapping(bytes32 => StableCredit) public stableCredits;
 
-    IGOV gov;
+    IGOV public gov;
 
     event Setup(
         string indexed assetCode,
@@ -24,7 +24,7 @@ contract DigitalReserveSystem is IDRS {
         string indexed assetCode,
         uint256 mintAmount,
         address indexed assetAddress,
-        bytes12 indexed collateralAssetCode,
+        bytes32 indexed collateralAssetCode,
         uint256 collateralAmount
     );
 
@@ -33,12 +33,12 @@ contract DigitalReserveSystem is IDRS {
     }
 
     function setup(
+        bytes32 collateralAssetCode,
+        bytes32 peggedCurrency,
         string calldata assetCode,
-        bytes12 collateralAssetCode,
-        bytes12 peggedCurrency,
         uint256 peggedValue
     ) external returns(address) {
-        bytes32 stableCreditId = keccak256(abi.encodePacked(msg.sender, assetCode));
+        bytes32 stableCreditId = getStableCreditId(msg.sender, assetCode);
         address collateralAddress = address(gov.getCollateralAsset(collateralAssetCode));
 
         require(collateralAddress != address(0x0), "collateralAssetCode has not been whitelisted");
@@ -50,12 +50,12 @@ contract DigitalReserveSystem is IDRS {
         require(gov.getPriceFeeders().getMedianPrice(linkId) > 0, "collateralAssetCode must has value more than 0");
 
         StableCredit newStableCredit = new StableCredit(
-            msg.sender,
-            assetCode,
-            peggedValue,
             peggedCurrency,
+            msg.sender,
+            collateralAssetCode,
             collateralAddress,
-            collateralAssetCode
+            assetCode,
+            peggedValue
         );
 
         stableCredits[stableCreditId] = newStableCredit;
@@ -67,25 +67,24 @@ contract DigitalReserveSystem is IDRS {
 
     /*
         TODO:
-            - mint(uint256 mintAmount, string calldata assetCode, bytes12 collateralAssetCode)
+            - mint(bytes32 collateralAssetCode, uint256 mintAmount, string calldata assetCode)
     */
     function mint(
-        bytes12 collateralAssetCode,
+        bytes32 collateralAssetCode,
         uint256 collateralAmount,
         string calldata assetCode
     ) external payable returns(bool) {
-        bytes32 stableCreditId = keccak256(abi.encodePacked(msg.sender, assetCode));
+        StableCredit credit = stableCredits[getStableCreditId(msg.sender, assetCode)];
 
         require(gov.isTrustedPartner(msg.sender), "only trusted partner can mint the stable credit");
-        require(address(stableCredits[stableCreditId]) == address(0x0), "stableCredit not exist");
+        require(address(credit) != address(0x0), "stableCredit not exist");
 
-        StableCredit credit = stableCredits[stableCreditId];
         bytes32 linkId = keccak256(abi.encodePacked(collateralAssetCode, credit.peggedCurrency()));
-
-        (uint256 mintAmount, uint256 fee) = _calMintStableCredit(credit, linkId, collateralAmount);
 
         require(gov.getCollateralAsset(collateralAssetCode) == credit.collateral(), "collateralAsset must be the same");
         require(gov.getPriceFeeders().getMedianPrice(linkId) != 0, "median price ref mut not be zero");
+
+        (uint256 mintAmount, uint256 fee) = _calMintStableCredit(credit, linkId, collateralAmount);
 
         gov.getCollateralAsset(collateralAssetCode).transferFrom(msg.sender, address(gov), fee);
         gov.getCollateralAsset(collateralAssetCode).transferFrom(msg.sender, address(credit), collateralAmount.sub(fee));
@@ -111,11 +110,10 @@ contract DigitalReserveSystem is IDRS {
         uint256 amount,
         string calldata assetCode
     ) external returns(bool) {
-        bytes32 stableCreditId = keccak256(abi.encodePacked(creditOwner, assetCode));
+        StableCredit credit = stableCredits[getStableCreditId(creditOwner, assetCode)];
 
-        require(address(stableCredits[stableCreditId]) != address(0x0), "stableCredit not existed");
+        require(address(credit) != address(0x0), "stableCredit not existed");
 
-        StableCredit credit = stableCredits[stableCreditId];
         bytes32 linkId = keccak256(abi.encodePacked(credit.collateralAssetCode(), credit.peggedCurrency()));
 
         _rebalance(creditOwner, assetCode);
@@ -138,9 +136,7 @@ contract DigitalReserveSystem is IDRS {
         address creditOwner,
         string memory assetCode
     ) private returns(bool) {
-        bytes32 stableCreditId = keccak256(abi.encodePacked(creditOwner, assetCode));
-
-        StableCredit credit = stableCredits[stableCreditId];
+        StableCredit credit = stableCredits[getStableCreditId(creditOwner, assetCode)];
         bytes32 linkId = keccak256(abi.encodePacked(credit.collateralAssetCode(), credit.peggedCurrency()));
 
         uint256 collateralAmount = _callCollateral(credit, linkId, credit.totalSupply());
@@ -174,7 +170,10 @@ contract DigitalReserveSystem is IDRS {
     }
 
     function collateralOf(address creditOwner, string calldata assetCode) external view returns (uint256, address) {
-        bytes32 stableCreditId = keccak256(abi.encodePacked(creditOwner, assetCode));
-        return stableCredits[stableCreditId].getCollateralDetail();
+        return stableCredits[getStableCreditId(creditOwner, assetCode)].getCollateralDetail();
+    }
+
+    function getStableCreditId(address creditOwner, string memory assetCode) private view returns (bytes32) {
+        return keccak256(abi.encodePacked(creditOwner, assetCode));
     }
 }

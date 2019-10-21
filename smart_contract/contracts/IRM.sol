@@ -1,5 +1,5 @@
 pragma solidity ^0.5.0;
 
 interface IRM {
-    function injectCollateral(bytes12 assetCode, address to, uint256 amount) external;
+    function injectCollateral(bytes32 assetCode, address to, uint256 amount) external;
 }
