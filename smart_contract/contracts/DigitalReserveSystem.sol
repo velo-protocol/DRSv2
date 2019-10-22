@@ -85,9 +85,16 @@ contract DigitalReserveSystem is IDRS {
         require(gov.getPriceFeeders().getMedianPrice(linkId) != 0, "median price ref mut not be zero");
 
         (uint256 mintAmount, uint256 fee) = _calMintStableCredit(credit, linkId, collateralAmount);
+        uint256 actualCollateralAmount = _callCollateral(credit, linkId, mintAmount);
+        uint256 reserveAmount = collateralAmount.sub(actualCollateralAmount).sub(fee);
 
         gov.getCollateralAsset(collateralAssetCode).transferFrom(msg.sender, address(gov), fee);
-        gov.getCollateralAsset(collateralAssetCode).transferFrom(msg.sender, address(credit), collateralAmount.sub(fee));
+        gov.getCollateralAsset(collateralAssetCode).transferFrom(msg.sender, address(credit), actualCollateralAmount);
+        gov.getCollateralAsset(collateralAssetCode).transferFrom(msg.sender, address(this), reserveAmount);
+
+        gov.getCollateralAsset(collateralAssetCode).approve(address(gov.getReserveManager()), reserveAmount);
+
+        gov.getReserveManager().lockReserve(collateralAssetCode, address(this), reserveAmount);
 
         credit.mint(msg.sender, mintAmount);
         credit.approveCollateral();
@@ -99,7 +106,7 @@ contract DigitalReserveSystem is IDRS {
             mintAmount,
             address(credit),
             collateralAssetCode,
-            collateralAmount
+            actualCollateralAmount
         );
 
         return true;
@@ -165,15 +172,14 @@ contract DigitalReserveSystem is IDRS {
     }
 
     function _callCollateral(StableCredit credit, bytes32 linkId, uint256 creditAmount) private view returns (uint256) {
-        uint256 collateralAmountAfterRatio = creditAmount.mul(credit.peggedValue()).div(gov.getPriceFeeders().getMedianPrice(linkId)).mul(gov.getCollateralRatio(credit.collateralAssetCode())).div(100);
-        return collateralAmountAfterRatio;
+        return creditAmount.mul(credit.peggedValue()).div(gov.getPriceFeeders().getMedianPrice(linkId));
     }
 
     function collateralOf(address creditOwner, string calldata assetCode) external view returns (uint256, address) {
         return stableCredits[getStableCreditId(creditOwner, assetCode)].getCollateralDetail();
     }
 
-    function getStableCreditId(address creditOwner, string memory assetCode) private view returns (bytes32) {
+    function getStableCreditId(address creditOwner, string memory assetCode) private pure returns (bytes32) {
         return keccak256(abi.encodePacked(creditOwner, assetCode));
     }
 }

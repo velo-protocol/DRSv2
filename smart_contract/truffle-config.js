@@ -70,7 +70,7 @@ module.exports = {
     // },
 
     // Useful for private networks
-    private: {
+    evrynet: {
       provider: () => new HDWalletProvider("glue antique cabin fade fossil wrist obtain pride spoon mention hand animal", `http://52.220.52.16:22002`),
       network_id: 15,   // This network is yours, in the cloud.
       gasPrice: 1000000000,

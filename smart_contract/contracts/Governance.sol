@@ -31,6 +31,11 @@ contract Governance is WhitelistAdminRole, IGOV {
 
     mapping(address => bool) public trustedPartners;
 
+    /*
+        reserveFreeze collateralAssetCode => seconds
+    */
+    mapping(bytes32 => uint32) public reserveFreeze;
+
     IPF public priceFeeders;
     IRM public reserveManager;
 
@@ -42,6 +47,14 @@ contract Governance is WhitelistAdminRole, IGOV {
 
     function getReserveManager() external view returns (IRM) {
         return reserveManager;
+    }
+
+    function setReserveFreeze(bytes32 assetCode, uint32 newSeconds) external {
+        reserveFreeze[assetCode] = newSeconds;
+    }
+
+    function getReserveFreeze(bytes32 assetCode) external view returns (uint32) {
+        return reserveFreeze[assetCode];
     }
 
     function setDrsAddress(address newDrsAddress) external onlyWhitelistAdmin {
@@ -99,9 +112,11 @@ contract Governance is WhitelistAdminRole, IGOV {
         return collectedFee[collateralAssetCode];
     }
 
-    function withdrawFee(uint256 amount) public onlyWhitelistAdmin {
-        //        require(amount <= collectedFee, "amount must <= to collectedFee");
-        //        veloToken.transfer(msg.sender, amount);
-        //        collectedFee = collectedFee.sub(amount);
+    function withdrawFee(bytes32 collateralAssetCode, uint256 amount) external onlyWhitelistAdmin {
+        require(amount <= collectedFee[collateralAssetCode], "amount must <= to collectedFee");
+
+        collateralAssets[collateralAssetCode].transfer(msg.sender, amount);
+
+        collectedFee[collateralAssetCode] = collectedFee[collateralAssetCode].sub(amount);
     }
 }
