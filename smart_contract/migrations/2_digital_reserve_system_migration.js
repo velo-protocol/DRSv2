@@ -20,24 +20,40 @@ module.exports = async function (deployer, network) {
     governanceInstance.setReserveManager(reserveManagerInstance.address);
     governanceInstance.setDrsAddress(drsInstance.address);
 
-    if (network === 'development') {
-        let adminAddress = '0xdEF0D3660Ed8A0165aBfb21020BC5834565c263C';
+    if (network === 'development' || network === 'evrynet') {
+        let adminAddress = '0x138812bf3C0b6c8FB23CBdF8d0CC6246A3801D11';
 
-        await deployer.deploy(Token, "TIM", "TIM", 7);
-        let timToken = await Token.deployed();
-        await timToken.mint(adminAddress, 10000000000000);
+        await deployer.deploy(Token, "VELO", "VELO", 7);
+        let veloToken = await Token.deployed();
+        await veloToken.mint(adminAddress, 10000000000000);
 
-        let timTokenAscii = Web3.utils.fromAscii("TIM");
+        await deployer.deploy(Token, "BO", "BO", 7);
+        let boToken = await Token.deployed();
+        await boToken.mint(adminAddress, 100000000000000);
+
+        let veloTokenAscii = Web3.utils.fromAscii("VELO");
+        let boTokenAscii = Web3.utils.fromAscii("BO");
         let usdAscii = Web3.utils.fromAscii("USD");
 
-        await priceFeedersInstance.setAsset(timTokenAscii, timToken.address);
-        await priceFeedersInstance.addAssetFiat(timTokenAscii, usdAscii);
-        await priceFeedersInstance.addPriceFeeder(timTokenAscii, usdAscii, adminAddress);
-        await priceFeedersInstance.setPrice(timTokenAscii, usdAscii, 10000000);
+        console.log("Setting up Price Feeder for VELO");
+        await priceFeedersInstance.setAsset(veloTokenAscii, veloToken.address);
+        await priceFeedersInstance.addAssetFiat(veloTokenAscii, usdAscii);
+        await priceFeedersInstance.addPriceFeeder(veloTokenAscii, usdAscii, adminAddress);
+        await priceFeedersInstance.setPrice(veloTokenAscii, usdAscii, 10000000);
 
-        await governanceInstance.setCollateralAsset(timTokenAscii, timToken.address, 125);
+        console.log("Setting up Price Feeder for BO");
+        await priceFeedersInstance.setAsset(boTokenAscii, boToken.address);
+        await priceFeedersInstance.addAssetFiat(boTokenAscii, usdAscii);
+        await priceFeedersInstance.addPriceFeeder(boTokenAscii, usdAscii, adminAddress);
+        await priceFeedersInstance.setPrice(boTokenAscii, usdAscii, 10000000);
+
+        console.log("Set Collateral assets");
+        await governanceInstance.setCollateralAsset(veloTokenAscii, veloToken.address, 100);
+        await governanceInstance.setCollateralAsset(boTokenAscii, veloToken.address, 1000);
         await governanceInstance.setTrustedPartner(adminAddress);
 
-        await timToken.approve(drsInstance.address, 10000000000);
+        console.log("Approve DRS to spend VELO and BO")
+        await boToken.approve(drsInstance.address, 100000000000000);
+        await veloToken.approve(drsInstance.address, 10000000000);
     }
 };
