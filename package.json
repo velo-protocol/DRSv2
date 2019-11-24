@@ -1,8 +1,8 @@
 {
-  "name": "smart_contract",
+  "name": "DRSv2",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT",
+  "license": "GNU AGPLv3",
   "dependencies": {
     "truffle-hdwallet-provider": "^1.0.17",
     "truffle-privatekey-provider": "^1.3.0",
