@@ -8,7 +8,7 @@ const Token = artifacts.require('Token');
 
 module.exports = async function (deployer, network, accounts) {
     await deployer.deploy(Governance);
-    let governanceInstance = await Governance.deployegd();
+    let governanceInstance = await Governance.deployed();
     await deployer.deploy(PriceFeeders);
     let priceFeedersInstance = await PriceFeeders.deployed();
     await deployer.deploy(DRS, governanceInstance.address);
