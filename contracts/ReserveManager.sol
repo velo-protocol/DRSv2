@@ -1,10 +1,10 @@
 pragma solidity ^0.5.0;
 
-import "./openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "./openzeppelin-solidity/contracts/access/roles/WhitelistAdminRole.sol";
-import "./IRM.sol";
-import "./IGOV.sol";
-import "./openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/roles/WhitelistAdminRole.sol";
+import "./contract-interfaces/IRM.sol";
+import "./contract-interfaces/IGOV.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 
 contract ReserveManager is IRM {

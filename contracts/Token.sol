@@ -1,8 +1,8 @@
 pragma solidity ^0.5.0;
 
-import "./openzeppelin-solidity/contracts/access/roles/WhitelistAdminRole.sol";
-import "./openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
-import "./openzeppelin-solidity/contracts/token/ERC20/ERC20Detailed.sol";
+import "@openzeppelin/contracts/access/roles/WhitelistAdminRole.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
 
 /// @author Velo Team
 /// @title A modified ERC20
