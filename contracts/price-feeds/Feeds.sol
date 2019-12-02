@@ -16,7 +16,7 @@ contract Feeds is IVS {
     }
 
     function getWithError() external view returns (bytes32, bool) {
-        return (value, active);
+        return (value, !active);
     }
 
     function get() external view returns (bytes32) {
