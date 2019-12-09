@@ -1,11 +1,11 @@
 pragma solidity ^0.5.0;
 
-import "../contract-interfaces/IVS.sol";
-import "../contract-interfaces/IMED.sol";
 import "../book-room/LL.sol";
+import "../contract-interfaces/IVS.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
-contract Med is IVS, IMED {
+contract Med is Initializable, IVS {
     using SafeMath for uint256;
 
     address public gov;
@@ -26,7 +26,7 @@ contract Med is IVS, IMED {
         _;
     }
 
-    constructor(address _gov, bytes32 _pair) public {
+    function initialize(address _gov, bytes32 _pair) public initializer {
         active = true;
         gov = _gov;
         pair = _pair;
