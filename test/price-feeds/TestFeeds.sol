@@ -1,14 +1,8 @@
 pragma solidity ^0.5.0;
 
 import "../../contracts/price-feeds/Feeds.sol";
-import "../../contracts/contract-interfaces/IMED.sol";
+import "../mocks/MockMed.sol";
 import "truffle/Assert.sol";
-
-contract MockMed is IMED {
-    function post() external {
-        // mock stuffs
-    }
-}
 
 contract TestFeeds {
     Feeds public feeds;

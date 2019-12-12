@@ -104,12 +104,12 @@ contract Med is Initializable, IPRS {
     }
 
     function getWithError() external view returns (uint256, bool) {
-        return (price, price < 0 && active);
+        return (price, price <= 0 || !active);
     }
 
     function set(uint256 newPrice) external {
         require(msg.sender == address(this), "caller must be Med");
-        price = newPrice;
+        _set(newPrice);
     }
 
     function _set(uint256 newPrice) internal {
