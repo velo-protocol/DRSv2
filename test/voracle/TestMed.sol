@@ -1,23 +1,14 @@
-//pragma solidity ^0.5.0;
-//
-//import "../../contracts/voracle/Med.sol";
-//import "../../contracts/price-feeds/FeedsFactory.sol";
-//import "../../contracts/book-room/LL.sol";
-//
-//contract TestMed {
-//    FeedsFactory public feedsFactory;
-//    Med public med;
-//
-//    LL.List public feeders;
-//    using LL for LL.List;
-//
-//    constructor() public {
-//        feedsFactory = new FeedsFactory();
-//
-//        feeders = feeders.init();
-//        feeders.add(feedsFactory.create());
-//        feeders.add(feedsFactory.create());
-//
-//        med = new Med(address(this), "XLMUSD");
-//    }
-//}
+pragma solidity ^0.5.0;
+
+import "../../contracts/voracle/Med.sol";
+import "truffle/Assert.sol";
+import "truffle/DeployedAddresses.sol";
+
+contract TestMed {
+    function testInitialize() public {
+        Med med = Med(DeployedAddresses.Med());
+        med.initialize(address(this), "VELOUSD");
+
+        Assert.equal(med.pair(), "VELOUSD", "pair must be VELOUSD");
+    }
+}

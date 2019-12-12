@@ -1,36 +1,38 @@
 pragma solidity ^0.5.0;
 
-import "../contract-interfaces/IVS.sol";
+import "../contract-interfaces/IPRS.sol";
 import "../contract-interfaces/IMED.sol";
 
-contract Feeds is IVS {
+contract Feeds is IPRS {
     address public owner;
-    bytes32 public value;
+    uint256 public value;
     bool public active;
 
-    event LogPriceUpdate(bytes32 value);
+    event LogPriceUpdate(uint256 value);
 
     constructor(address _owner) public {
         active = true;
         owner = _owner;
     }
 
-    function getWithError() external view returns (bytes32, bool) {
+    function getWithError() external view returns (uint256, bool) {
         return (value, !active);
     }
 
-    function get() external view returns (bytes32) {
+    function get() external view returns (uint256) {
         require(value > 0, "value not available");
         require(active, "active must be true");
         return value;
     }
 
-    function set(bytes32 newValue) external {
+    function set(uint256 newValue) external {
+        require(newValue > 0, "newValue must more than 0");
         require(msg.sender == owner, "caller must be owner");
         value = newValue;
     }
 
-    function set(bytes32 newValue, address medAddr) external {
+    function postMed(uint256 newValue, address medAddr) external {
+        require(newValue > 0, "newValue must more than 0");
         require(msg.sender == owner, "caller must be owner");
         value = newValue;
         IMED(medAddr).post();

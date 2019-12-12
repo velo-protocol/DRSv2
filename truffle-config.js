@@ -3,7 +3,8 @@ const PrivateKeyProvider = require("truffle-privatekey-provider");
 module.exports = {
   networks: {
     development: {
-      provider: () => new PrivateKeyProvider(process.env.SCC_PK, process.env.SCC_HOST),
+      host: "127.0.0.1",
+      port: 7545,
       network_id: "*"
     },
     testnet: {
