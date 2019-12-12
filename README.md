@@ -10,9 +10,8 @@ This repository contains the implementation of Velo Protocol in Solidity.
 ## Installation
 
 To install DRSv2, you need to install 
-[Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation), 
-[Ganache](https://www.trufflesuite.com/ganache) and 
-[Metamask](https://metamask.io/) first.
+[Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation) and 
+[Ganache](https://www.trufflesuite.com/ganache) first.
 
 1. You can use the command below to install [Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation). Please note that Truffle requires NodeJS v8.9.4 or later.
 
@@ -26,9 +25,11 @@ $ yarn global add truffle
 $ yarn install
 ```
 
-3. After that you can run the command below to deploy Velo Protocol smart contracts to the network
+3. Run Ganache
+
+4. After that you can run the command below to deploy Velo Protocol smart contracts to your local network
 ```sh
-$ truffle migrate --reset
+$ truffle migrate --reset --network development
 ```
 
 ## Run unit test with solidity-coverage
