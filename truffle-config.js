@@ -12,6 +12,13 @@ module.exports = {
       network_id: 15,
       gasPrice: 1000000000,
       production: false
+    },
+    coverage: {
+      host: "localhost",
+      network_id: "*",
+      port: 8555,
+      gas: 0xfffffffffff,
+      gasPrice: 0x01
     }
   },
   // Set default mocha options here, use special reporters etc.
@@ -28,4 +35,4 @@ module.exports = {
       }
     }
   }
-}
+};
