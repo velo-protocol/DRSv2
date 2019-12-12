@@ -3,7 +3,8 @@
 </div>
 <br>
 
-DRSv2 is a VELO Protocol Version Smart Contract.
+# Introduction
+This repository contains the implementation of Velo Protocol in Solidity.
 
 # Get Started
 ## Installation
@@ -13,31 +14,25 @@ To install DRSv2, you need to install
 [Ganache](https://www.trufflesuite.com/ganache) and 
 [Metamask](https://metamask.io/) first.
 
-1. The first need [Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation) installed (**NodeJS v8.9.4 or later required**), then you can use the below npm command to install truffle.
+1. You can use the command below to install [Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation). Please note that Truffle requires NodeJS v8.9.4 or later.
 
 ```sh
-$ npm install -g truffle
+$ yarn global add truffle
 ```
 
-2. Clone this Repository it in your machine and then go to folder DRSv2:
+2. Clone this repository in your machine, go to folder DRSv2, then use `yarn install` to install all dependencies:
 
-```node
+```sh
 $ yarn install
 ```
 
-3. After download ganache and installed you need run ganache and run this command
-```bash
-$ truffle build
-$ truffle deploy
+3. After that you can run the command below to deploy Velo Protocol smart contracts to the network
+```sh
+$ truffle migrate --reset
 ```
 
-4. Used Metamask extension from google chrome
- - use custom network to link in your ganache server (http://localhost:7545) 
- - import your ether account from private key to metamask
- - you can interact with metamask for send asset and see your transaction history from metamask or ganache
- 
-5. DRSv2 Environment Migration run this command
- 
-```bash
-$ truffle migrations/
+## Run unit test with solidity-coverage
+You can use the command below to run all unit test with full coverage report
+```sh
+$ npx solidity-coverage
 ```
