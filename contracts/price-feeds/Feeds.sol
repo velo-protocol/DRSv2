@@ -20,20 +20,20 @@ contract Feeds is IPRS {
     }
 
     function get() external view returns (uint256) {
-        require(value > 0, "value not available");
-        require(active, "active must be true");
+        require(value > 0, "Feeds | value not available");
+        require(active, "Feeds | active must be true");
         return value;
     }
 
     function set(uint256 newValue) external {
-        require(newValue > 0, "newValue must more than 0");
-        require(msg.sender == owner, "caller must be owner");
+        require(newValue > 0, "Feeds | newValue must more than 0");
+        require(msg.sender == owner, "Feeds | caller must be owner");
         value = newValue;
     }
 
     function postMed(uint256 newValue, address medAddr) external {
-        require(newValue > 0, "newValue must more than 0");
-        require(msg.sender == owner, "caller must be owner");
+        require(newValue > 0, "Feeds | newValue must more than 0");
+        require(msg.sender == owner, "Feeds | caller must be owner");
         value = newValue;
         IMED(medAddr).post();
 
@@ -41,7 +41,7 @@ contract Feeds is IPRS {
     }
 
     function disable() external {
-        require(msg.sender == owner, "caller must be owner");
+        require(msg.sender == owner, "Feeds | caller must be owner");
         active = false;
     }
 

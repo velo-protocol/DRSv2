@@ -22,7 +22,7 @@ contract Med is Initializable, IPRS {
     event LogMedPrice(uint256 price, bool isErr);
 
     modifier onlyGov() {
-        require(msg.sender == gov, "caller must be GOV");
+        require(msg.sender == gov, "Med | caller must be GOV");
         _;
     }
 
@@ -82,7 +82,7 @@ contract Med is Initializable, IPRS {
     }
 
     function setMinFedPrices(uint8 newMinFedPrices) onlyGov public {
-        require(newMinFedPrices != 0, "minFedPrices must more than 0");
+        require(newMinFedPrices != 0, "Med | minFedPrices must more than 0");
         minFedPrices = newMinFedPrices;
     }
 
@@ -99,7 +99,7 @@ contract Med is Initializable, IPRS {
     }
 
     function get() external view returns (uint256) {
-        require(price > 0, "invalid price");
+        require(price > 0, "Med | invalid price");
         return price;
     }
 
@@ -108,7 +108,7 @@ contract Med is Initializable, IPRS {
     }
 
     function set(uint256 newPrice) external {
-        require(msg.sender == address(this), "caller must be Med");
+        require(msg.sender == address(this), "Med | caller must be Med");
         _set(newPrice);
     }
 

@@ -2,6 +2,7 @@ const Web3 = require('web3');
 
 const MedProxy = artifacts.require('MedProxy');
 const Med = artifacts.require('Med');
+const Lag = artifacts.require('Lag');
 
 module.exports = async function (deployer, network, accounts) {
     await deployer.deploy(Med);
@@ -14,4 +15,6 @@ module.exports = async function (deployer, network, accounts) {
     let initializeCalldata = medInstance.methods.initialize(accounts[0], Web3.utils.fromAscii("VELOUSD")).encodeABI();
 
     await medProxy.initialize(med.address, initializeCalldata);
+
+    await deployer.deploy(Lag, medProxy.address);
 };
