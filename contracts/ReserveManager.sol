@@ -21,6 +21,10 @@ contract ReserveManager is IRM {
         uint256 blockNumber;
     }
 
+    /*
+        lockedReserveId = keccak256(abi.encodePacked(from, assetCode, amount, block.number))
+        lockedReserveId => LockedReserve
+    */
     mapping(bytes32 => LockedReserve) public lockedReserves;
 
     address public drsAddress;

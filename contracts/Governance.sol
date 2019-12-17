@@ -17,6 +17,10 @@ contract Governance is WhitelistAdminRole, IGOV {
         collateralRatios 1000 = require collateral 10x
         collateralRatios 125 = require collateral 1.25x
         collateralRatios 100 = require collateral 1x
+
+        ex. You need 1.6x of Eth as collateral to issue DAI
+
+        collateralAssetCode => ratio, ERC20 token
     */
     mapping(bytes32 => IERC20) public collateralAssets;
     mapping(bytes32 => uint) public collateralRatios;
@@ -27,8 +31,14 @@ contract Governance is WhitelistAdminRole, IGOV {
         creditIssuanceFee 100 = 1% = 0.01x
     */
     uint256 public creditIssuanceFee;
+    /*
+        collateralAssetCode => collectedFee
+    */
     mapping(bytes32 => uint256) public collectedFee;
 
+    /*
+        tp address => bool
+    */
     mapping(address => bool) public trustedPartners;
 
     /*
