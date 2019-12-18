@@ -35,5 +35,5 @@ $ truffle migrate --reset --network development
 ## Run unit test with solidity-coverage
 You can use the command below to run all unit test with full coverage report
 ```sh
-$ npx solidity-coverage
+$ yarn solidity-coverage
 ```
