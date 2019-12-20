@@ -2,6 +2,11 @@
   "name": "DRSv2",
   "version": "0.0.1",
   "main": "index.js",
+  "scripts": {
+    "reset": "truffle migrate --reset --network development",
+    "test:client": "truffle test ./client-test/StableCredit.test.js",
+    "test:unit": "solidity-coverage"
+  },
   "license": "GNU AGPLv3",
   "dependencies": {
     "@openzeppelin/contracts": "^2.4.0",
