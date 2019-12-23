@@ -1,16 +1,19 @@
+require('dotenv').config();
+
 const PrivateKeyProvider = require("truffle-privatekey-provider");
 
 module.exports = {
   networks: {
-    development: {
+    local: {
       host: "127.0.0.1",
       port: 7545,
       network_id: "*"
     },
-    testnet: {
-      provider: () => new PrivateKeyProvider(process.env.SCC_PK, process.env.SCC_HOST),
-      network_id: 15,
+    dev: {
+      provider: () => new PrivateKeyProvider(process.env.DEV_SCC_PK, process.env.DEV_SCC_HOST),
+      network_id: "*",
       gasPrice: 1000000000,
+      gas: 6357193,
       production: false
     },
     coverage: {
