@@ -41,8 +41,10 @@ contract Lag {
 
     event LogLaggedPrice(uint256 laggedPrice);
 
-    constructor(address _priceRefStorage) public {
+    constructor(address _gov, address _priceRefStorage) public {
+        consumers.init();
         priceRefStorage = _priceRefStorage;
+        gov = _gov;
         lagTime = uint16(DEFAULT_LAG_TIME);
     }
 

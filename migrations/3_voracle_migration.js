@@ -16,5 +16,6 @@ module.exports = async function (deployer, network, accounts) {
 
     await medProxy.initialize(med.address, initializeCalldata);
 
-    await deployer.deploy(Lag, medProxy.address);
+    // TODO: await deployer.deploy(Lag, gov.address, medProxy.address)
+    await deployer.deploy(Lag, medProxy.address, medProxy.address);
 };
