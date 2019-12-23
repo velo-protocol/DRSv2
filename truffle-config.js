@@ -10,7 +10,7 @@ module.exports = {
       network_id: "*"
     },
     dev: {
-      provider: () => new PrivateKeyProvider(process.env.DEV_SCC_HOST, process.env.SCC_HOST),
+      provider: () => new PrivateKeyProvider(process.env.DEV_SCC_PK, process.env.DEV_SCC_HOST),
       network_id: "*",
       gasPrice: 1000000000,
       gas: 6357193,
