@@ -17,30 +17,31 @@ contract TestLag {
     }
 
     function testHalt() public {
+        Assert.isFalse(lag.halted(), "lag.halted() should be false");
         lag.halt();
-
-        Assert.isTrue(lag.halted(), "lag.halted() are should be true");
+        Assert.isTrue(lag.halted(), "lag.halted() should be true");
     }
 
     function testHaltWhenNotGov() public {
         lagNoneGov = new Lag(address(1), address(2));
         (bool r,) = address(lagNoneGov).call(abi.encodePacked(lagNoneGov.halt.selector));
 
-        Assert.equal(r, false, "lag.halted() are should be false");
+        Assert.equal(r, false, "lag.halted() should be false");
     }
 
     function testResume() public {
+        Assert.isFalse(lag.halted(), "lag.halted() should be false");
         lag.halt();
+        Assert.isTrue(lag.halted(), "lag.halted() should be true");
         lag.resume();
-
-        Assert.equal(lag.halted(), false, "lag.resume() are should be false");
+        Assert.isFalse(lag.halted(), "lag.halted() should be false");
     }
 
     function testSetPriceRefStorage() public {
         address expectedPriceRefStorage = address(mockIPRS);
         lag.setPriceRefStorage(address(mockIPRS));
 
-        Assert.equal(lag.priceRefStorage(), expectedPriceRefStorage, "lag.setPriceRefStorage() are should be 0xb04aD816e86bFA5515c35Ad02081F71D9E848C88");
+        Assert.equal(lag.priceRefStorage(), expectedPriceRefStorage, "lag.setPriceRefStorage() should be 0xb04aD816e86bFA5515c35Ad02081F71D9E848C88");
     }
 
     function testSetLagTime() public {
@@ -49,7 +50,7 @@ contract TestLag {
         bytes memory data = abi.encodeWithSelector(selector, newLagTime);
         (bool r,) = address(lag).call(data);
 
-        Assert.isTrue(r, "lag.setLagTime() are should be true");
+        Assert.isTrue(r, "lag.setLagTime() should not throw an error");
     }
 
     function testSetLagTimeWithError() public {
@@ -58,19 +59,19 @@ contract TestLag {
         bytes memory data = abi.encodeWithSelector(selector, newLagTime);
         (bool r,) = address(lag).call(data);
 
-        Assert.isFalse(r, "lag.setLagTime() should throw the error");
+        Assert.isFalse(r, "lag.setLagTime() should throw an error");
     }
 
     function testVoid() public {
         lag.void();
 
-        Assert.equal(lag.halted(), true, "lag.void() variable halted should be true");
+        Assert.equal(lag.halted(), true, "lag.halted() should be true after lag.void() has been called");
     }
 
     function testIsLagTimePass() public {
         (bool r,) = address(lag).call(abi.encodePacked(lag.isLagTimePass.selector));
 
-        Assert.isTrue(r, "lag.isLagTimePass() are should be true");
+        Assert.isTrue(r, "lag.isLagTimePass() should not throw an error");
     }
 
     function testPost() public {
@@ -81,62 +82,71 @@ contract TestLag {
 
         (uint256 curr, bool isErr) = lag.getWithError();
 
-        Assert.equal(curr, 0, "curr are should be 0");
+        Assert.equal(curr, 0, "curr should be 0");
         Assert.equal(isErr, false, "isErr are should be false");
     }
 
     function testPostWhenPriceRefNotSet() public {
         (bool r,) = address(lag).call(abi.encodePacked(lag.post.selector));
 
-        Assert.equal(r, false, "lag.post() should throw the error");
+        Assert.equal(r, false, "lag.post() should throw an error");
     }
 
     function testPostWhenHalted() public {
         lag.halt();
         (bool r,) = address(lag).call(abi.encodePacked(lag.post.selector));
 
-        Assert.equal(r, false, "lag.post() must throw error Lag | Lag has been halted");
+        Assert.equal(r, false, "lag.post() should throw an error");
     }
 
     function testGetWithError() public {
         lag.addConsumer(address(this));
         (uint256 curr, bool isErr) = lag.getWithError();
 
-        Assert.equal(curr, 0, "lag.getWithError() curr are should be 0");
-        Assert.isFalse(isErr, "lag.getWithError() isErr are should be false");
+        Assert.equal(curr, 0, "lag.getWithError() curr should be 0");
+        Assert.isFalse(isErr, "lag.getWithError() isErr should be false");
     }
 
     function testGetWithErrorWithOutConsumerList() public {
         (bool r,) = address(lag).call(abi.encodePacked(lag.getWithError.selector));
 
-        Assert.isFalse(r, "lag.getWithError() are should be false because not consumer list");
+        Assert.isFalse(r, "lag.getWithError() should throw an error");
     }
 
     function testGetNextWithError() public {
         lag.addConsumer(address(this));
         (uint256 curr, bool isErr) = lag.getNextWithError();
 
-        Assert.equal(curr, 0, "lag.getNextWithError() curr are should be 0");
-        Assert.isFalse(isErr, "lag.getNextWithError() isErr are should be false");
+        Assert.equal(curr, 0, "lag.getNextWithError() curr should be 0");
+        Assert.isFalse(isErr, "lag.getNextWithError() isErr should be false");
     }
 
     function testGetNextWithErrorWithOutConsumerList() public {
         (bool r,) = address(lag).call(abi.encodePacked(lag.getNextWithError.selector));
 
-        Assert.isFalse(r, "lag.getNextWithError() should throw the error");
+        Assert.isFalse(r, "lag.getNextWithError() should throw an error");
     }
 
     function testGet() public {
         lag.addConsumer(address(this));
         uint256 currPrice = lag.get();
 
-        Assert.equal(currPrice, 0, "lag.get() are should be 0");
+        Assert.equal(currPrice, 0, "lag.get() should be 0");
+    }
+
+    function testGetAfterPost() public {
+        lag.setPriceRefStorage(address(mockIPRS));
+        lag.addConsumer(address(this));
+        lag.post();
+
+        uint256 currPrice = lag.get();
+        Assert.equal(currPrice, 0, "lag.get() should be 0");
     }
 
     function testGetWithErrorWhenAddressNotInConsumerList() public {
         (bool r,) = address(lag).call(abi.encodePacked(lag.get.selector));
 
-        Assert.isFalse(r, "lag.get() should throw error");
+        Assert.isFalse(r, "lag.get() should throw an error");
     }
 
     function testAddConsumer() public {
@@ -153,7 +163,7 @@ contract TestLag {
         bytes memory data = abi.encodeWithSelector(selector);
         (bool r,) = address(lag).call(data);
 
-        Assert.equal(r, false, "lag.addConsumer() should throw the error");
+        Assert.equal(r, false, "lag.addConsumer() should throw an error");
     }
 
     function testRemoveConsumer() public {
@@ -173,7 +183,7 @@ contract TestLag {
         bytes memory data = abi.encodeWithSelector(selector, address(mockIPRS));
         (bool r,) = address(lag).call(data);
 
-        Assert.equal(r, false, "lag.removeConsumer() should throw the error");
+        Assert.equal(r, false, "lag.removeConsumer() should throw an error");
     }
 
     function testGetConsumers() public {
