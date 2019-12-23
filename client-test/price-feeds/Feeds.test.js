@@ -1,6 +1,7 @@
 const Feeds = artifacts.require("Feeds");
 
 contract("Feeds test", async accounts => {
+  let feeds;
 
   beforeEach(async () => {
     feeds = await Feeds.new(accounts[0]);
@@ -42,5 +43,4 @@ contract("Feeds test", async accounts => {
 
     assert.equal(active, false, "active should be false");
   });
-
 });

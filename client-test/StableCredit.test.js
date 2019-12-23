@@ -3,10 +3,8 @@ const Token = artifacts.require("Token");
 
 const Web3 = require('web3');
 
-let stableCredit;
-let veloToken;
-
 contract("StableCredit test", async accounts => {
+  let stableCredit, veloToken;
 
   beforeEach(async () => {
     veloToken = await Token.new('Velo', 'VELO', 7);
