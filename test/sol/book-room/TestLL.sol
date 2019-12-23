@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "../../contracts/book-room/LL.sol";
+import "../../../contracts/modules/book-room/LL.sol";
 import "truffle/Assert.sol";
 
 contract TestLL {

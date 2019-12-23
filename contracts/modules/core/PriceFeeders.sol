@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/access/roles/WhitelistAdminRole.sol";
-import "./contract-interfaces/IPF.sol";
+import "../interfaces/IPF.sol";
 
 contract PriceFeeders is IPF, WhitelistAdminRole {
 

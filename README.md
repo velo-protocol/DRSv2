@@ -1,4 +1,4 @@
-<div align="center">
+<div style="text-align: center">
 <a href="https://velo.org"><img alt="Stellar" src="https://raw.githubusercontent.com/velo-protocol/assets/master/images/logo.png" width="368" /></a>
 </div>
 <br>
@@ -32,8 +32,43 @@ $ yarn install
 $ truffle migrate --reset --network development
 ```
 
-## Run unit test with solidity-coverage
-You can use the command below to run all unit test with full coverage report
+## Script usage
+#### Deployment
+##### 1. Deploy locally, suit when developing on local machine
 ```sh
-$ yarn solidity-coverage
+$ yarn run reset
+```
+
+##### 2. Deploy to dev environment (required DEV_SCC_HOST, DEV_SCC_PK configured correctly)
+```sh
+$ yarn run reset:dev
+```
+
+
+#### Running test
+##### 1. Test a single file, suit when focusing on a single file 
+```sh
+$ yarn run test test/path/to/file.js
+or
+$ yarn run test test/path/to/file.sol
+```
+
+##### 2. Test only js files
+```sh
+$ yarn run test:js
+```
+
+##### 3. Test only sol files
+```sh
+$ yarn run test:sol
+```
+
+##### 4. Test all files
+```sh
+$ yarn run test:all
+```
+
+##### 5. Test all files and generate a coverage report
+```sh
+$ yarn run test:cov
 ```

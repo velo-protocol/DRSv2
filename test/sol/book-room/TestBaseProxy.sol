@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 
 import "../mocks/MockTargetProxyV1.sol";
 import "../mocks/MockTargetProxyV2.sol";
-import "../../contracts/book-room/BaseProxy.sol";
+import "../../../contracts/modules/book-room/BaseProxy.sol";
 import "truffle/Assert.sol";
 
 contract TestBaseProxy {

@@ -1,14 +1,13 @@
 pragma solidity ^0.5.0;
 
-import "../../contracts/contract-interfaces/IPRS.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "../../../contracts/modules/interfaces/IPRS.sol";
 
-contract MockTargetProxyV1 is Initializable, IPRS {
+contract MockIPRS is IPRS {
 
     uint256 public value;
 
-    function initialize() public initializer {
-        value = 10;
+    constructor(uint256 _value) public {
+        value = _value;
     }
 
     function getWithError() external view returns (uint256, bool) {

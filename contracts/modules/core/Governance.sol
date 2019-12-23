@@ -3,9 +3,9 @@ pragma solidity ^0.5.0;
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/roles/WhitelistAdminRole.sol";
-import "./contract-interfaces/IPF.sol";
-import "./contract-interfaces/IGOV.sol";
-import "./contract-interfaces/IRM.sol";
+import "../interfaces/IPF.sol";
+import "../interfaces/IGOV.sol";
+import "../interfaces/IRM.sol";
 
 contract Governance is WhitelistAdminRole, IGOV {
     using SafeMath for uint256;

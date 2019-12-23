@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
 import "../book-room/LL.sol";
-import "../contract-interfaces/IPRS.sol";
+import "../interfaces/IPRS.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
