@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "../../contracts/voracle/Med.sol";
+import "../../../contracts/modules/voracle/Med.sol";
 import "../mocks/MockIPRS.sol";
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";

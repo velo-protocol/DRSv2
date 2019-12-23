@@ -1,8 +1,8 @@
 pragma solidity ^0.5.0;
 
-import "./contract-interfaces/IGOV.sol";
+import "../interfaces/IGOV.sol";
 import "./StableCredit.sol";
-import "./contract-interfaces/IDRS.sol";
+import "../interfaces/IDRS.sol";
 
 contract DigitalReserveSystem is IDRS {
     using SafeMath for uint256;

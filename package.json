@@ -5,7 +5,7 @@
   "scripts": {
     "reset": "truffle migrate --reset --network local",
     "reset:dev": "truffle migrate --reset --network dev",
-    "test:client": "truffle test ./client-test/StableCredit.test.js",
+    "test:client": "truffle test --network local js/**/Test**.js",
     "test:unit": "solidity-coverage"
   },
   "license": "GNU AGPLv3",

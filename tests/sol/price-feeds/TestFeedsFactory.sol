@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "../../contracts/price-feeds/FeedsFactory.sol";
+import "../../../contracts/modules/price-feeder/FeedsFactory.sol";
 import "truffle/Assert.sol";
 
 contract TestFeedsFactory {

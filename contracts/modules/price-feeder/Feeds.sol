@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
-import "../contract-interfaces/IPRS.sol";
-import "../contract-interfaces/IMED.sol";
+import "../interfaces/IPRS.sol";
+import "../interfaces/IMED.sol";
 
 contract Feeds is IPRS {
     address public owner;
