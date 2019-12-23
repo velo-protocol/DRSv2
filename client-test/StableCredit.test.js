@@ -3,15 +3,15 @@ const Token = artifacts.require("Token");
 
 const Web3 = require('web3');
 
-contract("StableCredit test", async (accounts) => {
+let stableCredit;
+let veloToken;
+
+contract("StableCredit test", async accounts => {
 
   beforeEach(async () => {
-
-    collateralAddress = await Token.new('Velo', 'VELO', 7);
-
-
+    veloToken = await Token.new('Velo', 'VELO', 7);
     stableCredit = await StableCredit.new(Web3.utils.fromAscii("USD"), accounts[1],
-      Web3.utils.fromAscii("VELO"), collateralAddress.address, 'test', '1');
+        Web3.utils.fromAscii(veloToken.symbol()), veloToken.address, 'testCredit', '1');
   });
 
   it("should mint correctly", async () => {
