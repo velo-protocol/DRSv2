@@ -13,7 +13,7 @@ contract("StableCredit test", async accounts => {
   });
 
   it("should mint correctly", async () => {
-    stableCredit.mint(accounts[0], 10);
+    await stableCredit.mint(accounts[0], 10);
 
     const balance = await stableCredit.balanceOf(accounts[0]);
 
@@ -21,8 +21,8 @@ contract("StableCredit test", async accounts => {
   });
 
   it("should burn correctly", async () => {
-    stableCredit.mint(accounts[0], 100);
-    stableCredit.burn(accounts[0], 10);
+    await stableCredit.mint(accounts[0], 100);
+    await stableCredit.burn(accounts[0], 10);
 
     const balance = await stableCredit.balanceOf(accounts[0]);
 
