@@ -9,7 +9,7 @@ contract("Feeds test", async accounts => {
 
   it("should set correctly", async () => {
     const expected = 120;
-    feeds.set(expected);
+    await feeds.set(expected);
 
     const value = await feeds.value();
 
@@ -18,7 +18,7 @@ contract("Feeds test", async accounts => {
 
   it("should get correctly", async () => {
     const expected = 120;
-    feeds.set(expected);
+    await feeds.set(expected);
 
     const value = await feeds.get();
 
@@ -27,7 +27,7 @@ contract("Feeds test", async accounts => {
 
   it("should getWithError correctly", async () => {
     const expected = 120;
-    feeds.set(expected);
+    await feeds.set(expected);
 
     const result = await feeds.getWithError();
     const value = result['0'];
@@ -38,7 +38,7 @@ contract("Feeds test", async accounts => {
   });
 
   it("should disable correctly", async () => {
-    feeds.disable();
+    await feeds.disable();
     const active = await feeds.active();
 
     assert.equal(active, false, "active should be false");
