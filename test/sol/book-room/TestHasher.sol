@@ -21,7 +21,6 @@ contract TestHasher {
 
     function testHasherCallFunctionLockedReserveId() public {
         bytes32 expected = 0x4afd1c8d71908c0a77df9b5973780be5f71f53c6a2ceb7f102746ef30eb5c9df;
-        bytes4 selector = hasher.lockedReserveId.selector;
         address from = 0x51800B4E5acD84BcA3b1a2be1d07158E35851Cb3;
         bytes32 collateralAssetCode = "VELO";
         uint256 collateralAmount = 100;
@@ -33,7 +32,7 @@ contract TestHasher {
 
     function testStableCreditId() public {
         bytes32 expected = 0x82d8c2282adba9ac0ab3f1a555a37692290b0598488f7fc4dfc2e2f8991ecbaf;
-        address creditOwner = 0xb04aD816e86bFA5515c35Ad02081F71D9E848C88;
+        address creditOwner = 0x51800B4E5acD84BcA3b1a2be1d07158E35851Cb3;
         string memory assetCode = "vTHB";
         bytes32 result = hasher.stableCredit(creditOwner, assetCode);
 
