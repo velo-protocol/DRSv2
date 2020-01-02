@@ -6,11 +6,15 @@ import "@openzeppelin/contracts/access/roles/WhitelistAdminRole.sol";
 import "../interfaces/IPF.sol";
 import "../interfaces/IHeart.sol";
 import "../interfaces/IRM.sol";
+import "./StableCredit.sol";
+import "../book-room/LL.sol";
 
 contract Heart is WhitelistAdminRole, IHeart {
     using SafeMath for uint256;
 
     address public drsAddr;
+    IPF public priceFeeders;
+    IRM public reserveManager;
 
     /*
         collateralRatios is 1/100
@@ -24,6 +28,14 @@ contract Heart is WhitelistAdminRole, IHeart {
     */
     mapping(bytes32 => IERC20) public collateralAssets;
     mapping(bytes32 => uint) public collateralRatios;
+
+    /*
+        StableCredit related mapping
+        stableCredits map between keccak256(stableCreditOwnerAddress, stableCreditCode) => StableCredit
+    */
+    mapping(bytes32 => StableCredit) public stableCredits;
+    LL public stableCreditsLL;
+
 
     /*
         creditIssuanceFee is  1/10,000
@@ -46,8 +58,6 @@ contract Heart is WhitelistAdminRole, IHeart {
     */
     mapping(bytes32 => uint32) public reserveFreeze;
 
-    IPF public priceFeeders;
-    IRM public reserveManager;
 
     constructor() public { }
 
@@ -69,6 +79,10 @@ contract Heart is WhitelistAdminRole, IHeart {
 
     function setDrsAddress(address newDrsAddress) external onlyWhitelistAdmin {
         drsAddr = newDrsAddress;
+    }
+
+    function getDrsAddress() external view returns (address) {
+        return drsAddr;
     }
 
     function setCollateralAsset(bytes32 assetCode, address addr, uint ratio) external onlyWhitelistAdmin {
@@ -128,5 +142,12 @@ contract Heart is WhitelistAdminRole, IHeart {
         collateralAssets[collateralAssetCode].transfer(msg.sender, amount);
 
         collectedFee[collateralAssetCode] = collectedFee[collateralAssetCode].sub(amount);
+    }
+
+    function setStableCredit(bytes32 stableCreditId, StableCredit stableCredit) external onlyWhitelistAdmin {
+        stableCredits[stableCreditId] = stableCredit;
+    }
+    function getStableCredit(bytes32 stableCreditId) external view returns (StableCredit) {
+        return stableCredits[stableCreditId];
     }
 }

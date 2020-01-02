@@ -8,6 +8,7 @@ import "../interfaces/IHeart.sol";
 
 
 contract ReserveManager is IRM {
+    IHeart public heart;
     /*
         WARNINGS: DO NOT SEND TOKEN TO THIS CONTRACT DIRECTLY
     */
@@ -27,11 +28,8 @@ contract ReserveManager is IRM {
     */
     mapping(bytes32 => LockedReserve) public lockedReserves;
 
-    address public drsAddress;
-    IHeart public heart;
-
     modifier onlyDRSSC() {
-        require(drsAddress == msg.sender, "caller is not DRSSC");
+        require(heart.getDrsAddress() == msg.sender, "caller is not DRSSC");
         _;
     }
 
@@ -40,8 +38,7 @@ contract ReserveManager is IRM {
         _;
     }
 
-    constructor(address digitalReserveSystemAddr, address heartAddr) public {
-        drsAddress = digitalReserveSystemAddr;
+    constructor(address heartAddr) public {
         heart = IHeart(heartAddr);
     }
 

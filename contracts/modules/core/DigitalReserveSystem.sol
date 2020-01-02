@@ -6,13 +6,6 @@ import "./StableCredit.sol";
 
 contract DigitalReserveSystem is IDRS {
     using SafeMath for uint256;
-
-    /*
-        StableCredit related mapping
-        stableCredits map between keccak256(stableCreditOwnerAddress, stableCreditCode) => StableCredit
-    */
-    mapping(bytes32 => StableCredit) public stableCredits;
-
     IHeart public heart;
 
     event Setup(
@@ -39,26 +32,26 @@ contract DigitalReserveSystem is IDRS {
         uint256 peggedValue
     ) external returns(address) {
         bytes32 stableCreditId = getStableCreditId(msg.sender, assetCode);
-        address collateralAddress = address(heart.getCollateralAsset(collateralAssetCode));
+        address stableCreditAddr = address(heart.getStableCredit(stableCreditId));
+        address collateralAddr = address(heart.getCollateralAsset(collateralAssetCode));
 
-        require(collateralAddress != address(0x0), "collateralAssetCode has not been whitelisted");
-        require(address(stableCredits[stableCreditId]) == address(0x0), "trusted partner cannot setup the same asset code");
+        require(collateralAddr != address(0x0), "collateralAssetCode has not been whitelisted");
+        require(stableCreditAddr == address(0x0), "trusted partner cannot setup the same asset code");
         require(heart.isTrustedPartner(msg.sender), "only trusted partner can setup the stable credit");
 
         bytes32 linkId = keccak256(abi.encodePacked(collateralAssetCode, peggedCurrency));
-
         require(heart.getPriceFeeders().getMedianPrice(linkId) > 0, "collateralAssetCode must has value more than 0");
 
         StableCredit newStableCredit = new StableCredit(
             peggedCurrency,
             msg.sender,
             collateralAssetCode,
-            collateralAddress,
+            collateralAddr,
             assetCode,
-            peggedValue
+            peggedValue,
+            address(heart)
         );
-
-        stableCredits[stableCreditId] = newStableCredit;
+        heart.setStableCredit(stableCreditId, newStableCredit);
 
         emit Setup(assetCode, address(newStableCredit));
 
@@ -74,37 +67,37 @@ contract DigitalReserveSystem is IDRS {
         uint256 collateralAmount,
         string calldata assetCode
     ) external payable returns(bool) {
-        StableCredit credit = stableCredits[getStableCreditId(msg.sender, assetCode)];
+        StableCredit stableCredit = heart.getStableCredit(getStableCreditId(msg.sender, assetCode));
 
         require(heart.isTrustedPartner(msg.sender), "only trusted partner can mint the stable credit");
-        require(address(credit) != address(0x0), "stableCredit not exist");
+        require(address(stableCredit) != address(0x0), "stableCredit not exist");
 
-        bytes32 linkId = keccak256(abi.encodePacked(collateralAssetCode, credit.peggedCurrency()));
+        bytes32 linkId = keccak256(abi.encodePacked(collateralAssetCode, stableCredit.peggedCurrency()));
 
-        require(heart.getCollateralAsset(collateralAssetCode) == credit.collateral(), "collateralAsset must be the same");
+        require(heart.getCollateralAsset(collateralAssetCode) == stableCredit.collateral(), "collateralAsset must be the same");
         require(heart.getPriceFeeders().getMedianPrice(linkId) != 0, "median price ref mut not be zero");
 
-        (uint256 mintAmount, uint256 fee) = _calMintStableCredit(credit, linkId, collateralAmount);
-        uint256 actualCollateralAmount = _callCollateral(credit, linkId, mintAmount);
+        (uint256 mintAmount, uint256 fee) = _calMintStableCredit(stableCredit, linkId, collateralAmount);
+        uint256 actualCollateralAmount = _callCollateral(stableCredit, linkId, mintAmount);
         uint256 reserveAmount = collateralAmount.sub(actualCollateralAmount).sub(fee);
 
         heart.getCollateralAsset(collateralAssetCode).transferFrom(msg.sender, address(heart), fee);
-        heart.getCollateralAsset(collateralAssetCode).transferFrom(msg.sender, address(credit), actualCollateralAmount);
+        heart.getCollateralAsset(collateralAssetCode).transferFrom(msg.sender, address(stableCredit), actualCollateralAmount);
         heart.getCollateralAsset(collateralAssetCode).transferFrom(msg.sender, address(this), reserveAmount);
 
         heart.getCollateralAsset(collateralAssetCode).approve(address(heart.getReserveManager()), reserveAmount);
 
         heart.getReserveManager().lockReserve(collateralAssetCode, address(this), reserveAmount);
 
-        credit.mint(msg.sender, mintAmount);
-        credit.approveCollateral();
+        stableCredit.mint(msg.sender, mintAmount);
+        stableCredit.approveCollateral();
 
         heart.collectFee(fee, collateralAssetCode);
 
         emit Mint(
             assetCode,
             mintAmount,
-            address(credit),
+            address(stableCredit),
             collateralAssetCode,
             actualCollateralAmount
         );
@@ -117,17 +110,17 @@ contract DigitalReserveSystem is IDRS {
         uint256 amount,
         string calldata assetCode
     ) external returns(bool) {
-        StableCredit credit = stableCredits[getStableCreditId(creditOwner, assetCode)];
+        StableCredit stableCredit = heart.getStableCredit(getStableCreditId(creditOwner, assetCode));
 
-        require(address(credit) != address(0x0), "stableCredit not existed");
+        require(address(stableCredit) != address(0x0), "stableCredit not existed");
 
-        bytes32 linkId = keccak256(abi.encodePacked(credit.collateralAssetCode(), credit.peggedCurrency()));
+        bytes32 linkId = keccak256(abi.encodePacked(stableCredit.collateralAssetCode(), stableCredit.peggedCurrency()));
 
         _rebalance(creditOwner, assetCode);
-        uint256 returnAmount = _callCollateral(credit, linkId, amount);
+        uint256 returnAmount = _callCollateral(stableCredit, linkId, amount);
 
-        credit.redeem(msg.sender, amount, returnAmount);
-        credit.approveCollateral();
+        stableCredit.redeem(msg.sender, amount, returnAmount);
+        stableCredit.approveCollateral();
 
         return true;
     }
@@ -143,15 +136,15 @@ contract DigitalReserveSystem is IDRS {
         address creditOwner,
         string memory assetCode
     ) private returns(bool) {
-        StableCredit credit = stableCredits[getStableCreditId(creditOwner, assetCode)];
-        bytes32 linkId = keccak256(abi.encodePacked(credit.collateralAssetCode(), credit.peggedCurrency()));
+        StableCredit stableCredit = heart.getStableCredit(getStableCreditId(creditOwner, assetCode));
+        bytes32 linkId = keccak256(abi.encodePacked(stableCredit.collateralAssetCode(), stableCredit.peggedCurrency()));
 
-        uint256 collateralAmount = _callCollateral(credit, linkId, credit.totalSupply());
+        uint256 collateralAmount = _callCollateral(stableCredit, linkId, stableCredit.totalSupply());
 
-        if (collateralAmount >= credit.collateral().balanceOf(address(credit))) {
-            heart.getReserveManager().injectCollateral(credit.collateralAssetCode(), address(credit), collateralAmount.sub(credit.collateral().balanceOf(address(credit))));
+        if (collateralAmount >= stableCredit.collateral().balanceOf(address(stableCredit))) {
+            heart.getReserveManager().injectCollateral(stableCredit.collateralAssetCode(), address(stableCredit), collateralAmount.sub(stableCredit.collateral().balanceOf(address(stableCredit))));
         } else {
-            heart.getCollateralAsset(credit.collateralAssetCode()).transferFrom(address(credit), address(heart.getReserveManager()), credit.collateral().balanceOf(address(credit)).sub(collateralAmount));
+            heart.getCollateralAsset(stableCredit.collateralAssetCode()).transferFrom(address(stableCredit), address(heart.getReserveManager()), stableCredit.collateral().balanceOf(address(stableCredit)).sub(collateralAmount));
         }
 
         return true;
@@ -176,7 +169,7 @@ contract DigitalReserveSystem is IDRS {
     }
 
     function collateralOf(address creditOwner, string calldata assetCode) external view returns (uint256, address) {
-        return stableCredits[getStableCreditId(creditOwner, assetCode)].getCollateralDetail();
+        return heart.getStableCredit(getStableCreditId(creditOwner, assetCode)).getCollateralDetail();
     }
 
     function getStableCreditId(address creditOwner, string memory assetCode) private pure returns (bytes32) {

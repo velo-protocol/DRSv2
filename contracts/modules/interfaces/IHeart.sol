@@ -3,6 +3,7 @@ pragma solidity ^0.5.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./IPF.sol";
 import "./IRM.sol";
+import "../core/StableCredit.sol";
 
 interface IHeart {
     function setReserveManager(address newReserveManager) external;
@@ -10,6 +11,7 @@ interface IHeart {
     function setReserveFreeze(bytes32 assetCode, uint32 newSeconds) external;
     function getReserveFreeze(bytes32 assetCode) external view returns (uint32);
     function setDrsAddress(address newDrsAddress) external;
+    function getDrsAddress() external view returns (address);
     function setCollateralAsset(bytes32 assetCode, address addr, uint ratio) external;
     function getCollateralAsset(bytes32 assetCode) external view returns (IERC20);
     function setCollateralRatio(bytes32 assetCode, uint ratio) external;
@@ -23,4 +25,6 @@ interface IHeart {
     function collectFee(uint256 fee, bytes32 collateralAssetCode) external;
     function getCollectedFee(bytes32 collateralAssetCode) external view returns (uint256);
     function withdrawFee(bytes32 collateralAssetCode, uint256 amount) external;
+    function setStableCredit(bytes32 stableCreditId, StableCredit stableCredit) external;
+    function getStableCredit(bytes32 stableCreditId) external view returns (StableCredit);
 }
