@@ -17,7 +17,7 @@ contract TestHasher {
         bytes memory data = abi.encodeWithSelector(selector, collateralAssetCode, peggedCurrency);
         (bool result,) = address(hasher).call(data);
 
-        Assert.isTrue(result, "hasher.linkId() should not throw an error");
+        Assert.isTrue(result, "hasher.linkId() should be true");
     }
 
     function testLinkIdWithError() public {
@@ -47,5 +47,23 @@ contract TestHasher {
         (bool result,) = address(hasher).call(data);
 
         Assert.equal(result, false, "Hasher lockedReserveId() should throw an error");
+    }
+
+    function testStableCreditId() public {
+        bytes4 selector = hasher.stableCredit.selector;
+        address creditOwner = 0xb04aD816e86bFA5515c35Ad02081F71D9E848C88;
+        string memory assetCode = 'vTHB';
+        bytes memory data = abi.encodeWithSelector(selector, creditOwner, assetCode);
+        (bool result,) = address(hasher).call(data);
+
+        Assert.equal(result, true, "Hasher stableCredit() should be true");
+    }
+
+    function testStableCreditIdWithErrorNoneParameters() public {
+        bytes4 selector = hasher.stableCredit.selector;
+        bytes memory data = abi.encodeWithSelector(selector);
+        (bool result,) = address(hasher).call(data);
+
+        Assert.equal(result, false, "Hasher stableCredit() should throw an error");
     }
 }
