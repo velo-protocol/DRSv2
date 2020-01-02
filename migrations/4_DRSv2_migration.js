@@ -1,24 +1,24 @@
 const Web3 = require('web3');
 
-const Governance = artifacts.require('Governance');
+const Heart = artifacts.require('Heart');
 const ReserveManager = artifacts.require('ReserveManager');
 const PriceFeeders = artifacts.require('PriceFeeders');
 const DRS = artifacts.require('DigitalReserveSystem');
 const Token = artifacts.require('Token');
 
 module.exports = async function (deployer, network, accounts) {
-    await deployer.deploy(Governance);
-    let governanceInstance = await Governance.deployed();
+    await deployer.deploy(Heart);
+    let heartInstance = await Heart.deployed();
     await deployer.deploy(PriceFeeders);
     let priceFeedersInstance = await PriceFeeders.deployed();
-    await deployer.deploy(DRS, governanceInstance.address);
+    await deployer.deploy(DRS, heartInstance.address);
     let drsInstance = await DRS.deployed();
-    await deployer.deploy(ReserveManager, drsInstance.address, governanceInstance.address);
+    await deployer.deploy(ReserveManager, drsInstance.address, heartInstance.address);
     let reserveManagerInstance = await ReserveManager.deployed();
 
-    governanceInstance.setPriceFeeders(priceFeedersInstance.address);
-    governanceInstance.setReserveManager(reserveManagerInstance.address);
-    governanceInstance.setDrsAddress(drsInstance.address);
+    heartInstance.setPriceFeeders(priceFeedersInstance.address);
+    heartInstance.setReserveManager(reserveManagerInstance.address);
+    heartInstance.setDrsAddress(drsInstance.address);
 
     if (network === 'development' || network === 'evrynet') {
         let adminAddress = accounts[0];
@@ -37,8 +37,8 @@ module.exports = async function (deployer, network, accounts) {
         await priceFeedersInstance.setPrice(veloTokenAscii, usdAscii, 10000000);
 
         console.log("Set Collateral assets");
-        await governanceInstance.setCollateralAsset(veloTokenAscii, veloToken.address, 100);
-        await governanceInstance.setTrustedPartner(adminAddress);
+        await heartInstance.setCollateralAsset(veloTokenAscii, veloToken.address, 100);
+        await heartInstance.setTrustedPartner(adminAddress);
 
         console.log("Approve DRS to spend VELO");
         await veloToken.approve(drsInstance.address, 10000000000);
