@@ -1,15 +1,26 @@
 const StableCredit = artifacts.require("StableCredit");
 const Token = artifacts.require("Token");
+const Heart = artifacts.require("Heart");
 
 const Web3 = require('web3');
 
 contract("StableCredit test", async accounts => {
-  let stableCredit, veloToken;
+  let stableCredit, veloToken, heart;
 
   beforeEach(async () => {
     veloToken = await Token.new('Velo', 'VELO', 7);
-    stableCredit = await StableCredit.new(Web3.utils.fromAscii("USD"), accounts[1],
-        Web3.utils.fromAscii(veloToken.symbol()), veloToken.address, 'testCredit', '1');
+    heart = await Heart.new();
+    await heart.setDrsAddress(accounts[0]);
+
+    stableCredit = await StableCredit.new(
+        Web3.utils.fromAscii("USD"),
+        accounts[1],
+        Web3.utils.fromAscii(veloToken.symbol()),
+        veloToken.address,
+        'testCredit',
+        '1',
+        heart.address
+    );
   });
 
   it("should mint correctly", async () => {

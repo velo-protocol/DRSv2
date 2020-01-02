@@ -2,10 +2,12 @@ pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
+import "../interfaces/IHeart.sol";
 
 /// @author Velo Team
 /// @title A modified ERC20
 contract StableCredit is ERC20, ERC20Detailed {
+    IHeart public heart;
 
     IERC20 public collateral;
     bytes32 public collateralAssetCode;
@@ -17,7 +19,7 @@ contract StableCredit is ERC20, ERC20Detailed {
     address public drsAddress;
 
     modifier onlyDRSSC() {
-        require(drsAddress == msg.sender, "caller is not DRSSC");
+        require(heart.getDrsAddress() == msg.sender, "caller is not DRSSC");
         _;
     }
 
@@ -27,15 +29,16 @@ contract StableCredit is ERC20, ERC20Detailed {
         bytes32 _collateralAssetCode,
         address _collateralAddress,
         string memory _code,
-        uint256 _peggedValue
+        uint256 _peggedValue,
+        address heartAddr
     )
     public ERC20Detailed(_code, _code, 7) {
-        drsAddress = msg.sender;
         creditOwner = _creditOwner;
         peggedValue = _peggedValue;
         peggedCurrency = _peggedCurrency;
         collateral = IERC20(_collateralAddress);
         collateralAssetCode = _collateralAssetCode;
+        heart = IHeart(heartAddr);
     }
 
     function mint(address recipient, uint256 amount) external onlyDRSSC {

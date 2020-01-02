@@ -13,7 +13,7 @@ module.exports = async function (deployer, network, accounts) {
     let priceFeedersInstance = await PriceFeeders.deployed();
     await deployer.deploy(DRS, heartInstance.address);
     let drsInstance = await DRS.deployed();
-    await deployer.deploy(ReserveManager, drsInstance.address, heartInstance.address);
+    await deployer.deploy(ReserveManager, heartInstance.address);
     let reserveManagerInstance = await ReserveManager.deployed();
 
     heartInstance.setPriceFeeders(priceFeedersInstance.address);
