@@ -32,11 +32,11 @@ contract DigitalReserveSystem is IDRS {
         uint256 peggedValue
     ) external returns(address) {
         bytes32 stableCreditId = getStableCreditId(msg.sender, assetCode);
-        address stableCreditAddress = address(heart.getStableCredit(stableCreditId));
-        address collateralAddress = address(heart.getCollateralAsset(collateralAssetCode));
+        address stableCreditAddr = address(heart.getStableCredit(stableCreditId));
+        address collateralAddr = address(heart.getCollateralAsset(collateralAssetCode));
 
-        require(collateralAddress != address(0x0), "collateralAssetCode has not been whitelisted");
-        require(stableCreditAddress == address(0x0), "trusted partner cannot setup the same asset code");
+        require(collateralAddr != address(0x0), "collateralAssetCode has not been whitelisted");
+        require(stableCreditAddr == address(0x0), "trusted partner cannot setup the same asset code");
         require(heart.isTrustedPartner(msg.sender), "only trusted partner can setup the stable credit");
 
         bytes32 linkId = keccak256(abi.encodePacked(collateralAssetCode, peggedCurrency));
@@ -46,7 +46,7 @@ contract DigitalReserveSystem is IDRS {
             peggedCurrency,
             msg.sender,
             collateralAssetCode,
-            collateralAddress,
+            collateralAddr,
             assetCode,
             peggedValue,
             address(heart)

@@ -7,6 +7,7 @@ import "../interfaces/IPF.sol";
 import "../interfaces/IHeart.sol";
 import "../interfaces/IRM.sol";
 import "./StableCredit.sol";
+import "../book-room/LL.sol";
 
 contract Heart is WhitelistAdminRole, IHeart {
     using SafeMath for uint256;
@@ -33,6 +34,7 @@ contract Heart is WhitelistAdminRole, IHeart {
         stableCredits map between keccak256(stableCreditOwnerAddress, stableCreditCode) => StableCredit
     */
     mapping(bytes32 => StableCredit) public stableCredits;
+    LL public stableCreditsLL;
 
 
     /*
