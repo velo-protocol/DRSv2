@@ -19,7 +19,7 @@ contract TestHasher {
         Assert.equal(result,expected, "hasher.linkId() result should be 0x4cb01440ae0bc757f71beb1faa542cd6a1aba2477a2b38aa35a7eee3283535e9");
     }
 
-    function testHasherCallFunctionLockedReserveId() public {
+    function testLockedReserveId() public {
         bytes32 expected = 0x4afd1c8d71908c0a77df9b5973780be5f71f53c6a2ceb7f102746ef30eb5c9df;
         address from = 0x51800B4E5acD84BcA3b1a2be1d07158E35851Cb3;
         bytes32 collateralAssetCode = "VELO";
