@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/roles/WhitelistAdminRole.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../interfaces/IRM.sol";
-import "../interfaces/IGOV.sol";
+import "../interfaces/IHeart.sol";
 
 
 contract ReserveManager is IRM {
@@ -28,28 +28,28 @@ contract ReserveManager is IRM {
     mapping(bytes32 => LockedReserve) public lockedReserves;
 
     address public drsAddress;
-    IGOV public gov;
+    IHeart public heart;
 
     modifier onlyDRSSC() {
         require(drsAddress == msg.sender, "caller is not DRSSC");
         _;
     }
 
-    modifier onlyGov() {
-        require(address(gov) == msg.sender, "caller is not Governance");
+    modifier onlyHeart() {
+        require(address(heart) == msg.sender, "caller is not Heart");
         _;
     }
 
-    constructor(address digitalReserveSystemAddr, address governanceAddr) public {
+    constructor(address digitalReserveSystemAddr, address heartAddr) public {
         drsAddress = digitalReserveSystemAddr;
-        gov = IGOV(governanceAddr);
+        heart = IHeart(heartAddr);
     }
 
     event InjectCollateral(bytes32 indexed assetCode, uint256 amount);
     event LockReserve(bytes32 indexed lockedReserveId);
 
     function lockReserve(bytes32 assetCode, address from, uint256 amount) external {
-        gov.getCollateralAsset(assetCode).transferFrom(from, address(this), amount);
+        heart.getCollateralAsset(assetCode).transferFrom(from, address(this), amount);
 
         bytes32 lockedReserveId = keccak256(abi.encodePacked(from, assetCode, amount, block.number));
         lockedReserves[lockedReserveId] = LockedReserve(
@@ -63,16 +63,16 @@ contract ReserveManager is IRM {
     }
 
     function releaseReserve(bytes32 lockedReserveId, bytes32 assetCode, uint256 amount) external {
-        require(block.number.sub(lockedReserves[lockedReserveId].blockNumber).mul(3) < gov.getReserveFreeze(assetCode), "release time not reach");
+        require(block.number.sub(lockedReserves[lockedReserveId].blockNumber).mul(3) < heart.getReserveFreeze(assetCode), "release time not reach");
         require(lockedReserves[lockedReserveId].owner == msg.sender, "only owner can release reserve");
 
-        gov.getCollateralAsset(assetCode).transfer(msg.sender, amount);
+        heart.getCollateralAsset(assetCode).transfer(msg.sender, amount);
 
         lockedReserves[lockedReserveId].amount = lockedReserves[lockedReserveId].amount.sub(amount);
     }
 
     function injectCollateral(bytes32 assetCode, address to, uint256 amount) external onlyDRSSC {
-        gov.getCollateralAsset(assetCode).transfer(to, amount);
+        heart.getCollateralAsset(assetCode).transfer(to, amount);
 
         emit InjectCollateral(assetCode, amount);
     }

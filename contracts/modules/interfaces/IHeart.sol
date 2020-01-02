@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./IPF.sol";
 import "./IRM.sol";
 
-interface IGOV {
+interface IHeart {
     function setReserveManager(address newReserveManager) external;
     function getReserveManager() external view returns (IRM);
     function setReserveFreeze(bytes32 assetCode, uint32 newSeconds) external;
