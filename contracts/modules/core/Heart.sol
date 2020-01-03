@@ -102,7 +102,7 @@ contract Heart is WhitelistAdminRole, IHeart {
     function getCollateralRatio(bytes32 assetCode) external view returns (uint) {
         return collateralRatios[assetCode];
     }
-
+    
     function setCreditIssuanceFee(uint256 newFee) external onlyWhitelistAdmin {
         creditIssuanceFee = newFee;
     }
