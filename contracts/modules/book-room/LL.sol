@@ -44,4 +44,9 @@ library LL {
         }
         return addrs;
     }
+
+    function getNextOf(List storage l, address curr) internal view returns (address) {
+        return l.next[curr];
+    }
+
 }

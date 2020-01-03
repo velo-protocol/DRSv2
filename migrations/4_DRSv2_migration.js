@@ -5,8 +5,13 @@ const ReserveManager = artifacts.require('ReserveManager');
 const PriceFeeders = artifacts.require('PriceFeeders');
 const DRS = artifacts.require('DigitalReserveSystem');
 const Token = artifacts.require('Token');
+const Hasher = artifacts.require('Hasher');
 
 module.exports = async function (deployer, network, accounts) {
+    await deployer.deploy(Hasher);
+    // await deployer.link(Hasher, DRS);
+
+
     await deployer.deploy(Heart);
     let heartInstance = await Heart.deployed();
     await deployer.deploy(PriceFeeders);
