@@ -25,6 +25,6 @@ interface IHeart {
     function collectFee(uint256 fee, bytes32 collateralAssetCode) external;
     function getCollectedFee(bytes32 collateralAssetCode) external view returns (uint256);
     function withdrawFee(bytes32 collateralAssetCode, uint256 amount) external;
-    function addStableCredit(bytes32 stableCreditId, StableCredit stableCredit) external;
+    function addStableCredit(StableCredit stableCredit) external;
     function getStableCredit(bytes32 stableCreditId) external view returns (StableCredit);
 }

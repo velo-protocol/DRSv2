@@ -51,7 +51,7 @@ contract DigitalReserveSystem is IDRS {
             peggedValue,
             address(heart)
         );
-        heart.addStableCredit(stableCreditId, newStableCredit);
+        heart.addStableCredit(newStableCredit);
 
         emit Setup(assetCode, address(newStableCredit));
 

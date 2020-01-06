@@ -8,6 +8,7 @@ import "../interfaces/IHeart.sol";
 import "../interfaces/IRM.sol";
 import "./StableCredit.sol";
 import "../book-room/LL.sol";
+import "../book-room/Hasher.sol";
 
 contract Heart is WhitelistAdminRole, IHeart {
     using SafeMath for uint256;
@@ -147,9 +148,11 @@ contract Heart is WhitelistAdminRole, IHeart {
         collectedFee[collateralAssetCode] = collectedFee[collateralAssetCode].sub(amount);
     }
 
-    function addStableCredit(bytes32 stableCreditId, StableCredit newStableCredit) external onlyWhitelistAdmin {
+    function addStableCredit(StableCredit newStableCredit) external onlyWhitelistAdmin {
         require(address(newStableCredit) != address(0), "newStableCredit address must not be 0");
+        bytes32 stableCreditId = Hasher.stableCreditId(newStableCredit.name());
         require(address(stableCredits[stableCreditId]) == address(0), "stableCredit has already existed");
+
         stableCredits[stableCreditId] = newStableCredit;
         stableCreditsLL = stableCreditsLL.add(address(newStableCredit));
     }
@@ -158,7 +161,7 @@ contract Heart is WhitelistAdminRole, IHeart {
         return stableCredits[stableCreditId];
     }
 
-    function getFirstStableCredit() external view returns (StableCredit) {
+    function getRecentStableCredit() external view returns (StableCredit) {
         address addr = stableCreditsLL.getNextOf(address(1));
         return StableCredit(addr);
     }

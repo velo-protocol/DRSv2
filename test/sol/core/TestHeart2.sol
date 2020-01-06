@@ -7,6 +7,7 @@ import "truffle/Assert.sol";
 
 contract TestHeart2 {
     event debug(bytes32 x);
+
     Heart public heart;
 
     function beforeEach() public {
@@ -14,11 +15,37 @@ contract TestHeart2 {
     }
 
     function testGetAddStableCredit() public {
-        uint count = heart.getStableCreditCount();
-        Assert.equal(count, uint(0), "heart.getStableCreditCount() must return 0");
-        Assert.equal(address(heart.getFirstStableCredit()), address(1), "heart.getFirstStableCredit() must return StableCredit at address 1");
+        Assert.equal(heart.getStableCreditCount(), uint(0), "heart.getStableCreditCount() must return 0");
+        Assert.equal(address(heart.getRecentStableCredit()), address(1), "heart.getFirstStableCredit() must return StableCredit at address 1");
 
-        heart.addStableCredit(Hasher.stableCreditId("vTHB"), StableCredit(10));
-        heart.addStableCredit(Hasher.stableCreditId("vUSD"), StableCredit(10));
+        heart.addStableCredit(new StableCredit(
+                "THB",
+                address(10),
+                "VELO",
+                address(99),
+                "vTHB",
+                uint(1),
+                address(heart)
+            ));
+        heart.addStableCredit(new StableCredit(
+                "USD",
+                address(11),
+                "VELO",
+                address(99),
+                "vUSD",
+                uint(1),
+                address(heart)
+            ));
+
+        Assert.equal(heart.getStableCreditCount(), uint(2), "heart.getStableCreditCount() must return 2");
+
+        StableCredit vUSD = heart.getRecentStableCredit();
+        Assert.equal(vUSD.name(), "vUSD", "heart.getFirstStableCredit() must return a correct StableCredit");
+
+        StableCredit vTHB = heart.getNextStableCredit(vUSD.getId());
+        Assert.equal(vTHB.name(), "vTHB", "heart.getNextStableCredit() must return a correct StableCredit");
+
     }
+
+
 }

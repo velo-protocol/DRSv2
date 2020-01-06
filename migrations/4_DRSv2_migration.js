@@ -9,8 +9,7 @@ const Hasher = artifacts.require('Hasher');
 
 module.exports = async function (deployer, network, accounts) {
     await deployer.deploy(Hasher);
-    // await deployer.link(Hasher, DRS);
-
+    await deployer.link(Hasher, [DRS, Heart]);
 
     await deployer.deploy(Heart);
     let heartInstance = await Heart.deployed();
