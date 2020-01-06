@@ -10,47 +10,47 @@ library LL {
         mapping (address => address) next;
     }
 
-    function init(List storage l) internal returns (List memory) {
-        l.next[start] = end;
+    function init(List storage list) internal returns (List memory) {
+        list.next[start] = end;
 
-        return l;
+        return list;
     }
 
-    function has(List storage l, address addr) internal view returns (bool) {
-        return l.next[addr] != empty;
+    function has(List storage list, address addr) internal view returns (bool) {
+        return list.next[addr] != empty;
     }
 
-    function add(List storage l, address addr) internal returns (List memory) {
-        require(!has(l, addr), "addr is already in the list");
-        l.next[addr] = l.next[start];
-        l.next[start] = addr;
-        l.llSize++;
+    function add(List storage list, address addr) internal returns (List memory) {
+        require(!has(list, addr), "addr is already in the list");
+        list.next[addr] = list.next[start];
+        list.next[start] = addr;
+        list.llSize++;
 
-        return l;
+        return list;
     }
 
-    function remove(List storage l, address addr, address prevAddr) internal returns (List memory) {
-        require(has(l, addr), "addr not whitelisted yet");
-        require(l.next[prevAddr] == addr, "wrong prevConsumer");
-        l.next[prevAddr] = l.next[addr];
-        l.next[addr] = empty;
-        l.llSize--;
+    function remove(List storage list, address addr, address prevAddr) internal returns (List memory) {
+        require(has(list, addr), "addr not whitelisted yet");
+        require(list.next[prevAddr] == addr, "wrong prevConsumer");
+        list.next[prevAddr] = list.next[addr];
+        list.next[addr] = empty;
+        list.llSize--;
 
-        return l;
+        return list;
     }
 
-    function getAll(List storage l) internal view returns (address[] memory) {
-        address[] memory addrs = new address[](l.llSize);
-        address curr = l.next[start];
+    function getAll(List storage list) internal view returns (address[] memory) {
+        address[] memory addrs = new address[](list.llSize);
+        address curr = list.next[start];
         for(uint256 i = 0; curr != end; i++) {
             addrs[i] = curr;
-            curr = l.next[curr];
+            curr = list.next[curr];
         }
         return addrs;
     }
 
-    function getNextOf(List storage l, address curr) internal view returns (address) {
-        return l.next[curr];
+    function getNextOf(List storage list, address curr) internal view returns (address) {
+        return list.next[curr];
     }
 
 }

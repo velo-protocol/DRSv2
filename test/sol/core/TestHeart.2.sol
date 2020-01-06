@@ -50,9 +50,9 @@ contract TestHeart2 {
             )
         );
 
-        (bool r,) = address(heart).call(data);
+        (bool result,) = address(heart).call(data);
 
-        Assert.isTrue(r, "heart.addStableCredit must not throw");
+        Assert.isTrue(result, "heart.addStableCredit must not throw");
         StableCredit vTHB = heart.getStableCreditById(Hasher.stableCreditId("vTHB"));
         Assert.equal(vTHB.name(), "vTHB", "heart.addStableCredit must add StableCredit correctly");
     }
@@ -63,8 +63,8 @@ contract TestHeart2 {
             StableCredit(address(0))
         );
 
-        (bool r,) = address(heart).call(data);
-        Assert.isFalse(r, "heart.addStableCredit must throw an error");
+        (bool result,) = address(heart).call(data);
+        Assert.isFalse(result, "heart.addStableCredit must throw an error");
     }
 
     function testAddStableCredit_Fail_StableCreditHasAlreadyExist() public {
@@ -83,8 +83,8 @@ contract TestHeart2 {
             )
         );
 
-        (bool r,) = address(heart).call(data);
-        Assert.isFalse(r, "heart.addStableCredit must throw an error");
+        (bool result,) = address(heart).call(data);
+        Assert.isFalse(result, "heart.addStableCredit must throw an error");
     }
 
     function testGetStableCreditById_Success() public {
