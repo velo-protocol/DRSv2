@@ -2,14 +2,13 @@ pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/roles/WhitelistAdminRole.sol";
 import "../interfaces/IPF.sol";
 import "../interfaces/IHeart.sol";
 import "../interfaces/IRM.sol";
 import "./StableCredit.sol";
 import "../book-room/LL.sol";
 
-contract Heart is WhitelistAdminRole, IHeart {
+contract Heart is IHeart {
     using SafeMath for uint256;
 
     address public drsAddr;
@@ -49,9 +48,21 @@ contract Heart is WhitelistAdminRole, IHeart {
     mapping(bytes32 => uint256) public collectedFee;
 
     /*
-        tp address => bool
+        trusted partner address => bool
+        governor address => bool
     */
     mapping(address => bool) public trustedPartners;
+    mapping(address => bool) public governor;
+
+    modifier onlyGovernor() {
+        require(isGovernor(msg.sender), "WhitelistGovernorRole: caller does not have the Whitelist governor role");
+        _;
+    }
+
+    modifier onlyTrustedPartner() {
+        require(isTrustedPartner(msg.sender), "WhitelistTrustedPartnerRole: caller does not have the Whitelist trusted partner role");
+        _;
+    }
 
     /*
         reserveFreeze collateralAssetCode => seconds
@@ -59,9 +70,11 @@ contract Heart is WhitelistAdminRole, IHeart {
     mapping(bytes32 => uint32) public reserveFreeze;
 
 
-    constructor() public { }
+    constructor() public {
+        governor[msg.sender] = true;
+    }
 
-    function setReserveManager(address newReserveManager) external onlyWhitelistAdmin {
+    function setReserveManager(address newReserveManager) external onlyGovernor {
         reserveManager = IRM(newReserveManager);
     }
 
@@ -77,7 +90,7 @@ contract Heart is WhitelistAdminRole, IHeart {
         return reserveFreeze[assetCode];
     }
 
-    function setDrsAddress(address newDrsAddress) external onlyWhitelistAdmin {
+    function setDrsAddress(address newDrsAddress) external onlyGovernor {
         drsAddr = newDrsAddress;
     }
 
@@ -85,7 +98,7 @@ contract Heart is WhitelistAdminRole, IHeart {
         return drsAddr;
     }
 
-    function setCollateralAsset(bytes32 assetCode, address addr, uint ratio) external onlyWhitelistAdmin {
+    function setCollateralAsset(bytes32 assetCode, address addr, uint ratio) external onlyGovernor {
         collateralAssets[assetCode] = IERC20(addr);
         collateralRatios[assetCode] = ratio;
     }
@@ -94,7 +107,7 @@ contract Heart is WhitelistAdminRole, IHeart {
         return collateralAssets[assetCode];
     }
 
-    function setCollateralRatio(bytes32 assetCode, uint ratio) external onlyWhitelistAdmin {
+    function setCollateralRatio(bytes32 assetCode, uint ratio) external onlyGovernor {
         require(address(collateralAssets[assetCode]) != address(0x0), "assetCode has not been added");
         collateralRatios[assetCode] = ratio;
     }
@@ -102,8 +115,8 @@ contract Heart is WhitelistAdminRole, IHeart {
     function getCollateralRatio(bytes32 assetCode) external view returns (uint) {
         return collateralRatios[assetCode];
     }
-    
-    function setCreditIssuanceFee(uint256 newFee) external onlyWhitelistAdmin {
+
+    function setCreditIssuanceFee(uint256 newFee) external onlyGovernor {
         creditIssuanceFee = newFee;
     }
 
@@ -111,15 +124,23 @@ contract Heart is WhitelistAdminRole, IHeart {
         return creditIssuanceFee;
     }
 
-    function setTrustedPartner(address addr) external onlyWhitelistAdmin {
+    function setTrustedPartner(address addr) external onlyGovernor {
         trustedPartners[addr] = true;
     }
 
-    function isTrustedPartner(address addr) external view returns (bool) {
+    function setGovernor(address addr) external onlyGovernor {
+        governor[addr] = true;
+    }
+
+    function isTrustedPartner(address addr) public view returns (bool) {
         return trustedPartners[addr];
     }
 
-    function setPriceFeeders(address newPriceFeeders) external onlyWhitelistAdmin {
+    function isGovernor(address addr) public view returns (bool) {
+        return governor[addr];
+    }
+
+    function setPriceFeeders(address newPriceFeeders) external onlyGovernor {
         priceFeeders = IPF(newPriceFeeders);
     }
 
@@ -136,7 +157,7 @@ contract Heart is WhitelistAdminRole, IHeart {
         return collectedFee[collateralAssetCode];
     }
 
-    function withdrawFee(bytes32 collateralAssetCode, uint256 amount) external onlyWhitelistAdmin {
+    function withdrawFee(bytes32 collateralAssetCode, uint256 amount) external onlyGovernor {
         require(amount <= collectedFee[collateralAssetCode], "amount must <= to collectedFee");
 
         collateralAssets[collateralAssetCode].transfer(msg.sender, amount);
@@ -144,9 +165,10 @@ contract Heart is WhitelistAdminRole, IHeart {
         collectedFee[collateralAssetCode] = collectedFee[collateralAssetCode].sub(amount);
     }
 
-    function setStableCredit(bytes32 stableCreditId, StableCredit stableCredit) external onlyWhitelistAdmin {
+    function setStableCredit(bytes32 stableCreditId, StableCredit stableCredit) external onlyGovernor {
         stableCredits[stableCreditId] = stableCredit;
     }
+
     function getStableCredit(bytes32 stableCreditId) external view returns (StableCredit) {
         return stableCredits[stableCreditId];
     }
