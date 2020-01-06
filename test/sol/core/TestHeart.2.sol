@@ -6,10 +6,6 @@ import "../../../contracts/modules/book-room/Hasher.sol";
 import "truffle/Assert.sol";
 
 contract TestHeart2 {
-    using LL for LL;
-
-    event debug(bytes32 x);
-
     Heart public heart;
 
     function helper_addVTHB() public {
@@ -40,11 +36,6 @@ contract TestHeart2 {
         heart = new Heart();
     }
 
-    function testConstructor_Success() public {
-        Assert.equal(heart.getStableCreditCount(), uint(0), "StableCredit count must be 0");
-        Assert.equal(address(heart.getRecentStableCredit()), address(1), "getRecentStableCredit() must return address 0");
-    }
-
     function testAddStableCredit_Success() public {
         bytes memory data = abi.encodeWithSelector(
             heart.addStableCredit.selector,
@@ -66,7 +57,7 @@ contract TestHeart2 {
         Assert.equal(vTHB.name(), "vTHB", "heart.addStableCredit must add StableCredit correctly");
     }
 
-    function testAddStableCredit_Fail_stableCreditAddressMustNotBeZero() public {
+    function testAddStableCredit_Fail_StableCreditAddressMustNotBeZero() public {
         bytes memory data = abi.encodeWithSelector(
             heart.addStableCredit.selector,
             StableCredit(address(0))
@@ -76,7 +67,7 @@ contract TestHeart2 {
         Assert.isFalse(r, "heart.addStableCredit must throw an error");
     }
 
-    function testAddStableCredit_Fail_stableCreditHasAlreadyExist() public {
+    function testAddStableCredit_Fail_StableCreditHasAlreadyExist() public {
         helper_addVTHB();
 
         bytes memory data = abi.encodeWithSelector(
