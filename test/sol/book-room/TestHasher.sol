@@ -7,14 +7,13 @@ contract TestHasher {
     Hasher public hasher;
 
     constructor() public {
-        hasher = new Hasher();
     }
 
     function testLinkId() public {
         bytes32 expected = 0x4cb01440ae0bc757f71beb1faa542cd6a1aba2477a2b38aa35a7eee3283535e9;
         bytes32 collateralAssetCode = "VELO";
         bytes32 peggedCurrency = "vTHB";
-        bytes32 result = hasher.linkId(collateralAssetCode, peggedCurrency);
+        bytes32 result = Hasher.linkId(collateralAssetCode, peggedCurrency);
 
         Assert.equal(result,expected, "hasher.linkId() result should be 0x4cb01440ae0bc757f71beb1faa542cd6a1aba2477a2b38aa35a7eee3283535e9");
     }
@@ -25,7 +24,7 @@ contract TestHasher {
         bytes32 collateralAssetCode = "VELO";
         uint256 collateralAmount = 100;
         uint blockNumber = 1;
-        bytes32 result = hasher.lockedReserveId(from, collateralAssetCode, collateralAmount, blockNumber);
+        bytes32 result = Hasher.lockedReserveId(from, collateralAssetCode, collateralAmount, blockNumber);
 
         Assert.equal(result,expected, "Hasher lockedReserveId() result should be 0x4afd1c8d71908c0a77df9b5973780be5f71f53c6a2ceb7f102746ef30eb5c9df");
     }
@@ -37,9 +36,5 @@ contract TestHasher {
 //        bytes32 result = hasher.stableCredit(assetCode);
 //
 //        Assert.equal(result, expected, "Hasher stableCredit() result should be 0x82d8c2282adba9ac0ab3f1a555a37692290b0598488f7fc4dfc2e2f8991ecbaf");
-    }
-
-    function testMe() public {
-        StableCredit(0x00);
     }
 }

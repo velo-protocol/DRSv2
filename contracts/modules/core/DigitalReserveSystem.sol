@@ -32,7 +32,7 @@ contract DigitalReserveSystem is IDRS {
         uint256 peggedValue
     ) external returns(address) {
         bytes32 stableCreditId = getStableCreditId(assetCode);
-        address stableCreditAddr = address(heart.getStableCredit(stableCreditId));
+        address stableCreditAddr = address(heart.getStableCreditById(stableCreditId));
         address collateralAddr = address(heart.getCollateralAsset(collateralAssetCode));
 
         require(collateralAddr != address(0x0), "collateralAssetCode has not been whitelisted");
@@ -67,7 +67,7 @@ contract DigitalReserveSystem is IDRS {
         uint256 collateralAmount,
         string calldata assetCode
     ) external payable returns(bool) {
-        StableCredit stableCredit = heart.getStableCredit(getStableCreditId(assetCode));
+        StableCredit stableCredit = heart.getStableCreditById(getStableCreditId(assetCode));
 
         require(heart.isTrustedPartner(msg.sender), "only trusted partner can mint the stable credit");
         require(address(stableCredit) != address(0x0), "stableCredit not exist");
@@ -110,7 +110,7 @@ contract DigitalReserveSystem is IDRS {
         uint256 amount,
         string calldata assetCode
     ) external returns(bool) {
-        StableCredit stableCredit = heart.getStableCredit(getStableCreditId(assetCode));
+        StableCredit stableCredit = heart.getStableCreditById(getStableCreditId(assetCode));
 
         require(address(stableCredit) != address(0x0), "stableCredit not existed");
 
@@ -136,7 +136,7 @@ contract DigitalReserveSystem is IDRS {
         address creditOwner,
         string memory assetCode
     ) private returns(bool) {
-        StableCredit stableCredit = heart.getStableCredit(getStableCreditId(assetCode));
+        StableCredit stableCredit = heart.getStableCreditById(getStableCreditId(assetCode));
         bytes32 linkId = keccak256(abi.encodePacked(stableCredit.collateralAssetCode(), stableCredit.peggedCurrency()));
 
         uint256 collateralAmount = _callCollateral(stableCredit, linkId, stableCredit.totalSupply());
@@ -169,7 +169,7 @@ contract DigitalReserveSystem is IDRS {
     }
 
     function collateralOf(address creditOwner, string calldata assetCode) external view returns (uint256, address) {
-        return heart.getStableCredit(getStableCreditId(assetCode)).getCollateralDetail();
+        return heart.getStableCreditById(getStableCreditId(assetCode)).getCollateralDetail();
     }
 
     function getStableCreditId(string memory assetCode) private pure returns (bytes32) {

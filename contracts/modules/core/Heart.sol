@@ -157,7 +157,7 @@ contract Heart is WhitelistAdminRole, IHeart {
         stableCreditsLL = stableCreditsLL.add(address(newStableCredit));
     }
 
-    function getStableCredit(bytes32 stableCreditId) external view returns (StableCredit) {
+    function getStableCreditById(bytes32 stableCreditId) external view returns (StableCredit) {
         return stableCredits[stableCreditId];
     }
 
