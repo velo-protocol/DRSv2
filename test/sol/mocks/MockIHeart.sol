@@ -2,7 +2,9 @@ pragma solidity ^0.5.0;
 
 import "../../../contracts/modules/interfaces/IHeart.sol";
 import "../../../contracts/modules/interfaces/IRM.sol";
+import "../../../contracts/modules/interfaces/IPF.sol";
 import "../../../contracts/modules/interfaces/IERC20.sol";
+import "../../../contracts/modules/core/StableCredit.sol";
 
 contract MockIHeart is IHeart {
 
