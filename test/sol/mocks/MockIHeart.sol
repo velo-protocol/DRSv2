@@ -3,7 +3,7 @@ pragma solidity ^0.5.0;
 import "../../../contracts/modules/interfaces/IHeart.sol";
 import "../../../contracts/modules/interfaces/IRM.sol";
 import "../../../contracts/modules/interfaces/IPF.sol";
-import "../../../contracts/modules/interfaces/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../../../contracts/modules/core/StableCredit.sol";
 
 contract MockIHeart is IHeart {
@@ -14,7 +14,7 @@ contract MockIHeart is IHeart {
     StableCredit public vTHB;
     StableCredit public vUSD;
 
-    constructor (IRM _rm, IPF _pf, IERC20 _collateralAsset, StableCredit _vTHB, StableCredit _vUSD) {
+    constructor (IRM _rm, IPF _pf, IERC20 _collateralAsset, StableCredit _vTHB, StableCredit _vUSD) public {
         rm = _rm;
         pf = _pf;
         collateralAsset = _collateralAsset;
@@ -31,7 +31,7 @@ contract MockIHeart is IHeart {
     function setReserveFreeze(bytes32, uint32) external {}
 
     function getReserveFreeze(bytes32) external view returns (uint32) {
-        return uint(10);
+        return 10;
     }
 
     function setDrsAddress(address) external {}
@@ -97,7 +97,7 @@ contract MockIHeart is IHeart {
     }
 
     function getStableCreditCount() external view returns (uint8) {
-        return uint(2);
+        return 2;
     }
 
     function setAllowedLink(bytes32 linkId, bool enable) external {}
