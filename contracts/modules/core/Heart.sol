@@ -168,7 +168,6 @@ contract Heart is IHeart {
         collectedFee[collateralAssetCode] = collectedFee[collateralAssetCode].sub(amount);
     }
 
-
     function addStableCredit(StableCredit newStableCredit) external onlyGovernor {
         require(address(newStableCredit) != address(0), "newStableCredit address must not be 0");
         bytes32 stableCreditId = Hasher.stableCreditId(newStableCredit.name());
