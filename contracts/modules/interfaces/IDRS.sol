@@ -13,6 +13,11 @@ interface IDRS {
         string calldata assetCode
     ) external payable returns (bool);
 
+    function mintStableCredit(
+        uint256 stableCreditAmount,
+        string calldata assetCode
+    ) external payable returns(bool);
+
     function redeem(
         address creditOwner,
         uint256 amount,
