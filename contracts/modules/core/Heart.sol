@@ -7,6 +7,7 @@ import "../interfaces/IHeart.sol";
 import "../interfaces/IRM.sol";
 import "./StableCredit.sol";
 import "../book-room/LL.sol";
+import "../book-room/Hasher.sol";
 
 contract Heart is IHeart {
     using SafeMath for uint256;
@@ -33,7 +34,8 @@ contract Heart is IHeart {
         stableCredits map between keccak256(stableCreditOwnerAddress, stableCreditCode) => StableCredit
     */
     mapping(bytes32 => StableCredit) public stableCredits;
-    LL public stableCreditsLL;
+    LL.List public stableCreditsLL;
+    using LL for LL.List;
 
 
     /*
@@ -72,6 +74,7 @@ contract Heart is IHeart {
 
     constructor() public {
         governor[msg.sender] = true;
+        stableCreditsLL.init();
     }
 
     function setReserveManager(address newReserveManager) external onlyGovernor {
@@ -165,11 +168,32 @@ contract Heart is IHeart {
         collectedFee[collateralAssetCode] = collectedFee[collateralAssetCode].sub(amount);
     }
 
-    function setStableCredit(bytes32 stableCreditId, StableCredit stableCredit) external onlyGovernor {
-        stableCredits[stableCreditId] = stableCredit;
+
+    function addStableCredit(StableCredit newStableCredit) external onlyGovernor {
+        require(address(newStableCredit) != address(0), "newStableCredit address must not be 0");
+        bytes32 stableCreditId = Hasher.stableCreditId(newStableCredit.name());
+        require(address(stableCredits[stableCreditId]) == address(0), "stableCredit has already existed");
+
+        stableCredits[stableCreditId] = newStableCredit;
+        stableCreditsLL = stableCreditsLL.add(address(newStableCredit));
     }
 
-    function getStableCredit(bytes32 stableCreditId) external view returns (StableCredit) {
+    function getStableCreditById(bytes32 stableCreditId) external view returns (StableCredit) {
         return stableCredits[stableCreditId];
+    }
+
+    function getRecentStableCredit() external view returns (StableCredit) {
+        address addr = stableCreditsLL.getNextOf(address(1));
+        return StableCredit(addr);
+    }
+
+    function getNextStableCredit(bytes32 stableCreditId) external view returns (StableCredit) {
+        address currentAddr = address(stableCredits[stableCreditId]);
+        address nextAddr = stableCreditsLL.getNextOf(currentAddr);
+        return StableCredit(nextAddr);
+    }
+
+    function getStableCreditCount() external view returns (uint8) {
+        return stableCreditsLL.llSize;
     }
 }

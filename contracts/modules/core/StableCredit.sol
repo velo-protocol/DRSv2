@@ -2,6 +2,7 @@ pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
+import "../book-room/Hasher.sol";
 import "../interfaces/IHeart.sol";
 
 /// @author Velo Team
@@ -60,5 +61,9 @@ contract StableCredit is ERC20, ERC20Detailed {
 
     function getCollateralDetail() external view returns(uint256, address) {
         return (collateral.balanceOf(address(this)), address(collateral));
+    }
+
+    function getId() external view returns(bytes32) {
+        return Hasher.stableCreditId(this.name());
     }
 }
