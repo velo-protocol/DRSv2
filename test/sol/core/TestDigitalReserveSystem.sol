@@ -5,13 +5,19 @@ import "../../../contracts/modules/core/DigitalReserveSystem.sol";
 contract TestDigitalReserveSystem {
 
     DigitalReserveSystem public drs;
-    MockIHeart public mockIHeart;
 
     function beforeEach() public {
         drs = new DigitalReserveSystem();
     }
 
     constructor() public {
-        mockHeart = new Heart();
+
+        mockHeart = new MockHeart();
+    }
+
+    function testMintFromCollateral_Success() public {
+        uint256 collateralAmount = 100;
+        string assetCode = "VELO";
+        drs.mintFromCollateral(collateralAmount,assetCode);
     }
 }
