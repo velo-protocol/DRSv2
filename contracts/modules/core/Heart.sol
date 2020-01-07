@@ -37,7 +37,6 @@ contract Heart is IHeart {
     LL.List public stableCreditsLL;
     using LL for LL.List;
 
-
     /*
         creditIssuanceFee is  1/10,000
         creditIssuanceFee 185 = 1.85% = 0.0185x
@@ -55,6 +54,13 @@ contract Heart is IHeart {
     */
     mapping(address => bool) public trustedPartners;
     mapping(address => bool) public governor;
+
+    /*
+        Allowed peggedCurrency - collateralAsset pair
+        linkId => bool
+    */
+    mapping(bytes32 => bool) allowedLinks;
+
 
     modifier onlyGovernor() {
         require(isGovernor(msg.sender), "WhitelistGovernorRole: caller does not have the Whitelist governor role");
@@ -194,5 +200,13 @@ contract Heart is IHeart {
 
     function getStableCreditCount() external view returns (uint8) {
         return stableCreditsLL.llSize;
+    }
+
+    function setAllowedLink(bytes32 linkId, bool enable) external onlyGovernor {
+        allowedLinks[linkId] = enable;
+    }
+
+    function isLinkAllowed(bytes32 linkId) external view returns (bool) {
+        return allowedLinks[linkId];
     }
 }

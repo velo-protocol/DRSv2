@@ -20,6 +20,8 @@ interface IHeart {
     function getCreditIssuanceFee() external view returns (uint256);
     function setTrustedPartner(address addr) external;
     function isTrustedPartner(address addr) external view returns (bool);
+    function setGovernor(address addr) external;
+    function isGovernor(address addr) external view returns (bool);
     function setPriceFeeders(address newPriceFeeders) external;
     function getPriceFeeders() external view returns (IPF);
     function collectFee(uint256 fee, bytes32 collateralAssetCode) external;
@@ -27,4 +29,9 @@ interface IHeart {
     function withdrawFee(bytes32 collateralAssetCode, uint256 amount) external;
     function addStableCredit(StableCredit stableCredit) external;
     function getStableCreditById(bytes32 stableCreditId) external view returns (StableCredit);
+    function getRecentStableCredit() external view returns (StableCredit);
+    function getNextStableCredit(bytes32 stableCreditId) external view returns (StableCredit);
+    function getStableCreditCount() external view returns (uint8);
+    function setAllowedLink(bytes32 linkId, bool enable) external;
+    function isLinkAllowed(bytes32 linkId) external view returns (bool);
 }
