@@ -3,14 +3,19 @@ pragma solidity ^0.5.0;
 import "../interfaces/IHeart.sol";
 import "../interfaces/IDRS.sol";
 import "./StableCredit.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 
 contract DigitalReserveSystem is IDRS {
     using SafeMath for uint256;
     IHeart public heart;
 
     event Setup(
-        string indexed assetCode,
-        address indexed assetAddress
+        string assetCode,
+        bytes32 peggedCurrency,
+        uint256 peggedValue,
+        bytes32 indexed collateralAssetCode,
+        address assetAddress
     );
 
     event Mint(
@@ -21,6 +26,16 @@ contract DigitalReserveSystem is IDRS {
         uint256 collateralAmount
     );
 
+    modifier onlyGovernor() {
+        require(heart.isGovernor(msg.sender), "DigitalReserveSystem.onlyGovernor: caller must be a governor");
+        _;
+    }
+
+    modifier onlyTrustedPartner() {
+        require(heart.isTrustedPartner(msg.sender), "DigitalReserveSystem.onlyTrustedPartner: caller must be a trusted partner");
+        _;
+    }
+
     constructor(address heartAddr) public {
         heart = IHeart(heartAddr);
     }
@@ -30,32 +45,43 @@ contract DigitalReserveSystem is IDRS {
         bytes32 peggedCurrency,
         string calldata assetCode,
         uint256 peggedValue
-    ) external returns(address) {
-        bytes32 stableCreditId = getStableCreditId(assetCode);
-        address stableCreditAddr = address(heart.getStableCreditById(stableCreditId));
-        address collateralAddr = address(heart.getCollateralAsset(collateralAssetCode));
+    ) external onlyTrustedPartner returns (string memory, address) {
+        // validate asset code
+        require(bytes(assetCode).length > 0 && bytes(assetCode).length <= 12, "DigitalReserveSystem.setup: invalid assetCode format");
+        bytes32 stableCreditId = Hasher.stableCreditId(assetCode);
+        StableCredit stableCredit = heart.getStableCreditById(stableCreditId);
+        require(address(stableCredit) == address(0), "DigitalReserveSystem.setup: assetCode has already been used");
 
-        require(collateralAddr != address(0x0), "collateralAssetCode has not been whitelisted");
-        require(stableCreditAddr == address(0x0), "trusted partner cannot setup the same asset code");
-        require(heart.isTrustedPartner(msg.sender), "only trusted partner can setup the stable credit");
+        // validate collateralAssetCode
+        IERC20 collateralAsset = heart.getCollateralAsset(collateralAssetCode);
+        require(address(collateralAsset) != address(0), "DigitalReserveSystem.setup: collateralAssetCode does not exist");
 
-        bytes32 linkId = keccak256(abi.encodePacked(collateralAssetCode, peggedCurrency));
-        require(heart.getPriceFeeders().getMedianPrice(linkId) > 0, "collateralAssetCode must has value more than 0");
+        // validate collateralAssetCode, peggedCurrency
+        bytes32 linkId = Hasher.linkId(collateralAssetCode, peggedCurrency);
+        require(heart.isLinkAllowed(linkId), "DigitalReserveSystem.setup: collateralAssetCode - peggedCurrency pair does not exist");
+
+        // validate link price
+        require(heart.getPriceFeeders().getMedianPrice(linkId) > 0, "DigitalReserveSystem.setup: price of link must have value more than 0");
 
         StableCredit newStableCredit = new StableCredit(
             peggedCurrency,
             msg.sender,
             collateralAssetCode,
-            collateralAddr,
+            address(collateralAsset),
             assetCode,
             peggedValue,
             address(heart)
         );
         heart.addStableCredit(newStableCredit);
+        emit Setup(
+            assetCode,
+            peggedCurrency,
+            peggedValue,
+            collateralAssetCode,
+            address(newStableCredit)
+        );
 
-        emit Setup(assetCode, address(newStableCredit));
-
-        return address(newStableCredit);
+        return (assetCode, address(newStableCredit));
     }
 
     /*
@@ -66,7 +92,7 @@ contract DigitalReserveSystem is IDRS {
         bytes32 collateralAssetCode,
         uint256 collateralAmount,
         string calldata assetCode
-    ) external payable returns(bool) {
+    ) external payable returns (bool) {
         StableCredit stableCredit = heart.getStableCreditById(getStableCreditId(assetCode));
 
         require(heart.isTrustedPartner(msg.sender), "only trusted partner can mint the stable credit");
@@ -109,7 +135,7 @@ contract DigitalReserveSystem is IDRS {
         address creditOwner,
         uint256 amount,
         string calldata assetCode
-    ) external returns(bool) {
+    ) external returns (bool) {
         StableCredit stableCredit = heart.getStableCreditById(getStableCreditId(assetCode));
 
         require(address(stableCredit) != address(0x0), "stableCredit not existed");
@@ -128,14 +154,14 @@ contract DigitalReserveSystem is IDRS {
     function rebalance(
         address creditOwner,
         string calldata assetCode
-    ) external returns(bool) {
+    ) external returns (bool) {
         return _rebalance(creditOwner, assetCode);
     }
 
     function _rebalance(
         address creditOwner,
         string memory assetCode
-    ) private returns(bool) {
+    ) private returns (bool) {
         StableCredit stableCredit = heart.getStableCreditById(getStableCreditId(assetCode));
         bytes32 linkId = keccak256(abi.encodePacked(stableCredit.collateralAssetCode(), stableCredit.peggedCurrency()));
 

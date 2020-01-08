@@ -6,22 +6,22 @@ interface IDRS {
         bytes32 peggedCurrency,
         string calldata assetCode,
         uint256 peggedValue
-    ) external returns(address);
+    ) external returns (string memory, address);
 
     function mint(
         bytes32 collateralAssetCode,
         uint256 collateralAmount,
         string calldata assetCode
-    ) external payable returns(bool);
+    ) external payable returns (bool);
 
     function redeem(
         address creditOwner,
         uint256 amount,
         string calldata assetCode
-    ) external returns(bool);
+    ) external returns (bool);
 
     function rebalance(
         address creditOwner,
         string calldata assetCode
-    ) external returns(bool);
+    ) external returns (bool);
 }
