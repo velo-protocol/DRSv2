@@ -5,7 +5,6 @@ import "../interfaces/IDRS.sol";
 import "./StableCredit.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-
 contract DigitalReserveSystem is IDRS {
     using SafeMath for uint256;
     IHeart public heart;
