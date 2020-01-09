@@ -3,8 +3,10 @@ const Heart = artifacts.require("Heart");
 const PriceFeeders = artifacts.require('PriceFeeders');
 const StableCredit = artifacts.require("StableCredit");
 const MockContract = artifacts.require("MockContract");
+
 const Web3 = require('web3');
 const truffleAssert = require('truffle-assertions');
+const helper = require('../testhelper');
 
 let drs, heart, mock, pf;
 
@@ -27,27 +29,27 @@ contract("DigitalReserveSystem test", async accounts => {
     describe("SetupCredit", async () => {
         it("should setup credit successfully", async () => {
             await mock.givenMethodReturnBool(
-                heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+                helper.methodABI(heart, "isTrustedPartner", [accounts[0]]),
                 true
             );
             await mock.givenMethodReturnAddress(
-                heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
-                web3.utils.padLeft("0x0", 40)
+                helper.methodABI(heart, "getStableCreditById", [helper.address(0)]),
+                helper.address(0)
             );
             await mock.givenMethodReturnAddress(
-                heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
-                web3.utils.padLeft("0x1", 40)
+                helper.methodABI(heart, "getCollateralAsset", [helper.address(0)]),
+                helper.address(1)
             );
             await mock.givenMethodReturnBool(
-                heart.contract.methods.isLinkAllowed(Web3.utils.fromAscii("")).encodeABI(),
+                helper.methodABI(heart, "isLinkAllowed", [helper.address(0)]),
                 true
             );
             await mock.givenMethodReturnAddress(
-                heart.contract.methods.getPriceFeeders().encodeABI(),
+                helper.methodABI(heart, "getPriceFeeders"),
                 mock.address
             );
             await mock.givenMethodReturnUint(
-                pf.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+                helper.methodABI(pf, "getMedianPrice", [helper.address(0)]),
                 1
             );
 
@@ -59,9 +61,10 @@ contract("DigitalReserveSystem test", async accounts => {
             );
 
             truffleAssert.eventEmitted(result, 'Setup', async event => {
-                assert.equal(event.peggedCurrency, web3.utils.padRight(web3.utils.utf8ToHex("USD"), 64));
+                assert.equal(event.assetCode, "vUSD");
+                helper.assertEqualByteString(event.peggedCurrency, "USD");
                 assert.equal(event.peggedValue, 1);
-                assert.equal(event.collateralAssetCode, web3.utils.padRight(web3.utils.utf8ToHex("VELO"), 64));
+                helper.assertEqualByteString(event.collateralAssetCode, "VELO");
                 assert.ok(web3.utils.isAddress(event.assetAddress));
 
                 const stableCredit = await StableCredit.at(event.assetAddress);
@@ -74,7 +77,7 @@ contract("DigitalReserveSystem test", async accounts => {
 
         it("should fail, caller must be trusted partner", async () => {
             await mock.givenMethodReturnBool(
-                heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+                helper.methodABI(heart, "isTrustedPartner", [accounts[0]]),
                 false
             );
 
@@ -92,7 +95,7 @@ contract("DigitalReserveSystem test", async accounts => {
 
         it("should fail, invalid assetCode format", async () => {
             await mock.givenMethodReturnBool(
-                heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+                helper.methodABI(heart, "isTrustedPartner", [accounts[0]]),
                 true
             );
 
@@ -110,11 +113,11 @@ contract("DigitalReserveSystem test", async accounts => {
 
         it("should fail, assetCode has already been used", async () => {
             await mock.givenMethodReturnBool(
-                heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+                helper.methodABI(heart, "isTrustedPartner", [accounts[0]]),
                 true
             );
             await mock.givenMethodReturnAddress(
-                heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+                helper.methodABI(heart, "getStableCreditById", [helper.address(0)]),
                 web3.utils.padLeft("0x1", 40)
             );
 
@@ -132,15 +135,15 @@ contract("DigitalReserveSystem test", async accounts => {
 
         it("should fail, collateralAssetCode does not exist", async () => {
             await mock.givenMethodReturnBool(
-                heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+                helper.methodABI(heart, "isTrustedPartner", [accounts[0]]),
                 true
             );
             await mock.givenMethodReturnAddress(
-                heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+                helper.methodABI(heart, "getStableCreditById", [helper.address(0)]),
                 web3.utils.padLeft("0x0", 40)
             );
             await mock.givenMethodReturnAddress(
-                heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+                helper.methodABI(heart, "getCollateralAsset", [helper.address(0)]),
                 web3.utils.padLeft("0x0", 40)
             );
 
@@ -158,19 +161,19 @@ contract("DigitalReserveSystem test", async accounts => {
 
         it("should fail, collateralAssetCode - peggedCurrency pair does not exist", async () => {
             await mock.givenMethodReturnBool(
-                heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+                helper.methodABI(heart, "isTrustedPartner", [accounts[0]]),
                 true
             );
             await mock.givenMethodReturnAddress(
-                heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+                helper.methodABI(heart, "getStableCreditById", [helper.address(0)]),
                 web3.utils.padLeft("0x0", 40)
             );
             await mock.givenMethodReturnAddress(
-                heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+                helper.methodABI(heart, "getCollateralAsset", [helper.address(0)]),
                 web3.utils.padLeft("0x1", 40)
             );
             await mock.givenMethodReturnBool(
-                heart.contract.methods.isLinkAllowed(Web3.utils.fromAscii("")).encodeABI(),
+                helper.methodABI(heart, "isLinkAllowed", [helper.address(0)]),
                 false
             );
 
@@ -188,27 +191,27 @@ contract("DigitalReserveSystem test", async accounts => {
 
         it("should fail, price of link must have value more than 0", async () => {
             await mock.givenMethodReturnBool(
-                heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+                helper.methodABI(heart, "isTrustedPartner", [accounts[0]]),
                 true
             );
             await mock.givenMethodReturnAddress(
-                heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+                helper.methodABI(heart, "getStableCreditById", [helper.address(0)]),
                 web3.utils.padLeft("0x0", 40)
             );
             await mock.givenMethodReturnAddress(
-                heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+                helper.methodABI(heart, "getCollateralAsset", [helper.address(0)]),
                 web3.utils.padLeft("0x1", 40)
             );
             await mock.givenMethodReturnBool(
-                heart.contract.methods.isLinkAllowed(Web3.utils.fromAscii("")).encodeABI(),
+                helper.methodABI(heart, "isLinkAllowed", [helper.address(0)]),
                 true
             );
             await mock.givenMethodReturnAddress(
-                heart.contract.methods.getPriceFeeders().encodeABI(),
+                helper.methodABI(heart, "getPriceFeeders"),
                 mock.address
             );
             await mock.givenMethodReturnUint(
-                pf.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+                helper.methodABI(pf, "getMedianPrice", [helper.address(0)]),
                 0
             );
 
