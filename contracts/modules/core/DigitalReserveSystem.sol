@@ -25,11 +25,6 @@ contract DigitalReserveSystem is IDRS {
         uint256 collateralAmount
     );
 
-    modifier onlyGovernor() {
-        require(heart.isGovernor(msg.sender), "DigitalReserveSystem.onlyGovernor: caller must be a governor");
-        _;
-    }
-
     modifier onlyTrustedPartner() {
         require(heart.isTrustedPartner(msg.sender), "DigitalReserveSystem.onlyTrustedPartner: caller must be a trusted partner");
         _;
