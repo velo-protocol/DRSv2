@@ -3,6 +3,7 @@ pragma solidity ^0.5.0;
 import "../interfaces/IHeart.sol";
 import "../interfaces/IDRS.sol";
 import "./StableCredit.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract DigitalReserveSystem is IDRS {
     using SafeMath for uint256;
@@ -14,7 +15,7 @@ contract DigitalReserveSystem is IDRS {
     );
 
     event Mint(
-        string indexed assetCode,
+        string assetCode,
         uint256 mintAmount,
         address indexed assetAddress,
         bytes32 indexed collateralAssetCode,
@@ -66,10 +67,10 @@ contract DigitalReserveSystem is IDRS {
         uint256 collateralAmount,
         string calldata assetCode
     ) external payable returns (bool) {
+        require(heart.isTrustedPartner(msg.sender), "only trusted partner can mint the stable credit");
+
         StableCredit stableCredit = heart.getStableCreditById(getStableCreditId(assetCode));
         bytes32 collateralAssetCode = stableCredit.collateralAssetCode();
-
-        require(heart.isTrustedPartner(msg.sender), "only trusted partner can mint the stable credit");
         require(address(stableCredit) != address(0), "stableCredit not exist");
 
         bytes32 linkId = keccak256(abi.encodePacked(collateralAssetCode, stableCredit.peggedCurrency()));
@@ -77,14 +78,15 @@ contract DigitalReserveSystem is IDRS {
         require(heart.getPriceFeeders().getMedianPrice(linkId) != 0, "median price ref mut not be zero");
 
         (uint256 mintAmount, uint256 fee) = _calMintFromCollateral(stableCredit, linkId, collateralAmount);
-        uint256 actualCollateralAmount = _callCollateral(stableCredit, linkId, mintAmount);
+                uint256 actualCollateralAmount = _callCollateral(stableCredit, linkId, mintAmount);
         uint256 reserveAmount = collateralAmount.sub(actualCollateralAmount).sub(fee);
 
-        heart.getCollateralAsset(collateralAssetCode).transferFrom(msg.sender, address(heart), fee);
-        heart.getCollateralAsset(collateralAssetCode).transferFrom(msg.sender, address(stableCredit), actualCollateralAmount);
-        heart.getCollateralAsset(collateralAssetCode).transferFrom(msg.sender, address(this), reserveAmount);
+        IERC20 collateralAsset = heart.getCollateralAsset(collateralAssetCode);
+        collateralAsset.transferFrom(msg.sender, address(heart), fee);
+        collateralAsset.transferFrom(msg.sender, address(stableCredit), actualCollateralAmount);
+        collateralAsset.transferFrom(msg.sender, address(this), reserveAmount);
 
-        heart.getCollateralAsset(collateralAssetCode).approve(address(heart.getReserveManager()), reserveAmount);
+        collateralAsset.approve(address(heart.getReserveManager()), reserveAmount);
 
         heart.getReserveManager().lockReserve(collateralAssetCode, address(this), reserveAmount);
 
@@ -150,15 +152,14 @@ contract DigitalReserveSystem is IDRS {
     }
 
     function _calMintFromCollateral(StableCredit credit, bytes32 linkId, uint256 collateralAmount) private view returns (uint256, uint256) {
-        uint256 fee = collateralAmount.mul(heart.getCreditIssuanceFee().div(10000));
-        uint256 mintAmount = collateralAmount.sub(fee).mul(heart.getPriceFeeders().getMedianPrice(linkId)).div(heart.getCollateralRatio(credit.collateralAssetCode()).div(100).div(credit.peggedValue()));
-
+        uint256 fee = collateralAmount.mul(heart.getCreditIssuanceFee());
+        uint256 mintAmount = collateralAmount.sub(fee).mul(heart.getPriceFeeders().getMedianPrice(linkId)).div(heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()));
         return (mintAmount, fee);
     }
 
     function _calCollateralWithFee(StableCredit credit, bytes32 linkId, uint256 creditAmount) private view returns (uint256, uint256) {
         uint256 collateral = _callCollateral(credit, linkId, creditAmount);
-        uint256 fee = collateral.mul(heart.getCreditIssuanceFee()).div(10000);
+        uint256 fee = collateral.mul(heart.getCreditIssuanceFee());
 
         return (collateral, fee);
     }
