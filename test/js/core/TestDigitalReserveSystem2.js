@@ -10,10 +10,10 @@ const truffleAssert = require('truffle-assertions');
 const Web3 = require('web3');
 
 contract("DigitalReserveSystem test", async accounts => {
-  let collateralAsset, heart, stableCredit, mock, pf;
+  let collateralAsset, heart, stableCredit, mock, priceFeeder;
 
   before(async () => {
-    pf = await PriceFeeders.new();
+    priceFeeder = await PriceFeeders.new();
     mock = await MockContract.new();
   });
 
@@ -60,7 +60,7 @@ contract("DigitalReserveSystem test", async accounts => {
       );
 
       await mock.givenMethodReturnUint(
-        pf.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
         1
       );
 
@@ -76,7 +76,7 @@ contract("DigitalReserveSystem test", async accounts => {
       );
 
       await mock.givenMethodReturnUint(
-        pf.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
         1
       );
 
@@ -95,17 +95,17 @@ contract("DigitalReserveSystem test", async accounts => {
       );
 
       await mock.givenMethodReturnBool(
-        collateralAsset.contract.methods.transferFrom(accounts[0],collateralAsset.address,1).encodeABI(),
+        collateralAsset.contract.methods.transferFrom(accounts[0], collateralAsset.address, 1).encodeABI(),
         true
       );
 
       await mock.givenMethodReturnBool(
-        collateralAsset.contract.methods.transferFrom(accounts[0],drs.address,8).encodeABI(),
+        collateralAsset.contract.methods.transferFrom(accounts[0], drs.address, 8).encodeABI(),
         true
       );
 
       await mock.givenMethodReturnBool(
-        collateralAsset.contract.methods.approve(accounts[0],1).encodeABI(),
+        collateralAsset.contract.methods.approve(accounts[0], 1).encodeABI(),
         true
       );
 
@@ -115,7 +115,7 @@ contract("DigitalReserveSystem test", async accounts => {
       );
 
       await mock.givenMethodReturnBool(
-        reserveManager.contract.methods.lockReserve(Web3.utils.fromAscii('VELO'),drs.address,1).encodeABI(),
+        reserveManager.contract.methods.lockReserve(Web3.utils.fromAscii('VELO'), drs.address, 1).encodeABI(),
         true
       );
 

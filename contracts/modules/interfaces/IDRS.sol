@@ -6,7 +6,7 @@ interface IDRS {
         bytes32 peggedCurrency,
         string calldata assetCode,
         uint256 peggedValue
-    ) external returns (address);
+    ) external returns (string memory, address);
 
     function mintFromCollateral(
         uint256 collateralAmount,
