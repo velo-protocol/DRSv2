@@ -10,20 +10,21 @@ const Web3 = require('web3');
 const truffleAssert = require('truffle-assertions');
 const helper = require('../testhelper');
 
-let drs, heart, mock, priceFeeder;
+let drs, heart, mock, priceFeeder, reserveManager, veloCollateralAsset;
 
 contract("DigitalReserveSystem test", async accounts => {
 
   before(async () => {
-    heart = await Heart.new();
-    priceFeeder = await PriceFeeders.new();
     mock = await MockContract.new();
+    heart = await Heart.at(mock.address);
+    priceFeeder = await PriceFeeders.at(mock.address);
+    reserveManager = await ReserveManager.at(mock.address);
+    veloCollateralAsset = await Token.at(mock.address);
+
   });
 
   beforeEach(async () => {
     drs = await DigitalReserveSystem.new(mock.address);
-    heart = await Heart.new();
-    heart.setDrsAddress(drs.address);
   });
 
   afterEach(async () => {
@@ -50,7 +51,7 @@ contract("DigitalReserveSystem test", async accounts => {
       );
       await mock.givenMethodReturnAddress(
         helper.methodABI(heart, "getPriceFeeders"),
-        mock.address
+        priceFeeder.address
       );
       await mock.givenMethodReturnUint(
         helper.methodABI(priceFeeder, "getMedianPrice", [helper.address(0)]),
@@ -212,7 +213,7 @@ contract("DigitalReserveSystem test", async accounts => {
       );
       await mock.givenMethodReturnAddress(
         helper.methodABI(heart, "getPriceFeeders"),
-        mock.address
+        priceFeeder.address
       );
       await mock.givenMethodReturnUint(
         helper.methodABI(priceFeeder, "getMedianPrice", [helper.address(0)]),
@@ -230,23 +231,19 @@ contract("DigitalReserveSystem test", async accounts => {
         assert.equal(err.reason, "DigitalReserveSystem.setup: price of link must have value more than 0")
       }
     });
-  })
-  describe("MintCredit", async () => {
-    it("should mint from crollateral correctly", async () => {
+  });
 
-      const reserveManager = await ReserveManager.at(mock.address);
-      collateralAsset = await Token.at(mock.address);
-      stableCredit = await StableCredit.new(
+  describe("MintFromCollateral", async () => {
+    it("should mint from collateral correctly", async () => {
+      const stableCredit = await StableCredit.new(
         Web3.utils.fromAscii("THB"),
         accounts[1],
         Web3.utils.fromAscii('VELO'),
-        collateralAsset.address,
+        veloCollateralAsset.address,
         'vTHB',
         1000000,
         heart.address
       );
-
-      heart.addStableCredit(stableCredit.address);
 
       await mock.givenMethodReturnBool(
         heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
@@ -260,7 +257,7 @@ contract("DigitalReserveSystem test", async accounts => {
 
       await mock.givenMethodReturnAddress(
         heart.contract.methods.getPriceFeeders().encodeABI(),
-        mock.address
+        priceFeeder.address
       );
 
       await mock.givenMethodReturnUint(
@@ -280,25 +277,30 @@ contract("DigitalReserveSystem test", async accounts => {
 
       await mock.givenMethodReturnAddress(
         heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("VELO")).encodeABI(),
-        collateralAsset.address
+        veloCollateralAsset.address
       );
       await mock.givenMethodReturnBool(
-        collateralAsset.contract.methods.transferFrom(accounts[0], heart.address, 1).encodeABI(),
+        veloCollateralAsset.contract.methods.transferFrom(accounts[0], heart.address, 1).encodeABI(),
         true
       );
 
       await mock.givenMethodReturnBool(
-        collateralAsset.contract.methods.transferFrom(accounts[0], collateralAsset.address, 1).encodeABI(),
+        veloCollateralAsset.contract.methods.transferFrom(accounts[0], veloCollateralAsset.address, 1).encodeABI(),
         true
       );
 
       await mock.givenMethodReturnBool(
-        collateralAsset.contract.methods.transferFrom(accounts[0], drs.address, 8).encodeABI(),
+        veloCollateralAsset.contract.methods.transferFrom(accounts[0], drs.address, 8).encodeABI(),
         true
       );
 
+      await mock.givenMethodReturnAddress(
+        heart.contract.methods.getDrsAddress().encodeABI(),
+        drs.address
+      );
+
       await mock.givenMethodReturnBool(
-        collateralAsset.contract.methods.approve(accounts[0], 1).encodeABI(),
+        veloCollateralAsset.contract.methods.approve(accounts[0], 1).encodeABI(),
         true
       );
 
@@ -316,13 +318,14 @@ contract("DigitalReserveSystem test", async accounts => {
 
       truffleAssert.eventEmitted(result, 'Mint', event => {
         return event.assetCode === "vTHB"
-          && event.mintAmount == 990000000
-          && event.collateralAmount == 99000000
+          && new web3.utils.BN(event.mintAmount).toNumber() === 990000000
+          && new web3.utils.BN(event.collateralAmount).toNumber() === 99000000
           && event.assetAddress === stableCredit.address
           && event.collateralAssetCode === web3.utils.padRight(web3.utils.utf8ToHex("VELO"), 64);
-      }, 'contract should mint the event correctly');
+      }, 'contract should emit the event correctly');
 
     });
+
     it("should fail, caller must be trusted partner", async () => {
       await mock.givenMethodReturnBool(
         heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
@@ -358,12 +361,11 @@ contract("DigitalReserveSystem test", async accounts => {
     });
 
     it("should fail, median price ref mut not be zero", async () => {
-      const collateralAsset = await Token.new('Velo', 'VELO', 7);
-      stableCredit = await StableCredit.new(
+      const stableCredit = await StableCredit.new(
         Web3.utils.fromAscii("USD"),
         accounts[2],
         Web3.utils.fromAscii("VELO"),
-        collateralAsset.address,
+        veloCollateralAsset.address,
         'vUSD',
         1000000,
         heart.address
@@ -380,11 +382,11 @@ contract("DigitalReserveSystem test", async accounts => {
       );
       await mock.givenMethodReturnAddress(
         heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
-        collateralAsset.address
+        veloCollateralAsset.address
       );
       await mock.givenMethodReturnAddress(
         heart.contract.methods.getPriceFeeders().encodeABI(),
-        mock.address
+        priceFeeder.address
       );
       await mock.givenMethodReturnUint(
         priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
