@@ -34,6 +34,7 @@ contract TestHeart2 {
 
     function beforeEach() public {
         heart = new Heart();
+        heart.setDrsAddress(address(this));
     }
 
     function testAddStableCredit_Success() public {

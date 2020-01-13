@@ -72,6 +72,11 @@ contract Heart is IHeart {
         _;
     }
 
+    modifier onlyDRS() {
+        require(msg.sender == drsAddr, "Heart.onlyDRS: caller must be DRS");
+        _;
+    }
+
     /*
         reserveFreeze collateralAssetCode => seconds
     */
@@ -174,7 +179,7 @@ contract Heart is IHeart {
         collectedFee[collateralAssetCode] = collectedFee[collateralAssetCode].sub(amount);
     }
 
-    function addStableCredit(StableCredit newStableCredit) external onlyGovernor {
+    function addStableCredit(StableCredit newStableCredit) external onlyDRS {
         require(address(newStableCredit) != address(0), "newStableCredit address must not be 0");
         bytes32 stableCreditId = Hasher.stableCreditId(newStableCredit.name());
         require(address(stableCredits[stableCreditId]) == address(0), "stableCredit has already existed");
