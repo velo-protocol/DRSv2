@@ -130,7 +130,7 @@ contract("DigitalReserveSystem test", async accounts => {
           "vUSD"
         );
       } catch (err) {
-        assert.equal("only trusted partner can mint the stable credit", err.reason)
+        assert.equal("DigitalReserveSystem.onlyTrustedPartner: caller must be a trusted partner", err.reason)
       }
     });
 
@@ -149,7 +149,7 @@ contract("DigitalReserveSystem test", async accounts => {
           "vUSD"
         );
       } catch (err) {
-        assert.equal("stableCredit not exist", err.reason)
+        assert.equal("DigitalReserveSystem.mintFromCollateral: stableCredit not exist", err.reason)
       }
     });
 
@@ -192,7 +192,7 @@ contract("DigitalReserveSystem test", async accounts => {
           "vUSD"
         );
       } catch (err) {
-        assert.equal("median price ref mut not be zero", err.reason)
+        assert.equal("DigitalReserveSystem.mintFromCollateral: median price ref mut not be zero", err.reason)
       }
     });
   });

@@ -85,16 +85,15 @@ contract DigitalReserveSystem is IDRS {
     function mintFromCollateral(
         uint256 collateralAmount,
         string calldata assetCode
-    ) external payable returns (bool) {
-        require(heart.isTrustedPartner(msg.sender), "only trusted partner can mint the stable credit");
+    ) external onlyTrustedPartner payable returns (bool) {
 
-        StableCredit stableCredit = heart.getStableCreditById(getStableCreditId(assetCode));
-        require(address(stableCredit) != address(0), "stableCredit not exist");
+        StableCredit stableCredit = heart.getStableCreditById(Hasher.stableCreditId(assetCode));
+        require(address(stableCredit) != address(0), "DigitalReserveSystem.mintFromCollateral: stableCredit not exist");
         bytes32 collateralAssetCode = stableCredit.collateralAssetCode();
 
-        bytes32 linkId = keccak256(abi.encodePacked(collateralAssetCode, stableCredit.peggedCurrency()));
+        bytes32 linkId = Hasher.linkId(collateralAssetCode, stableCredit.peggedCurrency());
 
-        require(heart.getPriceFeeders().getMedianPrice(linkId) != 0, "median price ref mut not be zero");
+        require(heart.getPriceFeeders().getMedianPrice(linkId) != 0, "DigitalReserveSystem.mintFromCollateral: median price ref mut not be zero");
 
         (uint256 mintAmount, uint256 fee) = _calMintFromCollateral(stableCredit, linkId, collateralAmount);
         uint256 actualCollateralAmount = _callCollateral(stableCredit, linkId, mintAmount);
