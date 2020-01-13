@@ -89,8 +89,8 @@ contract DigitalReserveSystem is IDRS {
         require(heart.isTrustedPartner(msg.sender), "only trusted partner can mint the stable credit");
 
         StableCredit stableCredit = heart.getStableCreditById(getStableCreditId(assetCode));
-        bytes32 collateralAssetCode = stableCredit.collateralAssetCode();
         require(address(stableCredit) != address(0), "stableCredit not exist");
+        bytes32 collateralAssetCode = stableCredit.collateralAssetCode();
 
         bytes32 linkId = keccak256(abi.encodePacked(collateralAssetCode, stableCredit.peggedCurrency()));
 
@@ -171,16 +171,10 @@ contract DigitalReserveSystem is IDRS {
     }
 
     function _calMintFromCollateral(StableCredit credit, bytes32 linkId, uint256 collateralAmount) private view returns (uint256, uint256) {
-        uint256 fee = collateralAmount.mul(heart.getCreditIssuanceFee());
-        uint256 mintAmount = collateralAmount.sub(fee).mul(heart.getPriceFeeders().getMedianPrice(linkId)).div(heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()));
+        uint256 fee = collateralAmount.mul(heart.getCreditIssuanceFee()).div(10000000);
+        uint256 mintAmount = collateralAmount.sub(fee).mul(heart.getPriceFeeders().getMedianPrice(linkId)).mul(10000000).mul(10000000).
+        div(heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()).mul(10000000));
         return (mintAmount, fee);
-    }
-
-    function _calCollateralWithFee(StableCredit credit, bytes32 linkId, uint256 creditAmount) private view returns (uint256, uint256) {
-        uint256 collateral = _callCollateral(credit, linkId, creditAmount);
-        uint256 fee = collateral.mul(heart.getCreditIssuanceFee());
-
-        return (collateral, fee);
     }
 
     function _callCollateral(StableCredit credit, bytes32 linkId, uint256 creditAmount) private view returns (uint256) {

@@ -38,7 +38,7 @@ contract("DigitalReserveSystem test", async accounts => {
         Web3.utils.fromAscii('VELO'),
         collateralAsset.address,
         'vTHB',
-        1,
+        1000000,
         heart.address
       );
 
@@ -61,28 +61,17 @@ contract("DigitalReserveSystem test", async accounts => {
 
       await mock.givenMethodReturnUint(
         priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
-        1
+        10000000
       );
 
       await mock.givenMethodReturnUint(
         heart.contract.methods.getCreditIssuanceFee().encodeABI(),
-        1
-      );
-
-
-      await mock.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        mock.address
-      );
-
-      await mock.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
-        1
+        100000
       );
 
       await mock.givenMethodReturnUint(
         heart.contract.methods.getCollateralRatio(Web3.utils.fromAscii('VELO')).encodeABI(),
-        1
+        10000000
       );
 
       await mock.givenMethodReturnAddress(
@@ -119,22 +108,92 @@ contract("DigitalReserveSystem test", async accounts => {
         true
       );
 
-      const result = await drs.mintFromCollateral(10, 'vTHB');
+      const result = await drs.mintFromCollateral(100000000, 'vTHB');
 
-      truffleAssert.eventEmitted(result, 'Mint', async event => {
-        assert.equal(event.assetCode, web3.utils.padRight(web3.utils.utf8ToHex("vTHB"), 64));
-        assert.equal(event.mintAmount, 1);
-        assert.ok(web3.utils.isAddress(event.assetAddress));
-        assert.equal(event.collateralAssetCode, web3.utils.padRight(web3.utils.utf8ToHex("VELO"), 64));
-        assert.equal(event.collateralAmount, 100);
-
-        const stableCredit = await StableCredit.at(event.assetAddress);
-        const name = await stableCredit.name();
-        assert.equal(name, "vUSD");
-
-        return true;
+      truffleAssert.eventEmitted(result, 'Mint', event => {
+        return event.assetCode === "vTHB"
+          && event.mintAmount == 990000000
+          && event.collateralAmount == 99000000
+          && event.assetAddress === stableCredit.address
+          && event.collateralAssetCode === web3.utils.padRight(web3.utils.utf8ToHex("VELO"), 64);
       }, 'contract should mint the event correctly');
 
+    });
+    it("should fail, caller must be trusted partner", async () => {
+      await mock.givenMethodReturnBool(
+        heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+        false
+      );
+      try {
+        await drs.mintFromCollateral(
+          1,
+          "vUSD"
+        );
+      } catch (err) {
+        assert.equal("only trusted partner can mint the stable credit", err.reason)
+      }
+    });
+
+    it("should fail, caller must be setup credit already", async () => {
+      await mock.givenMethodReturnBool(
+        heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+        true
+      );
+      await mock.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        web3.utils.padLeft("0x0", 40)
+      );
+      try {
+        await drs.mintFromCollateral(
+          1,
+          "vUSD"
+        );
+      } catch (err) {
+        assert.equal("stableCredit not exist", err.reason)
+      }
+    });
+
+    it("should fail, median price ref mut not be zero", async () => {
+      const collateralAsset = await Token.new('Velo', 'VELO', 7);
+      stableCredit = await StableCredit.new(
+        Web3.utils.fromAscii("USD"),
+        accounts[2],
+        Web3.utils.fromAscii("VELO"),
+        collateralAsset.address,
+        'vUSD',
+        1000000,
+        heart.address
+      );
+      await heart.addStableCredit(stableCredit.address);
+
+      await mock.givenMethodReturnBool(
+        heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+        true
+      );
+      await mock.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCredit.address
+      );
+      await mock.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        collateralAsset.address
+      );
+      await mock.givenMethodReturnAddress(
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        mock.address
+      );
+      await mock.givenMethodReturnUint(
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        0
+      );
+      try {
+        await drs.mintFromCollateral(
+          1,
+          "vUSD"
+        );
+      } catch (err) {
+        assert.equal("median price ref mut not be zero", err.reason)
+      }
     });
   });
 });
