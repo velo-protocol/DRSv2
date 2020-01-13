@@ -11,10 +11,10 @@ contract MockIHeart is IHeart {
     IRM public rm;
     IPF public pf;
     IERC20 public collateralAsset;
-    StableCredit public vTHB;
-    StableCredit public vUSD;
+    IStableCredit public vTHB;
+    IStableCredit public vUSD;
 
-    constructor (IRM _rm, IPF _pf, IERC20 _collateralAsset, StableCredit _vTHB, StableCredit _vUSD) public {
+    constructor (IRM _rm, IPF _pf, IERC20 _collateralAsset, IStableCredit _vTHB, IStableCredit _vUSD) public {
         rm = _rm;
         pf = _pf;
         collateralAsset = _collateralAsset;
@@ -82,17 +82,17 @@ contract MockIHeart is IHeart {
 
     function withdrawFee(bytes32, uint256) external {}
 
-    function addStableCredit(StableCredit) external {}
+    function addStableCredit(IStableCredit) external {}
 
-    function getStableCreditById(bytes32) external view returns (StableCredit) {
+    function getStableCreditById(bytes32) external view returns (IStableCredit) {
         return vTHB;
     }
 
-    function getRecentStableCredit() external view returns (StableCredit) {
+    function getRecentStableCredit() external view returns (IStableCredit) {
         return vUSD;
     }
 
-    function getNextStableCredit(bytes32 stableCreditId) external view returns (StableCredit) {
+    function getNextStableCredit(bytes32 stableCreditId) external view returns (IStableCredit) {
         return vTHB;
     }
 

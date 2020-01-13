@@ -5,7 +5,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../interfaces/IPF.sol";
 import "../interfaces/IHeart.sol";
 import "../interfaces/IRM.sol";
-import "./StableCredit.sol";
+import "../interfaces/IStableCredit.sol";
+import "../interfaces/ICollateralAsset.sol";
 import "../book-room/LL.sol";
 import "../book-room/Hasher.sol";
 
@@ -16,7 +17,7 @@ contract Heart is IHeart {
     IPF public priceFeeders;
     IRM public reserveManager;
 
-    /*
+    /*ICollateralAsset
         collateralRatios is 1/100
         collateralRatios 1000 = require collateral 10x
         collateralRatios 125 = require collateral 1.25x
@@ -26,14 +27,14 @@ contract Heart is IHeart {
 
         collateralAssetCode => ratio, ERC20 token
     */
-    mapping(bytes32 => IERC20) public collateralAssets;
+    mapping(bytes32 => ICollateralAsset) public collateralAssets;
     mapping(bytes32 => uint) public collateralRatios;
 
     /*
         StableCredit related mapping
         stableCredits map between keccak256(stableCreditOwnerAddress, stableCreditCode) => StableCredit
     */
-    mapping(bytes32 => StableCredit) public stableCredits;
+    mapping(bytes32 => IStableCredit) public stableCredits;
     LL.List public stableCreditsLL;
     using LL for LL.List;
 
@@ -108,11 +109,11 @@ contract Heart is IHeart {
     }
 
     function setCollateralAsset(bytes32 assetCode, address addr, uint ratio) external onlyGovernor {
-        collateralAssets[assetCode] = IERC20(addr);
+        collateralAssets[assetCode] = ICollateralAsset(addr);
         collateralRatios[assetCode] = ratio;
     }
 
-    function getCollateralAsset(bytes32 assetCode) external view returns (IERC20) {
+    function getCollateralAsset(bytes32 assetCode) external view returns (ICollateralAsset) {
         return collateralAssets[assetCode];
     }
 
@@ -174,28 +175,28 @@ contract Heart is IHeart {
         collectedFee[collateralAssetCode] = collectedFee[collateralAssetCode].sub(amount);
     }
 
-    function addStableCredit(StableCredit newStableCredit) external onlyGovernor {
+    function addStableCredit(IStableCredit newStableCredit) external onlyTrustedPartner {
         require(address(newStableCredit) != address(0), "newStableCredit address must not be 0");
-        bytes32 stableCreditId = Hasher.stableCreditId(newStableCredit.name());
+        bytes32 stableCreditId = Hasher.stableCreditId(newStableCredit.assetCode());
         require(address(stableCredits[stableCreditId]) == address(0), "stableCredit has already existed");
 
         stableCredits[stableCreditId] = newStableCredit;
         stableCreditsLL = stableCreditsLL.add(address(newStableCredit));
     }
 
-    function getStableCreditById(bytes32 stableCreditId) external view returns (StableCredit) {
+    function getStableCreditById(bytes32 stableCreditId) external view returns (IStableCredit) {
         return stableCredits[stableCreditId];
     }
 
-    function getRecentStableCredit() external view returns (StableCredit) {
+    function getRecentStableCredit() external view returns (IStableCredit) {
         address addr = stableCreditsLL.getNextOf(address(1));
-        return StableCredit(addr);
+        return IStableCredit(addr);
     }
 
-    function getNextStableCredit(bytes32 stableCreditId) external view returns (StableCredit) {
+    function getNextStableCredit(bytes32 stableCreditId) external view returns (IStableCredit) {
         address currentAddr = address(stableCredits[stableCreditId]);
         address nextAddr = stableCreditsLL.getNextOf(currentAddr);
-        return StableCredit(nextAddr);
+        return IStableCredit(nextAddr);
     }
 
     function getStableCreditCount() external view returns (uint8) {
