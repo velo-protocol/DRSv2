@@ -16,7 +16,7 @@ interface IDRS {
     function mintFromStableCreditAmount(
         uint256 stableCreditAmount,
         string calldata assetCode
-    ) external payable returns(bool);
+    ) external payable returns (bool);
 
     function redeem(
         address creditOwner,
@@ -28,4 +28,8 @@ interface IDRS {
         address creditOwner,
         string calldata assetCode
     ) external returns (bool);
+
+    function getExchange(
+        string calldata assetCode
+    ) external view returns (string memory, bytes32, uint256);
 }

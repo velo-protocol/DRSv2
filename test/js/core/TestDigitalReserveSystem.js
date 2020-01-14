@@ -10,7 +10,7 @@ const Web3 = require('web3');
 const truffleAssert = require('truffle-assertions');
 const helper = require('../testhelper');
 
-let drs, heart, priceFeeder, reserveManager, veloCollateralAsset, otherCollateralAsset, mocks;
+let drs, heart, priceFeeder, reserveManager, veloCollateralAsset, otherCollateralAsset, stableCreditVUSD, mocks;
 
 contract("DigitalReserveSystem test", async accounts => {
 
@@ -21,6 +21,7 @@ contract("DigitalReserveSystem test", async accounts => {
       reserveManager: await MockContract.new(),
       veloCollateralAsset: await MockContract.new(),
       otherCollateralAsset: await MockContract.new(),
+      stableCreditvUSD: await MockContract.new(),
     };
 
     heart = await Heart.at(mocks.heart.address);
@@ -28,6 +29,7 @@ contract("DigitalReserveSystem test", async accounts => {
     reserveManager = await ReserveManager.at(mocks.reserveManager.address);
     veloCollateralAsset = await Token.at(mocks.veloCollateralAsset.address);
     otherCollateralAsset = await Token.at(mocks.otherCollateralAsset.address);
+    stableCreditVUSD = await StableCredit.at(mocks.stableCreditvUSD.address);
   });
 
   beforeEach(async () => {
@@ -367,41 +369,41 @@ contract("DigitalReserveSystem test", async accounts => {
           "vUSD"
         );
       } catch (err) {
-        assert.equal("DigitalReserveSystem._checkPreMintCondition: stableCredit not exist", err.reason)
+        assert.equal("DigitalReserveSystem._validateAssetCode: stableCredit not exist", err.reason)
       }
     });
 
     it("should fail, collateralAsset must be the same", async () => {
       const stableCredit = await StableCredit.new(
-          Web3.utils.fromAscii("USD"),
-          accounts[1],
-          Web3.utils.fromAscii("VELO"),
-          veloCollateralAsset.address,
-          'vUSD',
-          1000000,
-          heart.address
+        Web3.utils.fromAscii("USD"),
+        accounts[1],
+        Web3.utils.fromAscii("VELO"),
+        veloCollateralAsset.address,
+        'vUSD',
+        1000000,
+        heart.address
       );
 
       await mocks.heart.givenMethodReturnBool(
-          heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
-          true
+        heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+        true
       );
       await mocks.heart.givenMethodReturnAddress(
-          heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
-          stableCredit.address
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCredit.address
       );
       await mocks.heart.givenMethodReturnAddress(
-          heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
-          otherCollateralAsset.address
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        otherCollateralAsset.address
       );
 
       try {
         await drs.mintFromCollateralAmount(
-            1,
-            "vUSD"
+          1,
+          "vUSD"
         );
       } catch (err) {
-        assert.equal("DigitalReserveSystem._checkPreMintCondition: collateralAsset must be the same", err.reason)
+        assert.equal("DigitalReserveSystem._validateAssetCode: collateralAsset must be the same", err.reason)
       }
     });
 
@@ -442,7 +444,7 @@ contract("DigitalReserveSystem test", async accounts => {
           "vUSD"
         );
       } catch (err) {
-        assert.equal("DigitalReserveSystem._checkPreMintCondition: price of link must have value more than 0", err.reason)
+        assert.equal("DigitalReserveSystem._validateAssetCode: price of link must have value more than 0", err.reason)
       }
     });
   });
@@ -450,72 +452,72 @@ contract("DigitalReserveSystem test", async accounts => {
   describe("MintFromStableCreditAmount", async () => {
     it("should mint from stable credit correctly", async () => {
       const stableCredit = await StableCredit.new(
-          Web3.utils.fromAscii('USD'),
-          accounts[1],
-          Web3.utils.fromAscii('VELO'),
-          veloCollateralAsset.address,
-          'vUSD',
-          1000000,
-          heart.address
+        Web3.utils.fromAscii('USD'),
+        accounts[1],
+        Web3.utils.fromAscii('VELO'),
+        veloCollateralAsset.address,
+        'vUSD',
+        1000000,
+        heart.address
       );
 
       await mocks.heart.givenMethodReturnBool(
-          heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
-          true
+        heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+        true
       );
 
       await mocks.heart.givenMethodReturnAddress(
-          heart.contract.methods.getStableCreditById(Web3.utils.fromAscii('stableCreditId')).encodeABI(),
-          stableCredit.address
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii('stableCreditId')).encodeABI(),
+        stableCredit.address
       );
 
       await mocks.heart.givenMethodReturnAddress(
-          heart.contract.methods.getPriceFeeders().encodeABI(),
-          priceFeeder.address
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
       );
 
       await mocks.priceFeeder.givenMethodReturnUint(
-          priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii('')).encodeABI(),
-          10000000
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii('')).encodeABI(),
+        10000000
       );
 
       await mocks.heart.givenMethodReturnUint(
-          heart.contract.methods.getCreditIssuanceFee().encodeABI(),
-          100000
+        heart.contract.methods.getCreditIssuanceFee().encodeABI(),
+        100000
       );
 
       await mocks.heart.givenMethodReturnUint(
-          heart.contract.methods.getCollateralRatio(Web3.utils.fromAscii('VELO')).encodeABI(),
-          1
+        heart.contract.methods.getCollateralRatio(Web3.utils.fromAscii('VELO')).encodeABI(),
+        1
       );
 
       await mocks.heart.givenMethodReturnAddress(
-          heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii('VELO')).encodeABI(),
-          veloCollateralAsset.address
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii('VELO')).encodeABI(),
+        veloCollateralAsset.address
       );
       await mocks.veloCollateralAsset.givenMethodReturnBool(
-          veloCollateralAsset.contract.methods.transferFrom(accounts[0], heart.address, 1).encodeABI(),
-          true
+        veloCollateralAsset.contract.methods.transferFrom(accounts[0], heart.address, 1).encodeABI(),
+        true
       );
 
       await mocks.heart.givenMethodReturnAddress(
-          heart.contract.methods.getDrsAddress().encodeABI(),
-          drs.address
+        heart.contract.methods.getDrsAddress().encodeABI(),
+        drs.address
       );
 
       await mocks.veloCollateralAsset.givenMethodReturnBool(
-          veloCollateralAsset.contract.methods.approve(accounts[0], 10).encodeABI(),
-          true
+        veloCollateralAsset.contract.methods.approve(accounts[0], 10).encodeABI(),
+        true
       );
 
       await mocks.heart.givenMethodReturnAddress(
-          heart.contract.methods.getReserveManager().encodeABI(),
-          reserveManager.address
+        heart.contract.methods.getReserveManager().encodeABI(),
+        reserveManager.address
       );
 
       await mocks.reserveManager.givenMethodReturnBool(
-          reserveManager.contract.methods.lockReserve(Web3.utils.fromAscii('VELO'), drs.address, 1).encodeABI(),
-          true
+        reserveManager.contract.methods.lockReserve(Web3.utils.fromAscii('VELO'), drs.address, 1).encodeABI(),
+        true
       );
 
       const result = await drs.mintFromStableCreditAmount(10, Web3.utils.fromAscii("vUSD"));
@@ -524,22 +526,22 @@ contract("DigitalReserveSystem test", async accounts => {
         const eventMintAmount = new BN(event.mintAmount).toNumber();
         const eventCollateralAmount = new BN(event.collateralAmount).toNumber();
         return eventMintAmount === 10000000
-            && web3.utils.isAddress(event.assetAddress) === true
-            && web3.utils.hexToUtf8(event.assetCode) === 'vUSD'
-            && web3.utils.hexToUtf8(event.collateralAssetCode) === 'VELO'
-            && eventCollateralAmount === 1000000
+          && web3.utils.isAddress(event.assetAddress) === true
+          && web3.utils.hexToUtf8(event.assetCode) === 'vUSD'
+          && web3.utils.hexToUtf8(event.collateralAssetCode) === 'VELO'
+          && eventCollateralAmount === 1000000
       }, 'contract should emit the event correctly');
     });
 
     it("should fail, caller must be trusted partner", async () => {
       await mocks.heart.givenMethodReturnBool(
-          heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
-          false
+        heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+        false
       );
       try {
         await drs.mintFromStableCreditAmount(
-            1,
-            "vUSD"
+          1,
+          "vUSD"
         );
       } catch (err) {
         assert.equal("DigitalReserveSystem.onlyTrustedPartner: caller must be a trusted partner", err.reason)
@@ -548,95 +550,197 @@ contract("DigitalReserveSystem test", async accounts => {
 
     it("should fail, caller must be setup credit already", async () => {
       await mocks.heart.givenMethodReturnBool(
-          heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
-          true
+        heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+        true
       );
       await mocks.heart.givenMethodReturnAddress(
-          heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
-          web3.utils.padLeft("0x0", 40)
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        web3.utils.padLeft("0x0", 40)
       );
       try {
         await drs.mintFromStableCreditAmount(
-            1,
-            "vUSD"
+          1,
+          "vUSD"
         );
       } catch (err) {
-        assert.equal("DigitalReserveSystem._checkPreMintCondition: stableCredit not exist", err.reason)
+        assert.equal("DigitalReserveSystem._validateAssetCode: stableCredit not exist", err.reason)
       }
     });
 
     it("should fail, collateralAsset must be the same", async () => {
       const stableCredit = await StableCredit.new(
-          Web3.utils.fromAscii("USD"),
-          accounts[1],
-          Web3.utils.fromAscii("VELO"),
-          veloCollateralAsset.address,
-          'vUSD',
-          1000000,
-          heart.address
+        Web3.utils.fromAscii("USD"),
+        accounts[1],
+        Web3.utils.fromAscii("VELO"),
+        veloCollateralAsset.address,
+        'vUSD',
+        1000000,
+        heart.address
       );
 
       await mocks.heart.givenMethodReturnBool(
-          heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
-          true
+        heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+        true
       );
       await mocks.heart.givenMethodReturnAddress(
-          heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
-          stableCredit.address
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCredit.address
       );
       await mocks.heart.givenMethodReturnAddress(
-          heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
-          otherCollateralAsset.address
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        otherCollateralAsset.address
       );
       try {
         await drs.mintFromStableCreditAmount(
-            1,
-            "vUSD"
+          1,
+          "vUSD"
         );
       } catch (err) {
 
-        assert.equal("DigitalReserveSystem._checkPreMintCondition: collateralAsset must be the same", err.reason)
+        assert.equal("DigitalReserveSystem._validateAssetCode: collateralAsset must be the same", err.reason)
       }
     });
 
     it("should fail, median price ref mut not be zero", async () => {
       const stableCredit = await StableCredit.new(
-          Web3.utils.fromAscii("USD"),
-          accounts[2],
-          Web3.utils.fromAscii("VELO"),
-          veloCollateralAsset.address,
-          'vUSD',
-          1000000,
-          heart.address
+        Web3.utils.fromAscii("USD"),
+        accounts[2],
+        Web3.utils.fromAscii("VELO"),
+        veloCollateralAsset.address,
+        'vUSD',
+        1000000,
+        heart.address
       );
 
       await mocks.heart.givenMethodReturnBool(
-          heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
-          true
+        heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+        true
       );
       await mocks.heart.givenMethodReturnAddress(
-          heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
-          stableCredit.address
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCredit.address
       );
       await mocks.heart.givenMethodReturnAddress(
-          heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
-          veloCollateralAsset.address
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
       );
       await mocks.heart.givenMethodReturnAddress(
-          heart.contract.methods.getPriceFeeders().encodeABI(),
-          priceFeeder.address
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
       );
       await mocks.priceFeeder.givenMethodReturnUint(
-          priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
-          0
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        0
       );
       try {
         await drs.mintFromStableCreditAmount(
-            1,
-            "vUSD"
+          1,
+          "vUSD"
         );
       } catch (err) {
-        assert.equal("DigitalReserveSystem._checkPreMintCondition: price of link must have value more than 0", err.reason)
+        assert.equal("DigitalReserveSystem._validateAssetCode: price of link must have value more than 0", err.reason)
+      }
+    });
+  });
+
+  describe("GetExchangeRate", async () => {
+    it("should get exchange rate correctly", async () => {
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCreditVUSD.address
+      );
+      await mocks.stableCreditvUSD.givenMethodReturnAddress(
+        stableCreditVUSD.contract.methods.collateral().encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
+      );
+      await mocks.priceFeeder.givenMethodReturnUint(
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
+      );
+
+      const result = await drs.getExchange("vUSD");
+      const BN = web3.utils.BN;
+      const pricePerAssetUnit = new BN(result[2]).toNumber();
+
+      assert.equal("vUSD", result[0]);
+      assert.equal(web3.utils.padRight(0x0, 64), result[1]);
+      assert.equal(0, pricePerAssetUnit);
+    });
+
+    it("should fail, invalid assetCode format", async () => {
+      const expectedErr = "Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.getExchange: invalid assetCode format";
+      try {
+        await drs.getExchange("");
+      } catch (err) {
+        assert.equal(expectedErr, err)
+      }
+
+      try {
+        await drs.getExchange("vUSDTHBKHRSGDJPYEURBDHUSSkbph");
+      } catch (err) {
+        assert.equal(expectedErr, err)
+      }
+    });
+
+    it("should fail, stableCredit not exist", async () => {
+      try {
+        await drs.getExchange("vUSD");
+      } catch (err) {
+        assert.equal("Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: stableCredit not exist", err)
+      }
+    });
+
+    it("should fail, collateralAsset must be the same", async () => {
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        otherCollateralAsset.address
+      );
+
+      try {
+        await drs.getExchange("vUSD");
+      } catch (err) {
+        assert.equal("Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: collateralAsset must be the same", err)
+      }
+    });
+
+    it("should fail, price of link must have value more than 0", async () => {
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCreditVUSD.address
+      );
+      await mocks.stableCreditvUSD.givenMethodReturnAddress(
+        stableCreditVUSD.contract.methods.collateral().encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
+      );
+      await mocks.priceFeeder.givenMethodReturnUint(
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        0
+      );
+
+      try {
+        await drs.getExchange("vUSD");
+      } catch (err) {
+        assert.equal("Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: price of link must have value more than 0", err)
       }
     });
   });
