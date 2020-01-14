@@ -214,13 +214,6 @@ contract DigitalReserveSystem is IDRS {
         return (mintAmount, fee);
     }
 
-    function _calCollateralWithFee(IStableCredit credit, bytes32 linkId, uint256 creditAmount) private view returns (uint256, uint256) {
-        uint256 collateral = _calCollateral(credit, linkId, creditAmount);
-        uint256 fee = collateral.mul(heart.getCreditIssuanceFee()).div(10000);
-
-        return (collateral, fee);
-    }
-
     function _calCollateral(IStableCredit credit, bytes32 linkId, uint256 creditAmount) private view returns (uint256) {
         return creditAmount.mul(credit.peggedValue()).div(heart.getPriceFeeders().getMedianPrice(linkId));
     }
