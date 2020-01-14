@@ -17,7 +17,7 @@ contract Heart is IHeart {
     IPF public priceFeeders;
     IRM public reserveManager;
 
-    /*ICollateralAsset
+    /*
         collateralRatios is 1/100
         collateralRatios 1000 = require collateral 10x
         collateralRatios 125 = require collateral 1.25x
@@ -64,12 +64,17 @@ contract Heart is IHeart {
 
 
     modifier onlyGovernor() {
-        require(isGovernor(msg.sender), "WhitelistGovernorRole: caller does not have the Whitelist governor role");
+        require(isGovernor(msg.sender), "Heart.onlyGovernor: The message sender is not found or does not have sufficient permission");
         _;
     }
 
     modifier onlyTrustedPartner() {
-        require(isTrustedPartner(msg.sender), "WhitelistTrustedPartnerRole: caller does not have the Whitelist trusted partner role");
+        require(isTrustedPartner(msg.sender), "Heart.onlyTrustedPartner: The message sender is not found or does not have sufficient permission");
+        _;
+    }
+
+    modifier onlyDRS() {
+        require(msg.sender == drsAddr, "Heart.onlyDRS: caller must be DRS");
         _;
     }
 
@@ -175,7 +180,7 @@ contract Heart is IHeart {
         collectedFee[collateralAssetCode] = collectedFee[collateralAssetCode].sub(amount);
     }
 
-    function addStableCredit(IStableCredit newStableCredit) external onlyTrustedPartner {
+    function addStableCredit(IStableCredit newStableCredit) external onlyDRS {
         require(address(newStableCredit) != address(0), "newStableCredit address must not be 0");
         bytes32 stableCreditId = Hasher.stableCreditId(newStableCredit.assetCode());
         require(address(stableCredits[stableCreditId]) == address(0), "stableCredit has already existed");
