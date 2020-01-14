@@ -8,12 +8,12 @@ interface IDRS {
         uint256 peggedValue
     ) external returns (string memory, address);
 
-    function mintFromCollateral(
+    function mintFromCollateralAmount(
         uint256 collateralAmount,
         string calldata assetCode
     ) external payable returns (bool);
 
-    function mintStableCredit(
+    function mintFromStableCreditAmount(
         uint256 stableCreditAmount,
         string calldata assetCode
     ) external payable returns(bool);
