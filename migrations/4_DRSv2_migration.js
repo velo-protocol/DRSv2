@@ -13,27 +13,30 @@ module.exports = async function (deployer, network, accounts) {
     await deployer.link(Hasher, [DRS, Heart, StableCredit]);
 
     await deployer.deploy(Heart);
-    let heartInstance = await Heart.deployed();
+    const heartInstance = await Heart.deployed();
     await deployer.deploy(PriceFeeders);
-    let priceFeedersInstance = await PriceFeeders.deployed();
+    const priceFeedersInstance = await PriceFeeders.deployed();
     await deployer.deploy(DRS, heartInstance.address);
-    let drsInstance = await DRS.deployed();
+    const drsInstance = await DRS.deployed();
     await deployer.deploy(ReserveManager, heartInstance.address);
-    let reserveManagerInstance = await ReserveManager.deployed();
+    const reserveManagerInstance = await ReserveManager.deployed();
+
 
     heartInstance.setPriceFeeders(priceFeedersInstance.address);
     heartInstance.setReserveManager(reserveManagerInstance.address);
     heartInstance.setDrsAddress(drsInstance.address);
 
-    if (network === 'development' || network === 'evrynet') {
-        let adminAddress = accounts[0];
+    if (network === 'development' || network === 'local' || network === 'evrynet') {
+        const hasher = await Hasher.deployed();
+
+        const adminAddress = accounts[0];
 
         await deployer.deploy(Token, "VELO", "VELO", 7);
-        let veloToken = await Token.deployed();
+        const veloToken = await Token.deployed();
         await veloToken.mint(adminAddress, 10000000000000);
 
-        let veloTokenAscii = Web3.utils.fromAscii("VELO");
-        let usdAscii = Web3.utils.fromAscii("USD");
+        const veloTokenAscii = Web3.utils.fromAscii("VELO");
+        const usdAscii = Web3.utils.fromAscii("USD");
 
         console.log("Setting up Price Feeder for VELO");
         await priceFeedersInstance.setAsset(veloTokenAscii, veloToken.address);
@@ -44,6 +47,7 @@ module.exports = async function (deployer, network, accounts) {
         console.log("Set Collateral assets");
         await heartInstance.setCollateralAsset(veloTokenAscii, veloToken.address, 100);
         await heartInstance.setTrustedPartner(adminAddress);
+        await heartInstance.setAllowedLink(await hasher.linkId(veloTokenAscii, usdAscii), true);
 
         console.log("Approve DRS to spend VELO");
         await veloToken.approve(drsInstance.address, 10000000000);

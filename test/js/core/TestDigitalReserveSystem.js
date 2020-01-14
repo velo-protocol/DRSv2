@@ -244,7 +244,7 @@ contract("DigitalReserveSystem test", async accounts => {
     });
   });
 
-  describe("MintFromCollateral", async () => {
+  describe("MintFromCollateralAmount", async () => {
     it("should mint from collateral correctly", async () => {
       const stableCredit = await StableCredit.new(
         Web3.utils.fromAscii("THB"),
@@ -325,7 +325,7 @@ contract("DigitalReserveSystem test", async accounts => {
         true
       );
 
-      const result = await drs.mintFromCollateral(100000000, 'vTHB');
+      const result = await drs.mintFromCollateralAmount(100000000, 'vTHB');
 
       truffleAssert.eventEmitted(result, 'Mint', event => {
         return event.assetCode === "vTHB"
@@ -343,7 +343,7 @@ contract("DigitalReserveSystem test", async accounts => {
         false
       );
       try {
-        await drs.mintFromCollateral(
+        await drs.mintFromCollateralAmount(
           1,
           "vUSD"
         );
@@ -362,12 +362,12 @@ contract("DigitalReserveSystem test", async accounts => {
         web3.utils.padLeft("0x0", 40)
       );
       try {
-        await drs.mintFromCollateral(
+        await drs.mintFromCollateralAmount(
           1,
           "vUSD"
         );
       } catch (err) {
-        assert.equal("DigitalReserveSystem.mintFromCollateral: stableCredit not exist", err.reason)
+        assert.equal("DigitalReserveSystem._checkPreMintCondition: stableCredit not exist", err.reason)
       }
     });
 
@@ -396,12 +396,12 @@ contract("DigitalReserveSystem test", async accounts => {
       );
 
       try {
-        await drs.mintFromCollateral(
+        await drs.mintFromCollateralAmount(
             1,
             "vUSD"
         );
       } catch (err) {
-        assert.equal("DigitalReserveSystem.mintFromCollateral: collateralAsset must be the same", err.reason)
+        assert.equal("DigitalReserveSystem._checkPreMintCondition: collateralAsset must be the same", err.reason)
       }
     });
 
@@ -437,17 +437,17 @@ contract("DigitalReserveSystem test", async accounts => {
         0
       );
       try {
-        await drs.mintFromCollateral(
+        await drs.mintFromCollateralAmount(
           1,
           "vUSD"
         );
       } catch (err) {
-        assert.equal("DigitalReserveSystem.mintFromCollateral: price of link must have value more than 0", err.reason)
+        assert.equal("DigitalReserveSystem._checkPreMintCondition: price of link must have value more than 0", err.reason)
       }
     });
   });
 
-  describe("MintStableCredit", async () => {
+  describe("MintFromStableCreditAmount", async () => {
     it("should mint from stable credit correctly", async () => {
       const stableCredit = await StableCredit.new(
           Web3.utils.fromAscii('USD'),
@@ -518,7 +518,7 @@ contract("DigitalReserveSystem test", async accounts => {
           true
       );
 
-      const result = await drs.mintStableCredit(10, Web3.utils.fromAscii("vUSD"));
+      const result = await drs.mintFromStableCreditAmount(10, Web3.utils.fromAscii("vUSD"));
       truffleAssert.eventEmitted(result, 'Mint', event => {
         const BN = web3.utils.BN;
         const eventMintAmount = new BN(event.mintAmount).toNumber();
@@ -537,7 +537,7 @@ contract("DigitalReserveSystem test", async accounts => {
           false
       );
       try {
-        await drs.mintStableCredit(
+        await drs.mintFromStableCreditAmount(
             1,
             "vUSD"
         );
@@ -556,12 +556,12 @@ contract("DigitalReserveSystem test", async accounts => {
           web3.utils.padLeft("0x0", 40)
       );
       try {
-        await drs.mintStableCredit(
+        await drs.mintFromStableCreditAmount(
             1,
             "vUSD"
         );
       } catch (err) {
-        assert.equal("DigitalReserveSystem.mintStableCredit: stableCredit not exist", err.reason)
+        assert.equal("DigitalReserveSystem._checkPreMintCondition: stableCredit not exist", err.reason)
       }
     });
 
@@ -589,13 +589,13 @@ contract("DigitalReserveSystem test", async accounts => {
           otherCollateralAsset.address
       );
       try {
-        await drs.mintStableCredit(
+        await drs.mintFromStableCreditAmount(
             1,
             "vUSD"
         );
       } catch (err) {
 
-        assert.equal("DigitalReserveSystem.mintStableCredit: collateralAsset must be the same", err.reason)
+        assert.equal("DigitalReserveSystem._checkPreMintCondition: collateralAsset must be the same", err.reason)
       }
     });
 
@@ -631,12 +631,12 @@ contract("DigitalReserveSystem test", async accounts => {
           0
       );
       try {
-        await drs.mintStableCredit(
+        await drs.mintFromStableCreditAmount(
             1,
             "vUSD"
         );
       } catch (err) {
-        assert.equal("DigitalReserveSystem.mintStableCredit: price of link must have value more than 0", err.reason)
+        assert.equal("DigitalReserveSystem._checkPreMintCondition: price of link must have value more than 0", err.reason)
       }
     });
   });

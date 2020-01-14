@@ -4,13 +4,14 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
 import "../book-room/Hasher.sol";
 import "../interfaces/IHeart.sol";
+import "../interfaces/ICollateralAsset.sol";
 
 /// @author Velo Team
 /// @title A modified ERC20
 contract StableCredit is ERC20, ERC20Detailed {
     IHeart public heart;
 
-    IERC20 public collateral;
+    ICollateralAsset public collateral;
     bytes32 public collateralAssetCode;
 
     uint256 public peggedValue;
@@ -37,7 +38,7 @@ contract StableCredit is ERC20, ERC20Detailed {
         creditOwner = _creditOwner;
         peggedValue = _peggedValue;
         peggedCurrency = _peggedCurrency;
-        collateral = IERC20(_collateralAddress);
+        collateral = ICollateralAsset(_collateralAddress);
         collateralAssetCode = _collateralAssetCode;
         heart = IHeart(heartAddr);
     }
@@ -65,5 +66,9 @@ contract StableCredit is ERC20, ERC20Detailed {
 
     function getId() external view returns(bytes32) {
         return Hasher.stableCreditId(this.name());
+    }
+
+    function assetCode() external view returns(string memory) {
+        return this.name();
     }
 }

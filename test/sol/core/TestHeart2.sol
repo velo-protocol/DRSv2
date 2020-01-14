@@ -9,27 +9,29 @@ contract TestHeart2 {
     Heart public heart;
 
     function helper_addVTHB() public {
-        heart.addStableCredit(new StableCredit(
-                "THB",
-                address(10),
-                "VELO",
-                address(99),
-                "vTHB",
-                uint(1),
-                address(heart)
-            ));
+        StableCredit vTHB = new StableCredit(
+            "THB",
+            address(10),
+            "VELO",
+            address(99),
+            "vTHB",
+            uint(1),
+            address(heart)
+        );
+        heart.addStableCredit(IStableCredit(address(vTHB)));
     }
 
     function helper_addVUSD() public {
-        heart.addStableCredit(new StableCredit(
-                "USD",
-                address(10),
-                "VELO",
-                address(99),
-                "vUSD",
-                uint(1),
-                address(heart)
-            ));
+        StableCredit vUSD = new StableCredit(
+            "USD",
+            address(10),
+            "VELO",
+            address(99),
+            "vUSD",
+            uint(1),
+            address(heart)
+        );
+        heart.addStableCredit(IStableCredit(address(vUSD)));
     }
 
     function beforeEach() public {
@@ -54,14 +56,14 @@ contract TestHeart2 {
         (bool result,) = address(heart).call(data);
 
         Assert.isTrue(result, "heart.addStableCredit must not throw");
-        StableCredit vTHB = heart.getStableCreditById(Hasher.stableCreditId("vTHB"));
-        Assert.equal(vTHB.name(), "vTHB", "heart.addStableCredit must add StableCredit correctly");
+        IStableCredit vTHB = heart.getStableCreditById(Hasher.stableCreditId("vTHB"));
+        Assert.equal(vTHB.assetCode(), "vTHB", "heart.addStableCredit must add StableCredit correctly");
     }
 
     function testAddStableCredit_Fail_StableCreditAddressMustNotBeZero() public {
         bytes memory data = abi.encodeWithSelector(
             heart.addStableCredit.selector,
-            StableCredit(address(0))
+            IStableCredit(address(0))
         );
 
         (bool result,) = address(heart).call(data);
@@ -90,22 +92,22 @@ contract TestHeart2 {
 
     function testGetStableCreditById_Success() public {
         helper_addVTHB();
-        StableCredit vTHB = heart.getStableCreditById(Hasher.stableCreditId("vTHB"));
-        Assert.equal(vTHB.name(), "vTHB", "heart.getStableCreditById must return a correct StableCredit");
+        IStableCredit vTHB = heart.getStableCreditById(Hasher.stableCreditId("vTHB"));
+        Assert.equal(vTHB.assetCode(), "vTHB", "heart.getStableCreditById must return a correct StableCredit");
     }
 
     function testGetRecentStableCredit_Success() public {
         helper_addVUSD();
         helper_addVTHB();
-        StableCredit vTHB = heart.getRecentStableCredit();
-        Assert.equal(vTHB.name(), "vTHB", "heart.getRecentStableCredit must return a correct StableCredit");
+        IStableCredit vTHB = heart.getRecentStableCredit();
+        Assert.equal(vTHB.assetCode(), "vTHB", "heart.getRecentStableCredit must return a correct StableCredit");
     }
 
     function testGetNextStableCredit_Success() public {
         helper_addVUSD();
         helper_addVTHB();
-        StableCredit vUSD = heart.getNextStableCredit(heart.getRecentStableCredit().getId());
-        Assert.equal(vUSD.name(), "vUSD", "heart.getNextStableCredit must return a correct StableCredit");
+        IStableCredit vUSD = heart.getNextStableCredit(heart.getRecentStableCredit().getId());
+        Assert.equal(vUSD.assetCode(), "vUSD", "heart.getNextStableCredit must return a correct StableCredit");
     }
 
     function testGetStableCreditCount_Success() public {
