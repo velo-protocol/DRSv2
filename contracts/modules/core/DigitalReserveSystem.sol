@@ -78,10 +78,6 @@ contract DigitalReserveSystem is IDRS {
         return (assetCode, address(newStableCredit));
     }
 
-    /*
-        TODO:
-            - mintFromCollateral(uint256 mintAmount, string calldata assetCode)
-    */
     function mintFromCollateral(
         uint256 collateralAmount,
         string calldata assetCode
@@ -93,11 +89,55 @@ contract DigitalReserveSystem is IDRS {
 
         bytes32 linkId = Hasher.linkId(collateralAssetCode, stableCredit.peggedCurrency());
 
-        require(heart.getPriceFeeders().getMedianPrice(linkId) != 0, "DigitalReserveSystem.mintFromCollateral: median price ref mut not be zero");
+        require(heart.getCollateralAsset(collateralAssetCode) == stableCredit.collateral(), "DigitalReserveSystem.mintFromCollateral: collateralAsset must be the same");
+        require(heart.getPriceFeeders().getMedianPrice(linkId) > 0, "DigitalReserveSystem.mintFromCollateral: price of link must have value more than 0");
 
         (uint256 mintAmount, uint256 fee) = _calMintFromCollateral(stableCredit, linkId, collateralAmount);
         uint256 actualCollateralAmount = _callCollateral(stableCredit, linkId, mintAmount);
         uint256 reserveAmount = collateralAmount.sub(actualCollateralAmount).sub(fee);
+
+        IERC20 collateralAsset = heart.getCollateralAsset(collateralAssetCode);
+        collateralAsset.transferFrom(msg.sender, address(heart), fee);
+        collateralAsset.transferFrom(msg.sender, address(stableCredit), actualCollateralAmount);
+        collateralAsset.transferFrom(msg.sender, address(this), reserveAmount);
+
+        collateralAsset.approve(address(heart.getReserveManager()), reserveAmount);
+
+        heart.getReserveManager().lockReserve(collateralAssetCode, address(this), reserveAmount);
+
+        stableCredit.mint(msg.sender, mintAmount);
+        stableCredit.approveCollateral();
+
+        heart.collectFee(fee, collateralAssetCode);
+
+        emit Mint(
+            assetCode,
+            mintAmount,
+            address(stableCredit),
+            collateralAssetCode,
+            actualCollateralAmount
+        );
+
+        return true;
+    }
+
+    function mintStableCredit(
+        uint256 stableCreditAmount,
+        string calldata assetCode
+    ) external onlyTrustedPartner payable returns (bool) {
+        bytes32 stableCreditId = Hasher.stableCreditId(assetCode);
+        StableCredit stableCredit = heart.getStableCreditById(stableCreditId);
+        require(address(stableCredit) != address(0), "DigitalReserveSystem.mintStableCredit: stableCredit not exist");
+
+        bytes32 collateralAssetCode = stableCredit.collateralAssetCode();
+        bytes32 linkId = Hasher.linkId(collateralAssetCode, stableCredit.peggedCurrency());
+
+        require(heart.getCollateralAsset(collateralAssetCode) == stableCredit.collateral(), "DigitalReserveSystem.mintStableCredit: collateralAsset must be the same");
+        require(heart.getPriceFeeders().getMedianPrice(linkId) > 0, "DigitalReserveSystem.mintStableCredit: price of link must have value more than 0");
+
+        (uint256 mintAmount, uint256 fee) = _calMintStableCredit(stableCredit, linkId, stableCreditAmount);
+        uint256 actualCollateralAmount = _callCollateral(stableCredit, linkId, mintAmount);
+        uint256 reserveAmount = stableCreditAmount.add(actualCollateralAmount).add(fee);
 
         IERC20 collateralAsset = heart.getCollateralAsset(collateralAssetCode);
         collateralAsset.transferFrom(msg.sender, address(heart), fee);
@@ -174,6 +214,20 @@ contract DigitalReserveSystem is IDRS {
         uint256 mintAmount = collateralAmount.sub(fee).mul(heart.getPriceFeeders().getMedianPrice(linkId)).mul(10000000).mul(10000000).
         div(heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()).mul(10000000));
         return (mintAmount, fee);
+    }
+
+    function _calMintStableCredit(StableCredit credit, bytes32 linkId, uint256 stableCreditAmount) private view returns (uint256, uint256) {
+        uint256 mintAmount = stableCreditAmount.mul(heart.getCollateralRatio(credit.collateralAssetCode())).mul(credit.peggedValue()).div(heart.getPriceFeeders().getMedianPrice(linkId)).mul(10000000);
+        uint256 fee = mintAmount.mul(heart.getCreditIssuanceFee()).div(10000000);
+
+        return (mintAmount, fee);
+    }
+
+    function _calCollateralWithFee(StableCredit credit, bytes32 linkId, uint256 creditAmount) private view returns (uint256, uint256) {
+        uint256 collateral = _callCollateral(credit, linkId, creditAmount);
+        uint256 fee = collateral.mul(heart.getCreditIssuanceFee()).div(10000);
+
+        return (collateral, fee);
     }
 
     function _callCollateral(StableCredit credit, bytes32 linkId, uint256 creditAmount) private view returns (uint256) {

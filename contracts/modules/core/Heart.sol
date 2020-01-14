@@ -63,12 +63,12 @@ contract Heart is IHeart {
 
 
     modifier onlyGovernor() {
-        require(isGovernor(msg.sender), "WhitelistGovernorRole: caller does not have the Whitelist governor role");
+        require(isGovernor(msg.sender), "Heart.onlyGovernor: The message sender is not found or does not have sufficient permission");
         _;
     }
 
     modifier onlyTrustedPartner() {
-        require(isTrustedPartner(msg.sender), "WhitelistTrustedPartnerRole: caller does not have the Whitelist trusted partner role");
+        require(isTrustedPartner(msg.sender), "Heart.onlyTrustedPartner: The message sender is not found or does not have sufficient permission");
         _;
     }
 
