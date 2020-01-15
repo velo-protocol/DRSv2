@@ -42,12 +42,12 @@ module.exports = async function (deployer, network, accounts) {
         await priceFeedersInstance.setAsset(veloBytes32, veloToken.address);
         await priceFeedersInstance.addAssetFiat(veloBytes32, usdBytes32);
         await priceFeedersInstance.addPriceFeeder(veloBytes32, usdBytes32, adminAddress);
-        await priceFeedersInstance.setPrice(veloBytes32, usdBytes32, 10000000);
+        await priceFeedersInstance.setPrice(veloBytes32, usdBytes32, 100000000); // 10 USD/VELO
 
         console.log("Set Collateral assets");
-        await heartInstance.setCollateralAsset(veloBytes32, veloToken.address, 1300000);
+        await heartInstance.setCollateralAsset(veloBytes32, veloToken.address, 13000000); // 1.3
         await heartInstance.setTrustedPartner(adminAddress);
-        await heartInstance.setCreditIssuanceFee(50000);
+        await heartInstance.setCreditIssuanceFee(500000);  // 0.05 (5%)
         await heartInstance.setAllowedLink(await hasher.linkId(veloBytes32, usdBytes32), true);
 
         console.log("Approve DRS to spend VELO");

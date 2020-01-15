@@ -91,7 +91,7 @@ contract DigitalReserveSystem is IDRS {
             heart.getCreditIssuanceFee(),
             heart.getCollateralRatio(collateralAssetCode),
             stableCredit.peggedValue(),
-            1000000
+            10000000
         );
 
         _mint(collateralAsset, stableCredit, mintAmount, fee, actualCollateralAmount, reserveCollateralAmount);
@@ -121,7 +121,7 @@ contract DigitalReserveSystem is IDRS {
             heart.getCreditIssuanceFee(),
             heart.getCollateralRatio(collateralAssetCode),
             stableCredit.peggedValue(),
-            1000000
+            10000000
         );
 
         _mint(collateralAsset, stableCredit, mintAmount, fee, actualCollateralAmount, reserveCollateralAmount);
