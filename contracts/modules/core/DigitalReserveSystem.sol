@@ -224,30 +224,30 @@ contract DigitalReserveSystem is IDRS {
 //    }
 
     function _calMintAmountFromCollateral(
-        uint256 collateralAmount,
+        uint256 netCollateralAmount,
         uint256 price,
         uint256 issuanceFee,
         uint256 collateralRatio,
         uint256 peggedValue,
         uint256 divider
     ) private pure returns (uint256, uint256, uint256, uint256) {
-        // fee = collateralAmount * (issuanceFee / divider )
-        uint256 fee = collateralAmount.mul(issuanceFee).div(divider);
+        // fee = netCollateralAmount * (issuanceFee / divider )
+        uint256 fee = netCollateralAmount.mul(issuanceFee).div(divider);
 
-        // actualCollateralAmount = collateralAmount - fee
-        uint256 actualCollateralAmount = collateralAmount.sub(fee);
+        // collateralAmount = netCollateralAmount - fee
+        uint256 collateralAmount = netCollateralAmount.sub(fee);
 
-        // mintAmount = (actualCollateralAmount * priceInCurrencyPerCollateralUnit) / (collateralRatio * peggedValue)
-        uint256 mintAmount = actualCollateralAmount.mul(price).mul(1000000);
+        // mintAmount = (collateralAmount * priceInCurrencyPerCollateralUnit) / (collateralRatio * peggedValue)
+        uint256 mintAmount = collateralAmount.mul(price).mul(1000000);
         mintAmount = mintAmount.div(collateralRatio.mul(peggedValue));
 
-        // reserveAmount = (collateralRatio - 1) * actualCollateralAmount
-        uint reserveAmount = collateralAmount.sub(actualCollateralAmount);
+        // actualCollateralAmount = collateralAmount / collateralRatio
+        uint actualCollateralAmount = collateralAmount.div(collateralRatio);
 
-        //
+        // reserveCollateralAmount = collateralAmount - actualCollateralAmount
+        uint reserveCollateralAmount = collateralAmount.sub(actualCollateralAmount);
 
-
-        return (mintAmount, actualCollateralAmount, fee);
+        return (mintAmount, actualCollateralAmount, fee, reserveCollateralAmount);
     }
 
     function _calMintStableCredit(IStableCredit credit, bytes32 linkId, uint256 stableCreditAmount) private view returns (uint256, uint256) {
