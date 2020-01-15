@@ -32,4 +32,9 @@ interface IDRS {
     function getExchange(
         string calldata assetCode
     ) external view returns (string memory, bytes32, uint256);
+
+    function collateralHealthCheck(
+        string calldata assetCode,
+        string calldata collateralAssetCode
+    ) external view returns (bytes32, uint256, uint256);
 }
