@@ -35,21 +35,38 @@ module.exports = async function (deployer, network, accounts) {
         const veloToken = await Token.deployed();
         await veloToken.mint(adminAddress, 10000000000000);
 
-        const veloTokenAscii = Web3.utils.fromAscii("VELO");
-        const usdAscii = Web3.utils.fromAscii("USD");
+        const veloBytes32 = Web3.utils.fromAscii("VELO");
+        const usdBytes32 = Web3.utils.fromAscii("USD");
 
         console.log("Setting up Price Feeder for VELO");
-        await priceFeedersInstance.setAsset(veloTokenAscii, veloToken.address);
-        await priceFeedersInstance.addAssetFiat(veloTokenAscii, usdAscii);
-        await priceFeedersInstance.addPriceFeeder(veloTokenAscii, usdAscii, adminAddress);
-        await priceFeedersInstance.setPrice(veloTokenAscii, usdAscii, 10000000);
+        await priceFeedersInstance.setAsset(veloBytes32, veloToken.address);
+        await priceFeedersInstance.addAssetFiat(veloBytes32, usdBytes32);
+        await priceFeedersInstance.addPriceFeeder(veloBytes32, usdBytes32, adminAddress);
+        await priceFeedersInstance.setPrice(veloBytes32, usdBytes32, 10000000);
 
         console.log("Set Collateral assets");
-        await heartInstance.setCollateralAsset(veloTokenAscii, veloToken.address, 100);
+        await heartInstance.setCollateralAsset(veloBytes32, veloToken.address, 1300000);
         await heartInstance.setTrustedPartner(adminAddress);
-        await heartInstance.setAllowedLink(await hasher.linkId(veloTokenAscii, usdAscii), true);
+        await heartInstance.setCreditIssuanceFee(50000);
+        await heartInstance.setAllowedLink(await hasher.linkId(veloBytes32, usdBytes32), true);
 
         console.log("Approve DRS to spend VELO");
         await veloToken.approve(drsInstance.address, 10000000000);
+
+        console.log(await drsInstance.setup(veloBytes32, usdBytes32, "vUSD", 1000000));
+
+        const result = await drsInstance.mintFromCollateralAmount(22000000, "vUSD");
+        console.log(result.logs[0].args.mintAmount.toString());
+        console.log(result.logs[0].args.collateralAmount.toString());
+
+        // const result = await drsInstance.mintFromStableCreditAmount(160769230, "vUSD");
+        console.log(result.logs[0].args.mintAmount.toString());
+
+        // issue fee: 50 000 (0.05)
+        // col amount: 22 000 000 (22.00)
+        // price: 10 000 000 (10.00)
+        // col ratio: 1 300 000 (1.30)
+        // pegged: 1 000 000 (1.00)
+        // colAmount: 160 769 230 (169.769230)
     }
 };

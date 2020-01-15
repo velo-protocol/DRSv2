@@ -85,9 +85,16 @@ contract DigitalReserveSystem is IDRS {
     ) external onlyTrustedPartner payable returns (bool) {
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _checkPreMintCondition(assetCode);
 
-        (uint256 mintAmount, uint256 fee) = _calMintAmountFromCollateral(stableCredit, linkId, collateralAmount);
-        uint256 actualCollateralAmount = _calCollateral(stableCredit, linkId, mintAmount);
-        uint256 reserveAmount = collateralAmount.sub(actualCollateralAmount).sub(fee);
+        (uint256 mintAmount, uint256 actualCollateralAmount, uint256 fee) = _calMintAmountFromCollateral(
+            collateralAmount,
+            heart.getPriceFeeders().getMedianPrice(linkId),
+            heart.getCreditIssuanceFee(),
+            heart.getCollateralRatio(collateralAssetCode),
+            stableCredit.peggedValue(),
+            1000000
+        );
+
+        uint256 reserveAmount = collateralAmount.sub(actualCollateralAmount);
 
         _mint(collateralAsset, stableCredit, mintAmount, fee, actualCollateralAmount, reserveAmount);
         emit Mint(
@@ -123,7 +130,7 @@ contract DigitalReserveSystem is IDRS {
         return true;
     }
 
-    function _checkPreMintCondition(string memory assetCode) private returns (IStableCredit ,ICollateralAsset, bytes32, bytes32) {
+    function _checkPreMintCondition(string memory assetCode) private returns (IStableCredit, ICollateralAsset, bytes32, bytes32) {
         IStableCredit stableCredit = heart.getStableCreditById(Hasher.stableCreditId(assetCode));
         require(address(stableCredit) != address(0), "DigitalReserveSystem._checkPreMintCondition: stableCredit not exist");
 
@@ -199,12 +206,48 @@ contract DigitalReserveSystem is IDRS {
         return true;
     }
 
+//
+//    function _calMintAmountFromCollateral(IStableCredit credit, uint price, uint256 collateralAmount) private view returns (uint256, uint256, uint256) {
+//        // fee = collateralAmount * (issuanceFee / divider )
+//        uint256 fee = collateralAmount.mul(heart.getCreditIssuanceFee()).div(1000000);
+//
+//        // actualCollateralAmount = collateralAmount - fee
+//        uint256 actualCollateralAmount = collateralAmount.sub(fee);
+//
+//        uint256 collateralRatio = heart.getCollateralRatio(credit.collateralAssetCode());
+//
+//        // mintAmount = (actualCollateralAmount * priceInCurrencyPerCollateralUnit) / (collateralRatio * peggedValue)
+//        uint256 mintAmount = actualCollateralAmount.mul(price).mul(1000000);
+//        mintAmount = mintAmount.div(collateralRatio.mul(credit.peggedValue()));
+//
+//        return (mintAmount, actualCollateralAmount, fee);
+//    }
 
-    function _calMintAmountFromCollateral(IStableCredit credit, bytes32 linkId, uint256 collateralAmount) private view returns (uint256, uint256) {
-        uint256 fee = collateralAmount.mul(heart.getCreditIssuanceFee()).div(10000000);
-        uint256 mintAmount = collateralAmount.sub(fee).mul(heart.getPriceFeeders().getMedianPrice(linkId)).mul(10000000).mul(10000000).
-        div(heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()).mul(10000000));
-        return (mintAmount, fee);
+    function _calMintAmountFromCollateral(
+        uint256 collateralAmount,
+        uint256 price,
+        uint256 issuanceFee,
+        uint256 collateralRatio,
+        uint256 peggedValue,
+        uint256 divider
+    ) private pure returns (uint256, uint256, uint256, uint256) {
+        // fee = collateralAmount * (issuanceFee / divider )
+        uint256 fee = collateralAmount.mul(issuanceFee).div(divider);
+
+        // actualCollateralAmount = collateralAmount - fee
+        uint256 actualCollateralAmount = collateralAmount.sub(fee);
+
+        // mintAmount = (actualCollateralAmount * priceInCurrencyPerCollateralUnit) / (collateralRatio * peggedValue)
+        uint256 mintAmount = actualCollateralAmount.mul(price).mul(1000000);
+        mintAmount = mintAmount.div(collateralRatio.mul(peggedValue));
+
+        // reserveAmount = (collateralRatio - 1) * actualCollateralAmount
+        uint reserveAmount = collateralAmount.sub(actualCollateralAmount);
+
+        //
+
+
+        return (mintAmount, actualCollateralAmount, fee);
     }
 
     function _calMintStableCredit(IStableCredit credit, bytes32 linkId, uint256 stableCreditAmount) private view returns (uint256, uint256) {
