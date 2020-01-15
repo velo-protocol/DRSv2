@@ -83,7 +83,7 @@ contract DigitalReserveSystem is IDRS {
         uint256 collateralAmount,
         string calldata assetCode
     ) external onlyTrustedPartner payable returns (bool) {
-        (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _checkPreMintCondition(assetCode);
+        (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
 
         (uint256 mintAmount, uint256 fee) = _calMintAmountFromCollateral(stableCredit, linkId, collateralAmount);
         uint256 actualCollateralAmount = _calCollateral(stableCredit, linkId, mintAmount);
@@ -105,7 +105,7 @@ contract DigitalReserveSystem is IDRS {
         uint256 stableCreditAmount,
         string calldata assetCode
     ) external onlyTrustedPartner payable returns (bool) {
-        (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _checkPreMintCondition(assetCode);
+        (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
 
         (uint256 mintAmount, uint256 fee) = _calMintStableCredit(stableCredit, linkId, stableCreditAmount);
         uint256 actualCollateralAmount = _calCollateral(stableCredit, linkId, mintAmount);
@@ -123,16 +123,16 @@ contract DigitalReserveSystem is IDRS {
         return true;
     }
 
-    function _checkPreMintCondition(string memory assetCode) private returns (IStableCredit ,ICollateralAsset, bytes32, bytes32) {
+    function _validateAssetCode(string memory assetCode) private view returns (IStableCredit, ICollateralAsset, bytes32, bytes32) {
         IStableCredit stableCredit = heart.getStableCreditById(Hasher.stableCreditId(assetCode));
-        require(address(stableCredit) != address(0), "DigitalReserveSystem._checkPreMintCondition: stableCredit not exist");
+        require(address(stableCredit) != address(0), "DigitalReserveSystem._validateAssetCode: stableCredit not exist");
 
         bytes32 collateralAssetCode = stableCredit.collateralAssetCode();
         ICollateralAsset collateralAsset = heart.getCollateralAsset(stableCredit.collateralAssetCode());
-        require(collateralAsset == stableCredit.collateral(), "DigitalReserveSystem._checkPreMintCondition: collateralAsset must be the same");
+        require(collateralAsset == stableCredit.collateral(), "DigitalReserveSystem._validateAssetCode: collateralAsset must be the same");
 
         bytes32 linkId = Hasher.linkId(collateralAssetCode, stableCredit.peggedCurrency());
-        require(heart.getPriceFeeders().getMedianPrice(linkId) > 0, "DigitalReserveSystem._checkPreMintCondition: price of link must have value more than 0");
+        require(heart.getPriceFeeders().getMedianPrice(linkId) > 0, "DigitalReserveSystem._validateAssetCode: price of link must have value more than 0");
 
         return (stableCredit, collateralAsset, collateralAssetCode, linkId);
     }
@@ -181,6 +181,18 @@ contract DigitalReserveSystem is IDRS {
         return _rebalance(creditOwner, assetCode);
     }
 
+    function getExchange(
+        string calldata assetCode
+    ) external view returns (string memory, bytes32, uint256) {
+        require(bytes(assetCode).length > 0 && bytes(assetCode).length <= 12, "DigitalReserveSystem.getExchange: invalid assetCode format");
+
+        (IStableCredit stableCredit, , bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
+
+        (uint256 priceInCollateralPerAssetUnit) = _calExchangeRate(stableCredit, linkId);
+
+        return (assetCode, collateralAssetCode, priceInCollateralPerAssetUnit);
+    }
+
     function _rebalance(
         address creditOwner,
         string memory assetCode
@@ -216,6 +228,11 @@ contract DigitalReserveSystem is IDRS {
 
     function _calCollateral(IStableCredit credit, bytes32 linkId, uint256 creditAmount) private view returns (uint256) {
         return creditAmount.mul(credit.peggedValue()).div(heart.getPriceFeeders().getMedianPrice(linkId));
+    }
+
+    function _calExchangeRate(IStableCredit credit, bytes32 linkId) private view returns (uint256) {
+        uint256 priceInCollateralPerAssetUnit = heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()).div(heart.getPriceFeeders().getMedianPrice(linkId));
+        return (priceInCollateralPerAssetUnit);
     }
 
     function collateralOf(address creditOwner, string calldata assetCode) external view returns (uint256, address) {
