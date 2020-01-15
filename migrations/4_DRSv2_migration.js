@@ -52,21 +52,6 @@ module.exports = async function (deployer, network, accounts) {
 
         console.log("Approve DRS to spend VELO");
         await veloToken.approve(drsInstance.address, 10000000000);
-
-        console.log(await drsInstance.setup(veloBytes32, usdBytes32, "vUSD", 1000000));
-
-        const result = await drsInstance.mintFromCollateralAmount(22000000, "vUSD");
-        console.log(result.logs[0].args.mintAmount.toString());
-        console.log(result.logs[0].args.collateralAmount.toString());
-
-        // const result = await drsInstance.mintFromStableCreditAmount(160769230, "vUSD");
-        console.log(result.logs[0].args.mintAmount.toString());
-
-        // issue fee: 50 000 (0.05)
-        // col amount: 22 000 000 (22.00)
-        // price: 10 000 000 (10.00)
-        // col ratio: 1 300 000 (1.30)
-        // pegged: 1 000 000 (1.00)
-        // colAmount: 160 769 230 (169.769230)
     }
 };
+
