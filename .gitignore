@@ -10,3 +10,5 @@ out
 gen
 
 .openzeppelin/.session
+.DS_Store
+coverageEnv/
