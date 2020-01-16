@@ -718,28 +718,25 @@ contract("DigitalReserveSystem test", async accounts => {
 
     });
     it("should fail, redeem amount is zero", async () => {
-      const expectedErr = "Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.redeem: redeem amount must be greater than 0 -- Reason given: DigitalReserveSystem.redeem: redeem amount must be greater than 0.";
       try {
         await drs.redeem(0, "vUSD");
       } catch (err) {
-        assert.equal(expectedErr, err)
+        assert.equal("DigitalReserveSystem.redeem: redeem amount must be greater than 0", err.reason)
       }
 
     });
     it("should fail, invalid assetCode format", async () => {
-      const expectedErr = "Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.redeem: invalid assetCode format -- Reason given: DigitalReserveSystem.redeem: invalid assetCode format.";
       try {
         await drs.redeem(10000000, "");
       } catch (err) {
-        assert.equal(expectedErr, err)
+        assert.equal("DigitalReserveSystem.redeem: invalid assetCode format", err.reason)
       }
     });
     it("should fail, stableCredit not exist", async () => {
-      const expectedErr = "Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: stableCredit not exist -- Reason given: DigitalReserveSystem._validateAssetCode: stableCredit not exist.";
       try {
         await drs.redeem(10000000, "vTHB");
       } catch (err) {
-        assert.equal(expectedErr, err)
+        assert.equal("DigitalReserveSystem._validateAssetCode: stableCredit not exist", err.reason)
       }
     });
     it("should fail, collateralAsset must be the same", async () => {
@@ -757,11 +754,10 @@ contract("DigitalReserveSystem test", async accounts => {
         otherCollateralAsset.address
       );
 
-      const expectedErr = "Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: collateralAsset must be the same -- Reason given: DigitalReserveSystem._validateAssetCode: collateralAsset must be the same.";
       try {
         await drs.redeem(10000000, "vTHB");
       } catch (err) {
-        assert.equal(expectedErr, err)
+        assert.equal("DigitalReserveSystem._validateAssetCode: collateralAsset must be the same", err.reason)
       }
     });
     it("should fail, price of link must have value more than 0", async () => {
@@ -787,11 +783,10 @@ contract("DigitalReserveSystem test", async accounts => {
         0
       );
 
-      const expectedErr = "Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: price of link must have value more than 0 -- Reason given: DigitalReserveSystem._validateAssetCode: price of link must have value more than 0.";
       try {
         await drs.redeem(10000000, "vTHB");
       } catch (err) {
-        assert.equal(expectedErr, err)
+        assert.equal("DigitalReserveSystem._validateAssetCode: price of link must have value more than 0", err.reason)
       }
     });
   });

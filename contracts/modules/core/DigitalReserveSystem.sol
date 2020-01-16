@@ -188,7 +188,6 @@ contract DigitalReserveSystem is IDRS {
 
         _rebalance(assetCode);
 
-        // priceInCollateralPerAssetUnit = (collateralRatio * peggedValue) / priceInCurrencyPerAssetUnit
         uint256 priceInCollateralPerAssetUnit = _calExchangeRate(stableCredit, linkId);
 
         // collateralAmount = stableCreditAmount * priceInCollateralPerAssetUnit
@@ -307,6 +306,7 @@ contract DigitalReserveSystem is IDRS {
     }
 
     function _calExchangeRate(IStableCredit credit, bytes32 linkId) private view returns (uint256) {
+        // priceInCollateralPerAssetUnit = (collateralRatio * peggedValue) / priceInCurrencyPerAssetUnit
         uint256 priceInCollateralPerAssetUnit = heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()).div(heart.getPriceFeeders().getMedianPrice(linkId));
         return (priceInCollateralPerAssetUnit);
     }
