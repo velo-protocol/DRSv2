@@ -17,4 +17,5 @@ interface IStableCredit {
     function collateral() external view returns(ICollateralAsset);
     function collateralAssetCode() external view returns(bytes32);
     function totalSupply() external view returns (uint256);
+    function balanceOf(address account) external view returns (uint256);
 }
