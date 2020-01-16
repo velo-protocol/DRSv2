@@ -332,7 +332,7 @@ contract("DigitalReserveSystem test", async accounts => {
       truffleAssert.eventEmitted(result, 'Mint', event => {
         return event.assetCode === "vTHB"
           && new web3.utils.BN(event.mintAmount).toNumber() === 990000000
-          && new web3.utils.BN(event.collateralAmount).toNumber() === 99000000
+          && new web3.utils.BN(event.collateralAmount).toNumber() === 100000000
           && event.assetAddress === stableCredit.address
           && event.collateralAssetCode === web3.utils.padRight(web3.utils.utf8ToHex("VELO"), 64);
       }, 'contract should emit the event correctly');
@@ -488,7 +488,7 @@ contract("DigitalReserveSystem test", async accounts => {
 
       await mocks.heart.givenMethodReturnUint(
         heart.contract.methods.getCollateralRatio(Web3.utils.fromAscii('VELO')).encodeABI(),
-        1
+        10000000
       );
 
       await mocks.heart.givenMethodReturnAddress(
@@ -520,16 +520,16 @@ contract("DigitalReserveSystem test", async accounts => {
         true
       );
 
-      const result = await drs.mintFromStableCreditAmount(10, Web3.utils.fromAscii("vUSD"));
+      const result = await drs.mintFromStableCreditAmount(100000000, Web3.utils.fromAscii("vUSD"));
       truffleAssert.eventEmitted(result, 'Mint', event => {
         const BN = web3.utils.BN;
         const eventMintAmount = new BN(event.mintAmount).toNumber();
         const eventCollateralAmount = new BN(event.collateralAmount).toNumber();
-        return eventMintAmount === 10000000
+        return eventMintAmount === 100000000
           && web3.utils.isAddress(event.assetAddress) === true
           && web3.utils.hexToUtf8(event.assetCode) === 'vUSD'
           && web3.utils.hexToUtf8(event.collateralAssetCode) === 'VELO'
-          && eventCollateralAmount === 1000000
+          && eventCollateralAmount === 10101010
       }, 'contract should emit the event correctly');
     });
 
