@@ -9,8 +9,10 @@ const MockContract = artifacts.require("MockContract");
 const Web3 = require('web3');
 const truffleAssert = require('truffle-assertions');
 const helper = require('../testhelper');
+const abi = require('ethereumjs-abi');
 
-let drs, heart, priceFeeder, reserveManager, veloCollateralAsset, otherCollateralAsset, stableCreditVUSD, mocks;
+let drs, heart, priceFeeder, reserveManager, veloCollateralAsset, otherCollateralAsset, stableCreditVTHB,
+  stableCreditVUSD, mocks;
 
 contract("DigitalReserveSystem test", async accounts => {
 
@@ -22,6 +24,7 @@ contract("DigitalReserveSystem test", async accounts => {
       veloCollateralAsset: await MockContract.new(),
       otherCollateralAsset: await MockContract.new(),
       stableCreditvUSD: await MockContract.new(),
+      stableCreditVTHB: await MockContract.new(),
     };
 
     heart = await Heart.at(mocks.heart.address);
@@ -30,6 +33,7 @@ contract("DigitalReserveSystem test", async accounts => {
     veloCollateralAsset = await Token.at(mocks.veloCollateralAsset.address);
     otherCollateralAsset = await Token.at(mocks.otherCollateralAsset.address);
     stableCreditVUSD = await StableCredit.at(mocks.stableCreditvUSD.address);
+    stableCreditVTHB = await StableCredit.at(mocks.stableCreditVTHB.address);
   });
 
   beforeEach(async () => {
@@ -639,6 +643,155 @@ contract("DigitalReserveSystem test", async accounts => {
         );
       } catch (err) {
         assert.equal("DigitalReserveSystem._validateAssetCode: price of link must have value more than 0", err.reason)
+      }
+    });
+  });
+
+  describe("RedeemCredit", async () => {
+    it("should redeem correctly", async () => {
+
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCreditVTHB.address
+      );
+      await mocks.stableCreditVTHB.givenMethodReturn(
+        stableCreditVTHB.contract.methods.collateralAssetCode().encodeABI(),
+        '0x' + abi.rawEncode(['bytes32'], ['VELO']).toString("hex")
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.stableCreditVTHB.givenMethodReturnAddress(
+        stableCreditVTHB.contract.methods.collateral().encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
+      );
+      await mocks.priceFeeder.givenMethodReturnUint(
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getReserveManager().encodeABI(),
+        reserveManager.address
+      );
+      await mocks.veloCollateralAsset.givenMethodReturnUint(
+        veloCollateralAsset.contract.methods.balanceOf(stableCreditVTHB.address).encodeABI(),
+        100000000
+      );
+      await mocks.veloCollateralAsset.givenMethodReturnBool(
+        veloCollateralAsset.contract.methods.transferFrom(stableCreditVTHB.address, reserveManager.address, 90000000).encodeABI(),
+        true
+      );
+      await mocks.heart.givenMethodReturnUint(
+        heart.contract.methods.getCollateralRatio(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
+      );
+      await mocks.stableCreditVTHB.givenMethodReturnUint(
+        stableCreditVTHB.contract.methods.peggedValue().encodeABI(),
+        10000000
+      );
+      await mocks.stableCreditVTHB.givenMethodReturnBool(
+        stableCreditVTHB.contract.methods.redeem(accounts[0], 0, 0).encodeABI(),
+        true
+      );
+      await mocks.stableCreditVTHB.givenMethodReturnBool(
+        stableCreditVTHB.contract.methods.approveCollateral().encodeABI(),
+        true
+      );
+
+      const result = await drs.redeem(100000000, "vTHB");
+
+      truffleAssert.eventEmitted(result, 'Redeem', event => {
+        const BN = web3.utils.BN;
+        const eventMintAmount = new BN(event.stableCreditAmount).toNumber();
+        const eventCollateralAmount = new BN(event.collateralAmount).toNumber();
+        return event.assetCode === "vTHB"
+          && eventMintAmount === 100000000
+          && event.collateralAssetAddress === veloCollateralAsset.address
+          && web3.utils.hexToUtf8(event.collateralAssetCode) === 'VELO'
+          && eventCollateralAmount === 100000000;
+      }, 'contract should emit the event correctly');
+
+    });
+    it("should fail, redeem amount is zero", async () => {
+      const expectedErr = "Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.redeem: redeem amount must be greater than 0 -- Reason given: DigitalReserveSystem.redeem: redeem amount must be greater than 0.";
+      try {
+        await drs.redeem(0, "vUSD");
+      } catch (err) {
+        assert.equal(expectedErr, err)
+      }
+
+    });
+    it("should fail, invalid assetCode format", async () => {
+      const expectedErr = "Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.redeem: invalid assetCode format -- Reason given: DigitalReserveSystem.redeem: invalid assetCode format.";
+      try {
+        await drs.redeem(10000000, "");
+      } catch (err) {
+        assert.equal(expectedErr, err)
+      }
+    });
+    it("should fail, stableCredit not exist", async () => {
+      const expectedErr = "Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: stableCredit not exist -- Reason given: DigitalReserveSystem._validateAssetCode: stableCredit not exist.";
+      try {
+        await drs.redeem(10000000, "vTHB");
+      } catch (err) {
+        assert.equal(expectedErr, err)
+      }
+    });
+    it("should fail, collateralAsset must be the same", async () => {
+
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCreditVTHB.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.stableCreditVTHB.givenMethodReturnAddress(
+        stableCreditVTHB.contract.methods.collateral().encodeABI(),
+        otherCollateralAsset.address
+      );
+
+      const expectedErr = "Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: collateralAsset must be the same -- Reason given: DigitalReserveSystem._validateAssetCode: collateralAsset must be the same.";
+      try {
+        await drs.redeem(10000000, "vTHB");
+      } catch (err) {
+        assert.equal(expectedErr, err)
+      }
+    });
+    it("should fail, price of link must have value more than 0", async () => {
+
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCreditVTHB.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.stableCreditVTHB.givenMethodReturnAddress(
+        stableCreditVTHB.contract.methods.collateral().encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
+      );
+      await mocks.priceFeeder.givenMethodReturnUint(
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        0
+      );
+
+      const expectedErr = "Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: price of link must have value more than 0 -- Reason given: DigitalReserveSystem._validateAssetCode: price of link must have value more than 0.";
+      try {
+        await drs.redeem(10000000, "vTHB");
+      } catch (err) {
+        assert.equal(expectedErr, err)
       }
     });
   });
