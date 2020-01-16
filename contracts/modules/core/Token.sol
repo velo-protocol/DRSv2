@@ -7,7 +7,7 @@ import "../interfaces/ICollateralAsset.sol";
 
 /// @author Velo Team
 /// @title A modified ERC20
-contract Token is ICollateralAsset, ERC20, ERC20Detailed, WhitelistAdminRole {
+contract Token is ERC20, ERC20Detailed, WhitelistAdminRole {
     constructor (
         string memory _name,
         string memory _code,
