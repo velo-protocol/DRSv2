@@ -893,7 +893,7 @@ contract("DigitalReserveSystem test", async accounts => {
     });
   });
 
-  describe("Get Collateral Health Check", async () => {
+  describe("GetCollateralHealthCheck", async () => {
     it("should collateral health check correctly", async () => {
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
