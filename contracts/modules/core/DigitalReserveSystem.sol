@@ -159,15 +159,15 @@ contract DigitalReserveSystem is IDRS {
         return (stableCredit, collateralAsset, collateralAssetCode, linkId);
     }
 
-    function _mint(ICollateralAsset collateralAsset, IStableCredit stableCredit, uint256 mintAmount, uint256 fee, uint256 actualCollateralAmount, uint256 reserveAmount) private returns (bool) {
+    function _mint(ICollateralAsset collateralAsset, IStableCredit stableCredit, uint256 mintAmount, uint256 fee, uint256 actualCollateralAmount, uint256 reserveCollateralAmount) private returns (bool) {
         bytes32 collateralAssetCode = stableCredit.collateralAssetCode();
         collateralAsset.transferFrom(msg.sender, address(heart), fee);
         collateralAsset.transferFrom(msg.sender, address(stableCredit), actualCollateralAmount);
-        collateralAsset.transferFrom(msg.sender, address(this), reserveAmount);
+        collateralAsset.transferFrom(msg.sender, address(this), reserveCollateralAmount);
 
         IRM resManager = heart.getReserveManager();
-        collateralAsset.approve(address(resManager), reserveAmount);
-        resManager.lockReserve(collateralAssetCode, address(this), reserveAmount);
+        collateralAsset.approve(address(resManager), reserveCollateralAmount);
+        resManager.lockReserve(collateralAssetCode, address(this), reserveCollateralAmount);
 
         stableCredit.mint(msg.sender, mintAmount);
         stableCredit.approveCollateral();
