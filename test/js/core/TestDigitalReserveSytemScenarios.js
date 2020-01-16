@@ -10,8 +10,8 @@ const h = require("../testhelper");
 let drs, heart, priceFeeder, reserveManager, veloCollateralAsset, otherCollateralAsset, stableCreditVUSD, mocks;
 
 const velo = "VELO";
-const veloBytes32 = web3.utils.fromAscii(velo);
-const usdBytes32 = web3.utils.fromAscii("USD");
+const veloBytes32 = web3.utils.padRight(web3.utils.fromAscii(velo), 64);
+const usdBytes32 = web3.utils.padRight(web3.utils.fromAscii("USD"), 64);
 
 contract("DigitalReserveSystem Scenario Test", async accounts => {
   it("should work!", async () => {
@@ -23,9 +23,6 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
     };
 
     const [deployer, bob, alice, pf] = accounts;
-
-    // Library
-    const hasher = await Hasher.new();
 
     // Setup the whole ecosystem
     heart = await Heart.new();
@@ -52,7 +49,7 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
     await heart.setCollateralAsset(veloBytes32, veloCollateralAsset.address, calInputs.collateralRatio);
     await heart.setTrustedPartner(bob);
     await heart.setCreditIssuanceFee(calInputs.issuanceFeeRate);
-    await heart.setAllowedLink(await hasher.linkId(veloBytes32, usdBytes32), true);
+    await heart.setAllowedLink(web3.utils.soliditySha3(veloBytes32, usdBytes32), true);
 
     // Approve DRS to spend VELO
     await veloCollateralAsset.approve(drs.address, 10000000000, { from: bob });

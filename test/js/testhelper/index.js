@@ -5,7 +5,6 @@ module.exports = {
   decimal7(float) {
     return Math.trunc(float * Math.pow(10, 7));
   },
-  dec7: this.decimal7,
   methodABI(contractInstance, methodName, methodArgs = []) {
     return contractInstance.contract.methods[methodName](...methodArgs).encodeABI();
   },
