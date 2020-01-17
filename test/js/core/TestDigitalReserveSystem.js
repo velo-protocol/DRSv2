@@ -899,13 +899,29 @@ contract("DigitalReserveSystem test", async accounts => {
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
         stableCreditVUSD.address
       );
+      await mocks.stableCreditvUSD.givenMethodReturn(
+        stableCreditVUSD.contract.methods.collateralAssetCode().encodeABI(),
+        '0x' + abi.rawEncode(['bytes32'], ['VELO']).toString("hex")
+      );
       await mocks.stableCreditvUSD.givenMethodReturnAddress(
         stableCreditVUSD.contract.methods.collateral().encodeABI(),
         veloCollateralAsset.address
       );
+      await mocks.stableCreditvUSD.givenMethodReturnUint(
+        stableCreditVUSD.contract.methods.totalSupply().encodeABI(),
+        100000000
+      );
+      await mocks.stableCreditvUSD.givenMethodReturnUint(
+        stableCreditVUSD.contract.methods.peggedValue().encodeABI(),
+        15000000
+      );
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
         veloCollateralAsset.address
+      );
+      await mocks.veloCollateralAsset.givenMethodReturnUint(
+        veloCollateralAsset.contract.methods.balanceOf(stableCreditVUSD.address).encodeABI(),
+        100000000
       );
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getPriceFeeders().encodeABI(),
@@ -916,50 +932,30 @@ contract("DigitalReserveSystem test", async accounts => {
         10000000
       );
 
-      const result = await drs.collateralHealthCheck("vUSD", "VELO");
+      const result = await drs.collateralHealthCheck("vUSD");
       const BN = web3.utils.BN;
       const requiredAmount = new BN(result[1]).toNumber();
       const presentAmount = new BN(result[2]).toNumber();
-      assert.equal(web3.utils.padRight(0x0, 64), result[0]);
-      assert.equal(0, requiredAmount);
-      assert.equal(0, presentAmount);
+      assert.equal(web3.utils.hexToUtf8(result[0]), "VELO");
+      assert.equal(150000000, requiredAmount); //100000000 * 15000000 / 10000000
+      assert.equal(100000000, presentAmount);
     });
 
     it("should fail, invalid assetCode format", async () => {
       const expectedErr = "Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.collateralHealthCheck: invalid assetCode format";
 
       await helper.assert.throwsWithMessage(async () => {
-        await drs.collateralHealthCheck("", "");
+        await drs.collateralHealthCheck("");
       }, expectedErr);
 
       await helper.assert.throwsWithMessage(async () => {
-        await drs.collateralHealthCheck("VELO", "");
-      }, expectedErr);
-
-      await helper.assert.throwsWithMessage(async () => {
-        await drs.collateralHealthCheck("", "VELO");
-      }, expectedErr);
-
-      await helper.assert.throwsWithMessage(async () => {
-        await drs.collateralHealthCheck("", "VELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-      }, expectedErr);
-
-      await helper.assert.throwsWithMessage(async () => {
-        await drs.collateralHealthCheck("VELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", "");
-      }, expectedErr);
-
-      await helper.assert.throwsWithMessage(async () => {
-        await drs.collateralHealthCheck("VELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", "VELO");
-      }, expectedErr);
-
-      await helper.assert.throwsWithMessage(async () => {
-        await drs.collateralHealthCheck("VELO", "VELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+        await drs.collateralHealthCheck("vTHBBBBBBBBBB");
       }, expectedErr);
     });
 
     it("should fail, stableCredit not exist", async () => {
       await helper.assert.throwsWithMessage(async () => {
-        await drs.collateralHealthCheck("vUSD", "VELO");
+        await drs.collateralHealthCheck("vUSD");
       }, 'Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: stableCredit not exist');
     });
 
@@ -974,7 +970,7 @@ contract("DigitalReserveSystem test", async accounts => {
       );
 
       await helper.assert.throwsWithMessage(async () => {
-        await drs.collateralHealthCheck("vUSD", "VELO");
+        await drs.collateralHealthCheck("vUSD");
       }, 'Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: collateralAsset must be the same');
     });
 
@@ -993,7 +989,7 @@ contract("DigitalReserveSystem test", async accounts => {
       );
 
       await helper.assert.throwsWithMessage(async () => {
-         await drs.collateralHealthCheck("vUSD", "VELO");
+         await drs.collateralHealthCheck("vUSD");
       }, 'Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.collateralHealthCheck: collateralAssetCode does not exist');
     });
   });
