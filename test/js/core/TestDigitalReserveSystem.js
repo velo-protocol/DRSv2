@@ -926,56 +926,41 @@ contract("DigitalReserveSystem test", async accounts => {
     });
 
     it("should fail, invalid assetCode format", async () => {
-      const expectedErr = "Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.collateralHealthCheck: invalid assetCode format";
-      try {
+      const expectedErr = "Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.collateralHealthCheck: invalid assetCode format";
+
+      await helper.assert.throwsWithMessage(async () => {
         await drs.collateralHealthCheck("", "");
-      } catch (err) {
-        assert.equal(expectedErr, err)
-      }
+      }, expectedErr);
 
-      try {
+      await helper.assert.throwsWithMessage(async () => {
         await drs.collateralHealthCheck("VELO", "");
-      } catch (err) {
-        assert.equal(expectedErr, err)
-      }
+      }, expectedErr);
 
-      try {
+      await helper.assert.throwsWithMessage(async () => {
         await drs.collateralHealthCheck("", "VELO");
-      } catch (err) {
-        assert.equal(expectedErr, err)
-      }
+      }, expectedErr);
 
-      try {
+      await helper.assert.throwsWithMessage(async () => {
         await drs.collateralHealthCheck("", "VELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-      } catch (err) {
-        assert.equal(expectedErr, err)
-      }
+      }, expectedErr);
 
-      try {
+      await helper.assert.throwsWithMessage(async () => {
         await drs.collateralHealthCheck("VELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", "");
-      } catch (err) {
-        assert.equal(expectedErr, err)
-      }
+      }, expectedErr);
 
-      try {
+      await helper.assert.throwsWithMessage(async () => {
         await drs.collateralHealthCheck("VELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", "VELO");
-      } catch (err) {
-        assert.equal(expectedErr, err)
-      }
+      }, expectedErr);
 
-      try {
+      await helper.assert.throwsWithMessage(async () => {
         await drs.collateralHealthCheck("VELO", "VELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-      } catch (err) {
-        assert.equal(expectedErr, err)
-      }
+      }, expectedErr);
     });
 
     it("should fail, stableCredit not exist", async () => {
-      try {
+      await helper.assert.throwsWithMessage(async () => {
         await drs.collateralHealthCheck("vUSD", "VELO");
-      } catch (err) {
-        assert.equal("Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: stableCredit not exist", err)
-      }
+      }, 'Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: stableCredit not exist');
     });
 
     it("should fail, collateralAsset must be the same", async () => {
@@ -988,11 +973,9 @@ contract("DigitalReserveSystem test", async accounts => {
         otherCollateralAsset.address
       );
 
-      try {
-        await drs.collateralHealthCheck("vTHB", "VELO");
-      } catch (err) {
-        assert.equal("Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: collateralAsset must be the same", err)
-      }
+      await helper.assert.throwsWithMessage(async () => {
+        await drs.collateralHealthCheck("vUSD", "VELO");
+      }, 'Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: collateralAsset must be the same');
     });
 
     it("should fail, collateralAssetCode does not exist", async () => {
@@ -1009,11 +992,9 @@ contract("DigitalReserveSystem test", async accounts => {
         10000000
       );
 
-      try {
-        await drs.collateralHealthCheck("vUSD", "VELO");
-      } catch (err) {
-        assert.equal("Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.collateralHealthCheck: collateralAssetCode does not exist", err)
-      }
+      await helper.assert.throwsWithMessage(async () => {
+         await drs.collateralHealthCheck("vUSD", "VELO");
+      }, 'Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.collateralHealthCheck: collateralAssetCode does not exist');
     });
   });
 });
