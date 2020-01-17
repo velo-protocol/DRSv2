@@ -336,7 +336,7 @@ contract("DigitalReserveSystem test", async accounts => {
       truffleAssert.eventEmitted(result, 'Mint', event => {
         return event.assetCode === "vTHB"
           && new web3.utils.BN(event.mintAmount).toNumber() === 990000000
-          && new web3.utils.BN(event.collateralAmount).toNumber() === 99000000
+          && new web3.utils.BN(event.collateralAmount).toNumber() === 100000000
           && event.assetAddress === stableCredit.address
           && event.collateralAssetCode === web3.utils.padRight(web3.utils.utf8ToHex("VELO"), 64);
       }, 'contract should emit the event correctly');
@@ -414,7 +414,7 @@ contract("DigitalReserveSystem test", async accounts => {
     it("should fail, median price ref mut not be zero", async () => {
       const stableCredit = await StableCredit.new(
         Web3.utils.fromAscii("USD"),
-        accounts[2],
+        accounts[1],
         Web3.utils.fromAscii("VELO"),
         veloCollateralAsset.address,
         'vUSD',
@@ -492,7 +492,7 @@ contract("DigitalReserveSystem test", async accounts => {
 
       await mocks.heart.givenMethodReturnUint(
         heart.contract.methods.getCollateralRatio(Web3.utils.fromAscii('VELO')).encodeABI(),
-        1
+        10000000
       );
 
       await mocks.heart.givenMethodReturnAddress(
@@ -524,16 +524,16 @@ contract("DigitalReserveSystem test", async accounts => {
         true
       );
 
-      const result = await drs.mintFromStableCreditAmount(10, Web3.utils.fromAscii("vUSD"));
+      const result = await drs.mintFromStableCreditAmount(100000000, Web3.utils.fromAscii("vUSD"));
       truffleAssert.eventEmitted(result, 'Mint', event => {
         const BN = web3.utils.BN;
         const eventMintAmount = new BN(event.mintAmount).toNumber();
         const eventCollateralAmount = new BN(event.collateralAmount).toNumber();
-        return eventMintAmount === 10000000
+        return eventMintAmount === 100000000
           && web3.utils.isAddress(event.assetAddress) === true
           && web3.utils.hexToUtf8(event.assetCode) === 'vUSD'
           && web3.utils.hexToUtf8(event.collateralAssetCode) === 'VELO'
-          && eventCollateralAmount === 1000000
+          && eventCollateralAmount === 10101010
       }, 'contract should emit the event correctly');
     });
 
@@ -608,7 +608,7 @@ contract("DigitalReserveSystem test", async accounts => {
     it("should fail, median price ref mut not be zero", async () => {
       const stableCredit = await StableCredit.new(
         Web3.utils.fromAscii("USD"),
-        accounts[2],
+        accounts[1],
         Web3.utils.fromAscii("VELO"),
         veloCollateralAsset.address,
         'vUSD',
@@ -890,6 +890,111 @@ contract("DigitalReserveSystem test", async accounts => {
       } catch (err) {
         assert.equal("Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: price of link must have value more than 0", err)
       }
+    });
+  });
+
+  describe("GetCollateralHealthCheck", async () => {
+    it("should collateral health check correctly", async () => {
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCreditVUSD.address
+      );
+      await mocks.stableCreditvUSD.givenMethodReturnAddress(
+        stableCreditVUSD.contract.methods.collateral().encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
+      );
+      await mocks.priceFeeder.givenMethodReturnUint(
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
+      );
+
+      const result = await drs.collateralHealthCheck("vUSD", "VELO");
+      const BN = web3.utils.BN;
+      const requiredAmount = new BN(result[1]).toNumber();
+      const presentAmount = new BN(result[2]).toNumber();
+      assert.equal(web3.utils.padRight(0x0, 64), result[0]);
+      assert.equal(0, requiredAmount);
+      assert.equal(0, presentAmount);
+    });
+
+    it("should fail, invalid assetCode format", async () => {
+      const expectedErr = "Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.collateralHealthCheck: invalid assetCode format";
+
+      await helper.assert.throwsWithMessage(async () => {
+        await drs.collateralHealthCheck("", "");
+      }, expectedErr);
+
+      await helper.assert.throwsWithMessage(async () => {
+        await drs.collateralHealthCheck("VELO", "");
+      }, expectedErr);
+
+      await helper.assert.throwsWithMessage(async () => {
+        await drs.collateralHealthCheck("", "VELO");
+      }, expectedErr);
+
+      await helper.assert.throwsWithMessage(async () => {
+        await drs.collateralHealthCheck("", "VELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+      }, expectedErr);
+
+      await helper.assert.throwsWithMessage(async () => {
+        await drs.collateralHealthCheck("VELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", "");
+      }, expectedErr);
+
+      await helper.assert.throwsWithMessage(async () => {
+        await drs.collateralHealthCheck("VELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", "VELO");
+      }, expectedErr);
+
+      await helper.assert.throwsWithMessage(async () => {
+        await drs.collateralHealthCheck("VELO", "VELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+      }, expectedErr);
+    });
+
+    it("should fail, stableCredit not exist", async () => {
+      await helper.assert.throwsWithMessage(async () => {
+        await drs.collateralHealthCheck("vUSD", "VELO");
+      }, 'Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: stableCredit not exist');
+    });
+
+    it("should fail, collateralAsset must be the same", async () => {
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        otherCollateralAsset.address
+      );
+
+      await helper.assert.throwsWithMessage(async () => {
+        await drs.collateralHealthCheck("vUSD", "VELO");
+      }, 'Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: collateralAsset must be the same');
+    });
+
+    it("should fail, collateralAssetCode does not exist", async () => {
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCreditVUSD.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
+      );
+      await mocks.priceFeeder.givenMethodReturnUint(
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
+      );
+
+      await helper.assert.throwsWithMessage(async () => {
+         await drs.collateralHealthCheck("vUSD", "VELO");
+      }, 'Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.collateralHealthCheck: collateralAssetCode does not exist');
     });
   });
 });
