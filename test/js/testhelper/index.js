@@ -21,23 +21,25 @@ module.exports = {
       assert.equal(actualNumber.toString(), expectedNumber.toString());
     },
     async throwsWithReason(asyncFn, reason) {
-      let result;
+      let thrown = false;
       try {
         result = await asyncFn();
       } catch (err) {
+        thrown = true;
         assert.equal(err.reason, reason);
       } finally {
-        assert.ok(typeof result === 'undefined');
+        assert.ok(thrown, "expected error to be thrown");
       }
     },
     async throwsWithMessage(asyncFn, message) {
-      let result;
+      let thrown = false;
       try {
         result = await asyncFn();
       } catch (err) {
+        thrown = true;
         assert.equal(err.message, message);
       } finally {
-        assert.ok(typeof result === 'undefined');
+        assert.ok(thrown, "expected error to be thrown");
       }
     },
   }
