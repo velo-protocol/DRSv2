@@ -852,14 +852,6 @@ contract("DigitalReserveSystem test", async accounts => {
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
         stableCreditVUSD.address
       );
-      // await mocks.stableCreditvUSD.givenMethodReturnAddress(
-      //   stableCreditVUSD.contract.methods.collateral().encodeABI(),
-      //   veloCollateralAsset.address
-      // );
-      // await mocks.heart.givenMethodReturnAddress(
-      //   heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
-      //   veloCollateralAsset.address
-      // );
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getPriceFeeders().encodeABI(),
         priceFeeder.address
