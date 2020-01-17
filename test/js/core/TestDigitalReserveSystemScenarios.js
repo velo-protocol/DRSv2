@@ -129,5 +129,16 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(vUSDStableCredit.address), 16076923 + 16076922 - 20899999 + 1); // actualCollateralAmount '1' from rebalance error
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(reserveManager.address), 4823077 + 4823077 - 1); // reserveCollateralAmount '1' from rebalance error
 
+    // 6. Test drs.collateralHealthCheck
+    let healthCheckResult = await drs.collateralHealthCheck("vUSD");
+    healthCheckResult = {
+      collateralAssetCode: healthCheckResult['0'],
+      requiredAmount: healthCheckResult['1'],
+      presentAmount: healthCheckResult['2']
+    };
+    h.assert.equalByteString(healthCheckResult.collateralAssetCode, velo);
+    h.assert.equalNumber(healthCheckResult.requiredAmount.toString(), 160769230 * 1 / 10); // vUSD balance * peggedValue / price
+    h.assert.equalNumber(healthCheckResult.presentAmount.toString(), 16076923 + 16076922 - 20899999 + 1);
+
   });
 });
