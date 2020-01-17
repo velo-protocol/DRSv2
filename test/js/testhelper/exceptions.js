@@ -1,4 +1,5 @@
-const PREFIX = "VM Exception while processing transaction: ";
+const ALREADY_INTHELIST_ERROR = 
+    "Returned error: VM Exception while processing transaction: revert addr is already in the list -- Reason given: addr is already in the list.";
 
 async function tryCatch(promise, message) {
     try {
@@ -7,7 +8,10 @@ async function tryCatch(promise, message) {
     }
     catch (error) {
         assert(error, "Expected an error but did not get one");
-        assert(error.message.startsWith(PREFIX + message), "Expected an error starting with '" + PREFIX + message + "' but got '" + error.message + "' instead");
+        assert(
+            error.message === ALREADY_INTHELIST_ERROR, 
+            "Expected an error message: '" + ALREADY_INTHELIST_ERROR + "' but got '" + error.message + "' instead",
+            );
     }
 };
 
