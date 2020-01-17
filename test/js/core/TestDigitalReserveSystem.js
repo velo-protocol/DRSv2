@@ -1000,14 +1000,6 @@ contract("DigitalReserveSystem test", async accounts => {
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
         stableCreditVUSD.address
       );
-      await mocks.stableCreditvUSD.givenMethodReturnAddress(
-        stableCreditVUSD.contract.methods.collateral().encodeABI(),
-        veloCollateralAsset.address
-      );
-      await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
-        veloCollateralAsset.address
-      );
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getPriceFeeders().encodeABI(),
         priceFeeder.address
@@ -1020,7 +1012,7 @@ contract("DigitalReserveSystem test", async accounts => {
       try {
         await drs.collateralHealthCheck("vUSD", "VELO");
       } catch (err) {
-        assert.equal("DigitalReserveSystem.collateralHealthCheck: collateralAssetCode does not exist1", err.reason)
+        assert.equal("Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.collateralHealthCheck: collateralAssetCode does not exist", err)
       }
     });
   });
