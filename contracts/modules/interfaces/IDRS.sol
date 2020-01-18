@@ -19,17 +19,19 @@ interface IDRS {
     ) external payable returns (bool);
 
     function redeem(
-        address creditOwner,
         uint256 amount,
         string calldata assetCode
     ) external returns (bool);
 
     function rebalance(
-        address creditOwner,
         string calldata assetCode
     ) external returns (bool);
 
     function getExchange(
         string calldata assetCode
     ) external view returns (string memory, bytes32, uint256);
+
+    function collateralHealthCheck(
+        string calldata assetCode
+    ) external view returns (bytes32, uint256, uint256);
 }

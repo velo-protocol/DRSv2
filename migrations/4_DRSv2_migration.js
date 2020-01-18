@@ -35,21 +35,23 @@ module.exports = async function (deployer, network, accounts) {
         const veloToken = await Token.deployed();
         await veloToken.mint(adminAddress, 10000000000000);
 
-        const veloTokenAscii = Web3.utils.fromAscii("VELO");
-        const usdAscii = Web3.utils.fromAscii("USD");
+        const veloBytes32 = Web3.utils.fromAscii("VELO");
+        const usdBytes32 = Web3.utils.fromAscii("USD");
 
         console.log("Setting up Price Feeder for VELO");
-        await priceFeedersInstance.setAsset(veloTokenAscii, veloToken.address);
-        await priceFeedersInstance.addAssetFiat(veloTokenAscii, usdAscii);
-        await priceFeedersInstance.addPriceFeeder(veloTokenAscii, usdAscii, adminAddress);
-        await priceFeedersInstance.setPrice(veloTokenAscii, usdAscii, 10000000);
+        await priceFeedersInstance.setAsset(veloBytes32, veloToken.address);
+        await priceFeedersInstance.addAssetFiat(veloBytes32, usdBytes32);
+        await priceFeedersInstance.addPriceFeeder(veloBytes32, usdBytes32, adminAddress);
+        await priceFeedersInstance.setPrice(veloBytes32, usdBytes32, 100000000); // 10 USD/VELO
 
         console.log("Set Collateral assets");
-        await heartInstance.setCollateralAsset(veloTokenAscii, veloToken.address, 100);
+        await heartInstance.setCollateralAsset(veloBytes32, veloToken.address, 13000000); // 1.3
         await heartInstance.setTrustedPartner(adminAddress);
-        await heartInstance.setAllowedLink(await hasher.linkId(veloTokenAscii, usdAscii), true);
+        await heartInstance.setCreditIssuanceFee(500000);  // 0.05 (5%)
+        await heartInstance.setAllowedLink(await hasher.linkId(veloBytes32, usdBytes32), true);
 
         console.log("Approve DRS to spend VELO");
         await veloToken.approve(drsInstance.address, 10000000000);
     }
 };
+
