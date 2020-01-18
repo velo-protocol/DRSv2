@@ -2,21 +2,27 @@ const TestLLrevert = artifacts.require("TestLLrevert");
 
 contract("LL", async accounts => {
     let testLLrevert;
-    let item2 = accounts[0];
     let catchRevert = require("../testhelper/exceptions.js").catchRevert;
   
     beforeEach(async () => {
         testLLrevert = await TestLLrevert.new(accounts);
+        testLLrevert.initLL();
     });
 
     describe("TestLL and LL contract, assertion revert test:", function() {
-        before(async function() {
-            testLLrevert = await TestLLrevert.new();
+        it("should fail with revert", async function() {
+            // expected error messsage "addr is already in the list"
+            await catchRevert(testLLrevert.testDupAddRevert());
         });
 
-        it("should abort with an revert", async function() {
-            // should fail with revert messsage "addr is already in the list"
-            await catchRevert(testLLrevert.testRevert());
+        it("should fail with revert", async function() {
+            // expected error messsage "addr not whitelisted yet."
+            await catchRevert(testLLrevert.testRemoveNoExistRevert());
+        });
+
+        it("should fail with revert", async function() {
+            // expected error messsage "wrong prevConsumer."
+            await catchRevert(testLLrevert.testRemoveNoExistRevert());
         });
     });
 });
