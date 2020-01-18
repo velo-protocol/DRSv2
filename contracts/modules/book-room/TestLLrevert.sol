@@ -23,6 +23,7 @@ contract TestLLrevert {
     }
 
     function testRemoveWrongPreRevert() public {
-        cats = cats.remove(CAT1, CAT2);
+        cats = cats.add(CAT2);
+        cats = cats.remove(CAT2, CAT1);
     }
 }
