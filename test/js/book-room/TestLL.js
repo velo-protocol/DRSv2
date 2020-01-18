@@ -22,7 +22,7 @@ contract("LL", async accounts => {
 
         it("should fail with revert", async function() {
             // expected error messsage "wrong prevConsumer."
-            await catchRevert(testLLrevert.testRemoveNoExistRevert());
+            await catchRevert(testLLrevert.testRemoveWrongPreRevert());
         });
     });
 });
