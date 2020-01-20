@@ -34,6 +34,13 @@ contract DigitalReserveSystem is IDRS {
         uint256 collateralAmount
     );
 
+    event Rebalance(
+        string assetCode,
+        bytes32 indexed collateralAssetCode,
+        uint256 requiredAmount,
+        uint256 presentAmount
+    );
+
     modifier onlyTrustedPartner() {
         require(heart.isTrustedPartner(msg.sender), "DigitalReserveSystem.onlyTrustedPartner: caller must be a trusted partner");
         _;
@@ -184,7 +191,7 @@ contract DigitalReserveSystem is IDRS {
         require(bytes(assetCode).length > 0 && bytes(assetCode).length <= 12, "DigitalReserveSystem.redeem: invalid assetCode format");
 
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
-        require(address(collateralAsset) != address(0), "DigitalReserveSystem.collateralHealthCheck: collateralAssetCode does not exist");
+        require(address(collateralAsset) != address(0), "DigitalReserveSystem.redeem: collateralAssetCode does not exist");
 
         _rebalance(assetCode);
 
@@ -209,7 +216,7 @@ contract DigitalReserveSystem is IDRS {
 
     function rebalance(
         string calldata assetCode
-    ) external returns (bool) {
+    ) external payable returns (bool) {
         return _rebalance(assetCode);
     }
 
@@ -242,20 +249,30 @@ contract DigitalReserveSystem is IDRS {
     function _rebalance(
         string memory assetCode
     ) private returns (bool) {
+        require(bytes(assetCode).length > 0 && bytes(assetCode).length <= 12, "DigitalReserveSystem.rebalance: invalid assetCode format");
 
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
+        require(address(collateralAsset) != address(0), "DigitalReserveSystem.rebalance: collateralAssetCode does not exist");
 
-        uint256 requireCollateralAmount = _calCollateral(stableCredit, linkId, stableCredit.totalSupply());
+        uint256 requiredAmount = _calCollateral(stableCredit, linkId, stableCredit.totalSupply());
+        uint256 presentAmount = stableCredit.collateral().balanceOf(address(stableCredit));
+
+        require(requiredAmount != presentAmount, "DigitalReserveSystem.rebalance: rebalance is not required");
 
         IRM reserveManager = heart.getReserveManager();
 
-        uint256 presentAmount = collateralAsset.balanceOf(address(stableCredit));
-
-        if (requireCollateralAmount >= presentAmount) {
-            reserveManager.injectCollateral(collateralAssetCode, address(stableCredit), requireCollateralAmount.sub(presentAmount));
+        if (requiredAmount > presentAmount) {
+            reserveManager.injectCollateral(collateralAssetCode, address(stableCredit), requiredAmount.sub(presentAmount));
         } else {
-            heart.getCollateralAsset(collateralAssetCode).transferFrom(address(stableCredit), address(reserveManager), presentAmount.sub(requireCollateralAmount));
+            heart.getCollateralAsset(collateralAssetCode).transferFrom(address(stableCredit), address(reserveManager), presentAmount.sub(requiredAmount));
         }
+
+        emit Rebalance(
+            assetCode,
+            collateralAssetCode,
+            requiredAmount,
+            presentAmount
+        );
 
         return true;
     }
@@ -323,13 +340,5 @@ contract DigitalReserveSystem is IDRS {
         // priceInCollateralPerAssetUnit = (collateralRatio * peggedValue) / priceInCurrencyPerAssetUnit
         uint256 priceInCollateralPerAssetUnit = heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()).div(heart.getPriceFeeders().getMedianPrice(linkId));
         return (priceInCollateralPerAssetUnit);
-    }
-
-    function collateralOf(address creditOwner, string calldata assetCode) external view returns (uint256, address) {
-        return heart.getStableCreditById(getStableCreditId(assetCode)).getCollateralDetail();
-    }
-
-    function getStableCreditId(string memory assetCode) private pure returns (bytes32) {
-        return keccak256(abi.encodePacked(assetCode));
     }
 }

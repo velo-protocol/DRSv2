@@ -115,12 +115,12 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
 
     // 5. Test drs.redeem
     const redeemResult = await drs.redeem(160769230, "vUSD", {from: bob});
-    const redeemSEvent = redeemResult.logs[0].args;
-    assert.equal(redeemSEvent.assetCode, "vUSD");
-    h.assert.equalNumber(redeemSEvent.stableCreditAmount, 160769230);
-    assert.equal(redeemSEvent.collateralAsset, veloCollateralAsset.assetAddress);
-    h.assert.equalByteString(redeemSEvent.collateralAssetCode, velo);
-    h.assert.equalNumber(redeemSEvent.collateralAmount, 20899999);
+    const redeemEvent = redeemResult.logs[1].args;
+    assert.equal(redeemEvent.assetCode, "vUSD");
+    h.assert.equalNumber(redeemEvent.stableCreditAmount, 160769230);
+    assert.equal(redeemEvent.collateralAsset, veloCollateralAsset.assetAddress);
+    h.assert.equalByteString(redeemEvent.collateralAssetCode, velo);
+    h.assert.equalNumber(redeemEvent.collateralAmount, 20899999);
 
     // Assert the credit that has been redeemed
     // Noted that there is little calculation error
@@ -139,6 +139,14 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
     h.assert.equalByteString(healthCheckResult.collateralAssetCode, velo);
     h.assert.equalNumber(healthCheckResult.requiredAmount.toString(), 160769230 * 1 / 10); // vUSD balance * peggedValue / price
     h.assert.equalNumber(healthCheckResult.presentAmount.toString(), 16076923 + 16076922 - 20899999 + 1);
+
+    // 7. Test drs.rebalance
+    const rebalanceResult = await drs.rebalance("vUSD");
+    const rebalanceEvent = rebalanceResult.logs[0].args;
+    h.assert.equalString(rebalanceEvent.assetCode, "vUSD");
+    h.assert.equalByteString(rebalanceEvent.collateralAssetCode, velo);
+    h.assert.equalNumber(rebalanceEvent.requiredAmount.toString(), 160769230 * 1 / 10); // vUSD balance * peggedValue / price
+    h.assert.equalNumber(rebalanceEvent.presentAmount.toString(), 16076923 + 16076922 - 20899999 + 1);
 
   });
 });

@@ -17,6 +17,9 @@ module.exports = {
       const bytesLength = actualBytes.length - 2;
       assert.equal(actualBytes, web3.utils.padRight(web3.utils.utf8ToHex(expectedString), bytesLength));
     },
+    equalString(actualString, expectedString) {
+      assert.equal(actualString, expectedString);
+    },
     equalNumber(actualNumber, expectedNumber) {
       assert.equal(actualNumber.toString(), expectedNumber.toString());
     },
