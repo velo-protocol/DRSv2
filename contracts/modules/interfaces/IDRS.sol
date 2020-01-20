@@ -25,7 +25,7 @@ interface IDRS {
 
     function rebalance(
         string calldata assetCode
-    ) external returns (bool);
+    ) external payable returns (bool);
 
     function getExchange(
         string calldata assetCode

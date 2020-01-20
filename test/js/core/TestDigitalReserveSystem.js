@@ -760,6 +760,24 @@ contract("DigitalReserveSystem test", async accounts => {
         assert.equal("DigitalReserveSystem._validateAssetCode: collateralAsset must be the same", err.reason)
       }
     });
+    it("should fail, collateralAssetCode does not exist", async () => {
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCreditVUSD.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
+      );
+      await mocks.priceFeeder.givenMethodReturnUint(
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
+      );
+
+      await helper.assert.throwsWithReason(async () => {
+        await drs.redeem(10000000, "vTHB")
+      }, 'DigitalReserveSystem.redeem: collateralAssetCode does not exist');
+    });
     it("should fail, price of link must have value more than 0", async () => {
 
       await mocks.heart.givenMethodReturnAddress(
@@ -991,6 +1009,161 @@ contract("DigitalReserveSystem test", async accounts => {
       await helper.assert.throwsWithMessage(async () => {
          await drs.collateralHealthCheck("vUSD");
       }, 'Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.collateralHealthCheck: collateralAssetCode does not exist');
+    });
+  });
+
+  describe("Rebalance", async () => {
+    it("should fail, balance of collateral have been equal none require a rebalance", async () => {
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCreditVUSD.address
+      );
+      await mocks.stableCreditvUSD.givenMethodReturn(
+        stableCreditVUSD.contract.methods.collateralAssetCode().encodeABI(),
+        '0x' + abi.rawEncode(['bytes32'], ['VELO']).toString("hex")
+      );
+      await mocks.stableCreditvUSD.givenMethodReturnAddress(
+        stableCreditVUSD.contract.methods.collateral().encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.stableCreditvUSD.givenMethodReturnUint(
+        stableCreditVUSD.contract.methods.totalSupply().encodeABI(),
+        100000000
+      );
+      await mocks.stableCreditvUSD.givenMethodReturnUint(
+        stableCreditVUSD.contract.methods.peggedValue().encodeABI(),
+        15000000
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.veloCollateralAsset.givenMethodReturnUint(
+        veloCollateralAsset.contract.methods.balanceOf(stableCreditVUSD.address).encodeABI(),
+        100000000
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
+      );
+      await mocks.priceFeeder.givenMethodReturnUint(
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getReserveManager().encodeABI(),
+        reserveManager.address
+      );
+
+      const result = await drs.rebalance("vUSD");
+      truffleAssert.eventEmitted(result, 'Rebalance',  event => {
+        const BN = web3.utils.BN;
+        const eventRequiredAmount = new BN(event.requiredAmount).toNumber();
+        const eventPresentAmount = new BN(event.presentAmount).toNumber();
+        return event.assetCode === "vUSD"
+          && web3.utils.hexToUtf8(event.collateralAssetCode) === 'VELO'
+          && eventRequiredAmount === 150000000
+          && eventPresentAmount === 100000000
+      }, 'contract should emit the event correctly');
+    });
+
+    it("should fail, invalid assetCode format", async () => {
+      const expectedErr = "DigitalReserveSystem.rebalance: invalid assetCode format";
+
+      await helper.assert.throwsWithReason(async () => {
+        await drs.rebalance("");
+      }, expectedErr);
+
+      await helper.assert.throwsWithReason(async () => {
+        await drs.rebalance("vTHBBBBBBBBBB");
+      }, expectedErr);
+    });
+
+    it("should fail, stableCredit not exist", async () => {
+      await helper.assert.throwsWithReason(async () => {
+        await drs.rebalance("vUSD");
+      }, 'DigitalReserveSystem._validateAssetCode: stableCredit not exist');
+    });
+
+    it("should fail, collateralAsset must be the same", async () => {
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        otherCollateralAsset.address
+      );
+
+      await helper.assert.throwsWithReason(async () => {
+        await drs.rebalance("vUSD");
+      }, 'DigitalReserveSystem._validateAssetCode: collateralAsset must be the same');
+    });
+
+    it("should fail, collateralAssetCode does not exist", async () => {
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCreditVUSD.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
+      );
+      await mocks.priceFeeder.givenMethodReturnUint(
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
+      );
+
+      await helper.assert.throwsWithReason(async () => {
+        await drs.rebalance("vUSD");
+      }, 'DigitalReserveSystem.rebalance: collateralAssetCode does not exist');
+    });
+
+    it("should fail, balance of collateral have been equal none require a rebalance", async () => {
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCreditVUSD.address
+      );
+      await mocks.stableCreditvUSD.givenMethodReturn(
+        stableCreditVUSD.contract.methods.collateralAssetCode().encodeABI(),
+        '0x' + abi.rawEncode(['bytes32'], ['VELO']).toString("hex")
+      );
+      await mocks.stableCreditvUSD.givenMethodReturnAddress(
+        stableCreditVUSD.contract.methods.collateral().encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.stableCreditvUSD.givenMethodReturnUint(
+        stableCreditVUSD.contract.methods.totalSupply().encodeABI(),
+        100000000
+      );
+      await mocks.stableCreditvUSD.givenMethodReturnUint(
+        stableCreditVUSD.contract.methods.peggedValue().encodeABI(),
+        15000000
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.veloCollateralAsset.givenMethodReturnUint(
+        veloCollateralAsset.contract.methods.balanceOf(stableCreditVUSD.address).encodeABI(),
+        150000000
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
+      );
+      await mocks.priceFeeder.givenMethodReturnUint(
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getReserveManager().encodeABI(),
+        reserveManager.address
+      );
+
+      await helper.assert.throwsWithReason(async () => {
+        await drs.rebalance("vUSD");
+      }, 'DigitalReserveSystem.rebalance: rebalance is not required');
     });
   });
 });
