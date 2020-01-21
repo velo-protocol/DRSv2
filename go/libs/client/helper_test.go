@@ -15,6 +15,7 @@ import (
 const (
 	drsAddress            = "0x0000000000000000000000000000000000000001"
 	heartAddress          = "0x0000000000000000000000000000000000000002"
+	governorAddress       = "0x0000000000000000000000000000000000000003"
 	trustedPartnerAddress = "0x50637DeE3598e080B7B605B00f4FfC721046E4E0"
 	invalidAddress        = "GD4K"
 

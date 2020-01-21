@@ -4,22 +4,38 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/pkg/errors"
+	"github.com/velo-protocol/DRSv2/go/constants"
 )
 
-// TODO: implement correctly
 type WhitelistGovernorInput struct {
-}
-
-func (i *WhitelistGovernorInput) Validate() error {
-	return nil
-}
-
-func (i *WhitelistGovernorInput) ToAbiInput() common.Address {
-	return common.Address{}
+	Address string
 }
 
 type WhitelistGovernorOutput struct {
 	Tx *types.Transaction
+}
+
+type WhitelistGovernorAbiInput struct {
+	Address common.Address
+}
+
+func (i *WhitelistGovernorInput) Validate() error {
+	if len(i.Address) == 0 {
+		return errors.New("address must not be blank")
+	}
+
+	if !common.IsHexAddress(i.Address) {
+		return errors.New("invalid address format")
+	}
+
+	return nil
+}
+
+func (i *WhitelistGovernorInput) ToAbiInput() WhitelistGovernorAbiInput {
+	return WhitelistGovernorAbiInput{
+		Address: common.HexToAddress(i.Address),
+	}
 }
 
 func (c *Client) WhitelistGovernor(input *WhitelistGovernorInput) (*WhitelistGovernorOutput, error) {
@@ -29,7 +45,8 @@ func (c *Client) WhitelistGovernor(input *WhitelistGovernorInput) (*WhitelistGov
 	}
 
 	opt := bind.NewKeyedTransactor(&c.privateKey)
-	tx, err := c.Heart().SetGovernor(opt, input.ToAbiInput())
+	opt.GasLimit = constants.GasLimit
+	tx, err := c.Heart().SetGovernor(opt, input.ToAbiInput().Address)
 	if err != nil {
 		return nil, err
 	}
