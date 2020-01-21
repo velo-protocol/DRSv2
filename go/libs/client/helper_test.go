@@ -37,9 +37,10 @@ type TestHelper struct {
 	HeartContract  *vabi.Heart
 	GenesisAccount *bind.TransactOpts
 	Conn           *backends.SimulatedBackend
+	Client         *Client
 }
 
-func GetDrsDeployContract() TestHelper {
+func GetDrsDeployContract() *TestHelper {
 	genesisAccount := GetAuth(privateKey1)
 	auth2 := GetAuth(privateKey2)
 	alloc := make(core.GenesisAlloc)
@@ -70,12 +71,19 @@ func GetDrsDeployContract() TestHelper {
 	)
 
 	conn.Commit()
-	return TestHelper{
+
+	client, _ := NewClientWithEthClient(conn, privateKey1, ContractAddress{
+		DRS:   drsAddress.String(),
+		Heart: heartAddress.String(),
+	})
+
+	return &TestHelper{
 		DrsAddress:     drsAddress,
 		DrsContract:    drsContract,
 		HeartAddress:   heartAddress,
 		HeartContract:  heartContract,
 		GenesisAccount: genesisAccount,
 		Conn:           conn,
+		Client:         client,
 	}
 }
