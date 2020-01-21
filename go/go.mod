@@ -1,4 +1,4 @@
-module github.com/velo-protocol/DRSv2-go
+module github.com/velo-protocol/DRSv2/go
 
 go 1.12
 

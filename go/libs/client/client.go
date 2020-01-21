@@ -6,7 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/pkg/errors"
-	"github.com/velo-protocol/DRSv2-go/abi"
+	"github.com/velo-protocol/DRSv2/go/abi"
 )
 
 // Client struct
