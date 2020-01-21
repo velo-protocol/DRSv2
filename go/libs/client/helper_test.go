@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/velo-protocol/DRSv2/go/abi"
+	"github.com/velo-protocol/DRSv2/go/constants"
 	"log"
 	"math/big"
 )
@@ -21,13 +22,14 @@ const (
 	privateKey2 = "2e8b8b7fccb7fa535857a6edf74d72fd389fb4b88d877ed57a1fdbeaac1d6862"
 )
 
-func GetAuth(hexPrivateKey string) *bind.TransactOpts {
+func getOpts(hexPrivateKey string) *bind.TransactOpts {
 	privateKey, err := crypto.HexToECDSA(hexPrivateKey)
 	if err != nil {
 		log.Fatalf("hex private key :%s is not support", hexPrivateKey)
 	}
-	auth := bind.NewKeyedTransactor(privateKey)
-	return auth
+	opts := bind.NewKeyedTransactor(privateKey)
+	opts.GasLimit = constants.GasLimit
+	return opts
 }
 
 type TestHelper struct {
@@ -40,13 +42,13 @@ type TestHelper struct {
 	Client         *Client
 }
 
-func GetDrsDeployContract() *TestHelper {
-	genesisAccount := GetAuth(privateKey1)
-	auth2 := GetAuth(privateKey2)
+func testHelper() *TestHelper {
+	opts := getOpts(privateKey1)
+	opts2 := getOpts(privateKey2)
 	alloc := make(core.GenesisAlloc)
-	blockGasLimit := uint64(4700000)
-	address1 := genesisAccount.From
-	address2 := auth2.From
+	blockGasLimit := uint64(constants.GasLimit)
+	address1 := opts.From
+	address2 := opts2.From
 	alloc = map[common.Address]core.GenesisAccount{
 		address1: {
 			Balance: big.NewInt(1000000000000000000),
@@ -59,13 +61,14 @@ func GetDrsDeployContract() *TestHelper {
 
 	//Deploy Heart contract
 	heartAddress, _, heartContract, _ := vabi.DeployHeart(
-		genesisAccount,
+		opts,
 		conn,
 	)
+	conn.Commit()
 
 	//Deploy DigitalReserveSystem contract
 	drsAddress, _, drsContract, _ := vabi.DeployDigitalReserveSystem(
-		genesisAccount,
+		opts,
 		conn,
 		heartAddress,
 	)
@@ -82,7 +85,7 @@ func GetDrsDeployContract() *TestHelper {
 		DrsContract:    drsContract,
 		HeartAddress:   heartAddress,
 		HeartContract:  heartContract,
-		GenesisAccount: genesisAccount,
+		GenesisAccount: opts,
 		Conn:           conn,
 		Client:         client,
 	}

@@ -1,5 +1,5 @@
 package constants
 
 const (
-	GasLimit = 4700000
+	GasLimit = 8000000
 )
