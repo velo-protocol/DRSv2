@@ -12,17 +12,17 @@ contract("LL", async accounts => {
     describe("TestLL and LL contract, assertion revert test:", function() {
         it("should fail with revert", async function() {
             // expected error messsage "addr is already in the list"
-            await catchRevert(testLLrevert.testDupAddRevert());
+            await catchRevert(testLLrevert.llDupAddRevert());
         });
 
         it("should fail with revert", async function() {
             // expected error messsage "addr not whitelisted yet."
-            await catchRevert(testLLrevert.testRemoveNoExistRevert());
+            await catchRevert(testLLrevert.llRemoveNoExistRevert());
         });
 
         it("should fail with revert", async function() {
             // expected error messsage "wrong prevConsumer."
-            await catchRevert(testLLrevert.testRemoveWrongPreRevert());
+            await catchRevert(testLLrevert.llRemoveWrongPreRevert());
         });
     });
 });

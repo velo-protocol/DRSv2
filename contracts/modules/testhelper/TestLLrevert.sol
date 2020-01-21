@@ -13,16 +13,16 @@ contract TestLLrevert {
         cats = cats.init();
     }
 
-    function testDupAddRevert() public {
+    function llDupAddRevert() public {
         cats = cats.add(CAT1);
         cats = cats.add(CAT1);
     }
 
-    function testRemoveNoExistRevert() public {
+    function llRemoveNoExistRevert() public {
         cats = cats.remove(CAT2, CAT1);
     }
 
-    function testRemoveWrongPreRevert() public {
+    function llRemoveWrongPreRevert() public {
         cats = cats.add(CAT2);
         cats = cats.remove(CAT2, CAT1);
     }
