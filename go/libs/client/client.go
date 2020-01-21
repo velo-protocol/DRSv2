@@ -2,6 +2,7 @@ package client
 
 import (
 	"crypto/ecdsa"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -13,7 +14,7 @@ import (
 type Client struct {
 	rpcUrl          string
 	privateKey      ecdsa.PrivateKey
-	conn            *ethclient.Client
+	conn            bind.ContractBackend
 	contractAddress ContractAddress
 
 	// Contracts
@@ -44,6 +45,24 @@ func NewClient(rpcUrl string, privateKey string, contractAddress ContractAddress
 
 	return &Client{
 		rpcUrl:          rpcUrl,
+		privateKey:      *privKey,
+		conn:            conn,
+		contractAddress: contractAddress,
+	}, nil
+}
+
+func NewClientWithEthClient(conn bind.ContractBackend, privateKey string, contractAddress ContractAddress) (*Client, error) {
+	privKey, err := crypto.HexToECDSA(privateKey)
+	if err != nil {
+		return nil, errors.Wrap(err, "invalid private key format")
+	}
+
+	err = validateContractAddress(contractAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Client{
 		privateKey:      *privKey,
 		conn:            conn,
 		contractAddress: contractAddress,
