@@ -35,15 +35,9 @@ func TestClient_WhitelistTrustedPartner(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		whitelistTrustedPartnerInput := &WhitelistTrustedPartnerInput{Address: trustedPartnerAddress}
 
-		testHelper := GetDrsDeployContract()
+		testHelper := testHelper()
 
-		client, err := NewClientWithEthClient(testHelper.Conn, privateKey1, ContractAddress{
-			DRS:   testHelper.DrsAddress.String(),
-			Heart: testHelper.HeartAddress.String(),
-		})
-		assert.NoError(t, err)
-
-		result, err := client.WhitelistTrustedPartner(whitelistTrustedPartnerInput)
+		result, err := testHelper.Client.WhitelistTrustedPartner(whitelistTrustedPartnerInput)
 		assert.NoError(t, err)
 		assert.NotEmpty(t, result)
 		assert.NotEmpty(t, result.Tx.Hash())
@@ -52,15 +46,9 @@ func TestClient_WhitelistTrustedPartner(t *testing.T) {
 	t.Run("error, validation fail", func(t *testing.T) {
 		whitelistTrustedPartnerInput := &WhitelistTrustedPartnerInput{Address: invalidAddress}
 
-		testHelper := GetDrsDeployContract()
+		testHelper := testHelper()
 
-		client, err := NewClientWithEthClient(testHelper.Conn, privateKey1, ContractAddress{
-			DRS:   testHelper.DrsAddress.String(),
-			Heart: testHelper.HeartAddress.String(),
-		})
-		assert.NoError(t, err)
-
-		result, err := client.WhitelistTrustedPartner(whitelistTrustedPartnerInput)
+		result, err := testHelper.Client.WhitelistTrustedPartner(whitelistTrustedPartnerInput)
 		assert.Error(t, err)
 		assert.Empty(t, result)
 		assert.Equal(t, "invalid address format", err.Error())
