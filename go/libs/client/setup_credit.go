@@ -33,7 +33,7 @@ func (i *SetupCreditInput) Validate() error {
 		return errors.Wrap(err, "invalid peggedValue format")
 	}
 	if !peggedValue.IsPositive() {
-		return errors.Wrap(err, "peggedValue must be positive")
+		return errors.New("peggedValue must be positive")
 	}
 
 	return nil
@@ -67,8 +67,10 @@ func (c *Client) SetupCredit(input *SetupCreditInput) (*SetupCreditOutput, error
 	}
 
 	abiInput := input.ToAbiInput()
+	opt := bind.NewKeyedTransactor(&c.privateKey)
+	opt.GasLimit = 470000
 	tx, err := c.DRS().Setup(
-		bind.NewKeyedTransactor(&c.privateKey),
+		opt,
 		abiInput.CollateralAssetCode,
 		abiInput.PeggedCurrency,
 		abiInput.AssetCode,
