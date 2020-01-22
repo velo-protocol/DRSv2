@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
+	"github.com/velo-protocol/DRSv2/go/constants"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"math/big"
 	"regexp"
@@ -68,7 +69,7 @@ func (c *Client) SetupCredit(input *SetupCreditInput) (*SetupCreditOutput, error
 
 	abiInput := input.ToAbiInput()
 	opt := bind.NewKeyedTransactor(&c.privateKey)
-	opt.GasLimit = 470000
+	opt.GasLimit = constants.GasLimit
 	tx, err := c.DRS().Setup(
 		opt,
 		abiInput.CollateralAssetCode,
