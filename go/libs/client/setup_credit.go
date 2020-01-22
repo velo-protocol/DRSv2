@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
+	"github.com/velo-protocol/DRSv2/go/constants"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"math/big"
 	"regexp"
@@ -33,7 +34,7 @@ func (i *SetupCreditInput) Validate() error {
 		return errors.Wrap(err, "invalid peggedValue format")
 	}
 	if !peggedValue.IsPositive() {
-		return errors.Wrap(err, "peggedValue must be positive")
+		return errors.New("peggedValue must be positive")
 	}
 
 	return nil
@@ -67,8 +68,10 @@ func (c *Client) SetupCredit(input *SetupCreditInput) (*SetupCreditOutput, error
 	}
 
 	abiInput := input.ToAbiInput()
+	opt := bind.NewKeyedTransactor(&c.privateKey)
+	opt.GasLimit = constants.GasLimit
 	tx, err := c.DRS().Setup(
-		bind.NewKeyedTransactor(&c.privateKey),
+		opt,
 		abiInput.CollateralAssetCode,
 		abiInput.PeggedCurrency,
 		abiInput.AssetCode,
