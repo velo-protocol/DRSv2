@@ -1,4 +1,4 @@
-package client
+package vclient
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -34,7 +34,7 @@ func TestValidateWhitelistGovernorToAbiInput(t *testing.T) {
 
 func TestWhitelistGovernor(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		mockContract :=  testHelper()
+		mockContract := testHelper()
 
 		tx, err := mockContract.Client.WhitelistGovernor(&WhitelistGovernorInput{Address: governorAddress})
 

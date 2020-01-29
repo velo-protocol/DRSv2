@@ -1,10 +1,11 @@
-package client
+package vclient
 
 import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
+	vabi "github.com/velo-protocol/DRSv2/go/abi"
 	"github.com/velo-protocol/DRSv2/go/constants"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"math/big"
@@ -58,7 +59,9 @@ func (i *SetupCreditInput) ToAbiInput() *SetupCreditAbiInput {
 }
 
 type SetupCreditOutput struct {
-	Tx *types.Transaction
+	Tx      *types.Transaction
+	Receipt *types.Receipt
+	Event   *vabi.DigitalReserveSystemSetup
 }
 
 func (c *Client) SetupCredit(input *SetupCreditInput) (*SetupCreditOutput, error) {
@@ -81,7 +84,20 @@ func (c *Client) SetupCredit(input *SetupCreditInput) (*SetupCreditOutput, error
 		return nil, err
 	}
 
+	receipt, err := c.ConfirmTx(tx)
+	if err != nil {
+		return nil, err
+	}
+
+	event := new(vabi.DigitalReserveSystemSetup)
+	err = c.DRSAbi().Unpack(event, "Setup", receipt.Logs[0].Data)
+	if err != nil {
+		return nil, errors.Wrap(err, "fail to read event log")
+	}
+
 	return &SetupCreditOutput{
-		Tx: tx,
+		Tx:      tx,
+		Receipt: receipt,
+		Event:   event,
 	}, nil
 }
