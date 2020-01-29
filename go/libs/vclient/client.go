@@ -1,4 +1,4 @@
-package client
+package vclient
 
 import (
 	"crypto/ecdsa"

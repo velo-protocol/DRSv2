@@ -1,11 +1,10 @@
-package client
+package vclient
 
 import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
-	"github.com/velo-protocol/DRSv2/go/constants"
 )
 
 type WhitelistTrustedPartnerInput struct {
@@ -41,7 +40,7 @@ func (c *Client) WhitelistTrustedPartner(input *WhitelistTrustedPartnerInput) (*
 	}
 
 	opt := bind.NewKeyedTransactor(&c.privateKey)
-	opt.GasLimit = constants.GasLimit
+	opt.GasLimit = 5000000
 	tx, err := c.Heart().SetTrustedPartner(opt, input.ToAbiInput().Address)
 	if err != nil {
 		return nil, err
