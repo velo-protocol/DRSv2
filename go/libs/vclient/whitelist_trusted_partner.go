@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
+	"github.com/velo-protocol/DRSv2/go/constants"
 )
 
 type WhitelistTrustedPartnerInput struct {
@@ -40,7 +41,7 @@ func (c *Client) WhitelistTrustedPartner(input *WhitelistTrustedPartnerInput) (*
 	}
 
 	opt := bind.NewKeyedTransactor(&c.privateKey)
-	opt.GasLimit = 5000000
+	opt.GasLimit = constants.GasLimit
 	tx, err := c.Heart().SetTrustedPartner(opt, input.ToAbiInput().Address)
 	if err != nil {
 		return nil, err
