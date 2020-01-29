@@ -1,4 +1,4 @@
-package client
+package vclient
 
 import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -19,7 +19,7 @@ const (
 	trustedPartnerAddress = "0x50637DeE3598e080B7B605B00f4FfC721046E4E0"
 	invalidAddress        = "GD4K"
 
-	privateKey1 = "6d71af6c908ff8b618825926f1004431915faf9b66238c30af9f86438d2bcd89"
+	privateKey1 = "da17d295e2fd005747cca4de855bbb0493f2e0669753bba1e752700dbad4c78c"
 	privateKey2 = "2e8b8b7fccb7fa535857a6edf74d72fd389fb4b88d877ed57a1fdbeaac1d6862"
 )
 

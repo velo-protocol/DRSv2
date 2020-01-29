@@ -1,4 +1,4 @@
-package client
+package vclient
 
 import (
 	"github.com/ethereum/go-ethereum/common"
