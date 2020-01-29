@@ -17,7 +17,7 @@ ci_test:
 
 mockgen/all:
 	mockgen \
-		-source=./libs/client/interface.go \
-		-destination=./libs/client/mocks/mocked_interfaces.go \
+		-source=./libs/vclient/interface.go \
+		-destination=./libs/vclient/mocks/mocked_interfaces.go \
 		-package mocks \
 		-mock_names Connection=MockConnection,DRSContract=MockDRSContract,HeartContract=MockHeartContract,TxHelper=MockTxHelper

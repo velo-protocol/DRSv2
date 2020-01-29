@@ -24,8 +24,8 @@ const (
 	trustedPartnerAddress = "0x50637DeE3598e080B7B605B00f4FfC721046E4E0"
 	invalidAddress        = "GD4K"
 
-	privateKey1 = "da17d295e2fd005747cca4de855bbb0493f2e0669753bba1e752700dbad4c78c"
-	privateKey2 = "2e8b8b7fccb7fa535857a6edf74d72fd389fb4b88d877ed57a1fdbeaac1d6862"
+	privateKey1 = "b673aace6739646820330920307288260703487da63525f944c96039931d8ed2"
+	privateKey2 = "db6ff87a7f34725eb41dd61e3f6a93bee738bf561c8642efff20d0b4d09d507f"
 )
 
 func getOpts(hexPrivateKey string) *bind.TransactOpts {
@@ -38,12 +38,21 @@ func getOpts(hexPrivateKey string) *bind.TransactOpts {
 	return opts
 }
 
+func getCallOpts() *bind.CallOpts {
+	opts := &bind.CallOpts{
+		Pending: true,
+		From:    common.HexToAddress("b673aace6739646820330920307288260703487da63525f944c96039931d8ed2"),
+	}
+	return opts
+}
+
 type TestHelper struct {
 	DrsAddress     common.Address
 	DrsContract    *vabi.DigitalReserveSystem
 	HeartAddress   common.Address
 	HeartContract  *vabi.Heart
 	GenesisAccount *bind.TransactOpts
+	CallOpts       *bind.CallOpts
 	Conn           *backends.SimulatedBackend
 	Client         *Client
 	TxHelper       *txHelper
@@ -58,15 +67,20 @@ type TestHelper struct {
 func testHelper(t *testing.T) *TestHelper {
 	opts := getOpts(privateKey1)
 	opts2 := getOpts(privateKey2)
+	opts3 := getCallOpts()
 	alloc := make(core.GenesisAlloc)
 	blockGasLimit := uint64(constants.GasLimit)
 	address1 := opts.From
 	address2 := opts2.From
+	address3 := opts3.From
 	alloc = map[common.Address]core.GenesisAccount{
 		address1: {
 			Balance: big.NewInt(1000000000000000000),
 		},
 		address2: {
+			Balance: big.NewInt(1000000000000000000),
+		},
+		address3: {
 			Balance: big.NewInt(1000000000000000000),
 		},
 	}
@@ -99,6 +113,7 @@ func testHelper(t *testing.T) *TestHelper {
 		HeartAddress:   heartAddress,
 		HeartContract:  heartContract,
 		GenesisAccount: opts,
+		CallOpts:       opts3,
 		Conn:           conn,
 		Client:         client,
 	}
