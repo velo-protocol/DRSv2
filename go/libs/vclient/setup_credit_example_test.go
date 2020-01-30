@@ -20,7 +20,7 @@ func ExampleClient_SetupCredit() {
 	output, err := client.SetupCredit(context.Background(), &SetupCreditInput{
 		CollateralAssetCode: "VELO",
 		PeggedCurrency:      "USD",
-		AssetCode:           "vUSDs3g",
+		AssetCode:           "vUSD",
 		PeggedValue:         "1.0",
 	})
 	if err != nil {
