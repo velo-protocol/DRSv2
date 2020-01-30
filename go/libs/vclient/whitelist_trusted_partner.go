@@ -42,7 +42,7 @@ func (c *Client) WhitelistTrustedPartner(input *WhitelistTrustedPartnerInput) (*
 
 	opt := bind.NewKeyedTransactor(&c.privateKey)
 	opt.GasLimit = constants.GasLimit
-	tx, err := c.heart.SetTrustedPartner(opt, input.ToAbiInput().Address)
+	tx, err := c.contract.heart.SetTrustedPartner(opt, input.ToAbiInput().Address)
 	if err != nil {
 		return nil, err
 	}

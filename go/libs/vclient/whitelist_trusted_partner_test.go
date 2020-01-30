@@ -1,7 +1,10 @@
 package vclient
 
 import (
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -35,9 +38,17 @@ func TestClient_WhitelistTrustedPartner(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		whitelistTrustedPartnerInput := &WhitelistTrustedPartnerInput{Address: trustedPartnerAddress}
 
-		testHelper := testHelper(nil)
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		abiInput := whitelistTrustedPartnerInput.ToAbiInput()
+
+		testHelper.MockHeartContract.EXPECT().
+			SetTrustedPartner(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.Address).
+			Return(&types.Transaction{}, nil)
 
 		result, err := testHelper.Client.WhitelistTrustedPartner(whitelistTrustedPartnerInput)
+
 		assert.NoError(t, err)
 		assert.NotEmpty(t, result)
 		assert.NotEmpty(t, result.Tx.Hash())
@@ -46,7 +57,8 @@ func TestClient_WhitelistTrustedPartner(t *testing.T) {
 	t.Run("error, validation fail", func(t *testing.T) {
 		whitelistTrustedPartnerInput := &WhitelistTrustedPartnerInput{Address: invalidAddress}
 
-		testHelper := testHelper(nil)
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
 
 		result, err := testHelper.Client.WhitelistTrustedPartner(whitelistTrustedPartnerInput)
 		assert.Error(t, err)

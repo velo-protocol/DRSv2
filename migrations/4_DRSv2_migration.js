@@ -26,7 +26,7 @@ module.exports = async function (deployer, network, accounts) {
     heartInstance.setReserveManager(reserveManagerInstance.address);
     heartInstance.setDrsAddress(drsInstance.address);
 
-    if (network === 'development' || network === 'local' || network === 'evrynet') {
+    if (network === 'development' || network === 'local' || network === 'dev') {
         const hasher = await Hasher.deployed();
 
         const adminAddress = accounts[0];

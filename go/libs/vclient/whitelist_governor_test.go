@@ -1,6 +1,9 @@
 package vclient
 
 import (
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -34,22 +37,36 @@ func TestValidateWhitelistGovernorToAbiInput(t *testing.T) {
 
 func TestWhitelistGovernor(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		mockContract := testHelperWithMock(t)
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
 
-		tx, err := mockContract.Client.WhitelistGovernor(&WhitelistGovernorInput{Address: governorAddress})
+		input := &WhitelistGovernorInput{
+			Address: governorAddress,
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockHeartContract.EXPECT().
+			SetGovernor(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.Address).
+			Return(&types.Transaction{}, nil)
+
+		result, err := testHelper.Client.WhitelistGovernor(input)
 
 		assert.NoError(t, err)
-		assert.NotNil(t, mockContract.Client)
-		assert.NotNil(t, tx)
+		assert.NotNil(t, result.Tx)
 	})
 
 	t.Run("fail, should throw error address must not be blank", func(t *testing.T) {
-		mockContract := testHelper(nil)
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
 
-		tx, err := mockContract.Client.WhitelistGovernor(&WhitelistGovernorInput{Address: ""})
+		input := &WhitelistGovernorInput{
+			Address: "",
+		}
 
-		assert.NotNil(t, mockContract.Client)
-		assert.Nil(t, tx)
+		result, err := testHelper.Client.WhitelistGovernor(input)
+
+		assert.NotNil(t, err)
+		assert.Nil(t, result)
 		assert.Equal(t, "address must not be blank", err.Error())
 	})
 }

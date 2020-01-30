@@ -16,9 +16,12 @@ type Connection interface {
 
 type DRSContract interface {
 	Setup(opts *bind.TransactOpts, collateralAssetCode [32]byte, peggedCurrency [32]byte, assetCode string, peggedValue *big.Int) (*types.Transaction, error)
+	GetExchange(opts *bind.CallOpts, assetCode string) (string, [32]byte, *big.Int, error)
 }
 
 type HeartContract interface {
+	SetGovernor(opts *bind.TransactOpts, address common.Address) (*types.Transaction, error)
+	SetTrustedPartner(opts *bind.TransactOpts, address common.Address) (*types.Transaction, error)
 }
 
 type TxHelper interface {
