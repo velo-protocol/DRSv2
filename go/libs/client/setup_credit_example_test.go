@@ -3,20 +3,21 @@
 package vclient
 
 import (
+	"context"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"log"
 )
 
 func ExampleClient_SetupCredit() {
 	client, err := NewClient("http://127.0.0.1:7545", "<PRIVATE_KEY>", ContractAddress{
-		DRS:   "<DRS_CONTRACT_ADDRESS>",   // 0x4Db9c67836A3735f63c0eCe4cFBc486bB80732b0
-		Heart: "<HEART_CONTRACT_ADDRESS>", // 0x1F1247eDEa84dC392C857A7887203a5640f3f2Fd
+		drsAddress:   "<DRS_CONTRACT_ADDRESS>",   // 0x4Db9c67836A3735f63c0eCe4cFBc486bB80732b0
+		heartAddress: "<HEART_CONTRACT_ADDRESS>", // 0x1F1247eDEa84dC392C857A7887203a5640f3f2Fd
 	})
 	if err != nil {
 		panic(err)
 	}
 
-	output, err := client.SetupCredit(&SetupCreditInput{
+	output, err := client.SetupCredit(context.Background(), &SetupCreditInput{
 		CollateralAssetCode: "VELO",
 		PeggedCurrency:      "USD",
 		AssetCode:           "vUSD",

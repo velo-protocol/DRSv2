@@ -283,7 +283,7 @@ func (_DigitalReserveSystem *DigitalReserveSystemCallerSession) GetExchange(asse
 	return _DigitalReserveSystem.Contract.GetExchange(&_DigitalReserveSystem.CallOpts, assetCode)
 }
 
-// Heart is a free data retrieval call binding the contract method 0xf58d1c94.
+// heartAddress is a free data retrieval call binding the contract method 0xf58d1c94.
 //
 // Solidity: function heart() constant returns(address)
 func (_DigitalReserveSystem *DigitalReserveSystemCaller) Heart(opts *bind.CallOpts) (common.Address, error) {
@@ -295,14 +295,14 @@ func (_DigitalReserveSystem *DigitalReserveSystemCaller) Heart(opts *bind.CallOp
 	return *ret0, err
 }
 
-// Heart is a free data retrieval call binding the contract method 0xf58d1c94.
+// heartAddress is a free data retrieval call binding the contract method 0xf58d1c94.
 //
 // Solidity: function heart() constant returns(address)
 func (_DigitalReserveSystem *DigitalReserveSystemSession) Heart() (common.Address, error) {
 	return _DigitalReserveSystem.Contract.Heart(&_DigitalReserveSystem.CallOpts)
 }
 
-// Heart is a free data retrieval call binding the contract method 0xf58d1c94.
+// heartAddress is a free data retrieval call binding the contract method 0xf58d1c94.
 //
 // Solidity: function heart() constant returns(address)
 func (_DigitalReserveSystem *DigitalReserveSystemCallerSession) Heart() (common.Address, error) {

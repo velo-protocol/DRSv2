@@ -1,6 +1,7 @@
 package vclient
 
 import (
+	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
@@ -64,7 +65,7 @@ type SetupCreditOutput struct {
 	Event   *vabi.DigitalReserveSystemSetup
 }
 
-func (c *Client) SetupCredit(input *SetupCreditInput) (*SetupCreditOutput, error) {
+func (c *Client) SetupCredit(ctx context.Context, input *SetupCreditInput) (*SetupCreditOutput, error) {
 	err := input.Validate()
 	if err != nil {
 		return nil, err
@@ -73,7 +74,7 @@ func (c *Client) SetupCredit(input *SetupCreditInput) (*SetupCreditOutput, error
 	abiInput := input.ToAbiInput()
 	opt := bind.NewKeyedTransactor(&c.privateKey)
 	opt.GasLimit = constants.GasLimit
-	tx, err := c.DRS().Setup(
+	tx, err := c.contract.drs.Setup(
 		opt,
 		abiInput.CollateralAssetCode,
 		abiInput.PeggedCurrency,
@@ -84,15 +85,18 @@ func (c *Client) SetupCredit(input *SetupCreditInput) (*SetupCreditOutput, error
 		return nil, err
 	}
 
-	receipt, err := c.ConfirmTx(tx)
+	receipt, err := c.txHelper.ConfirmTx(ctx, tx)
 	if err != nil {
 		return nil, err
 	}
 
-	event := new(vabi.DigitalReserveSystemSetup)
-	err = c.DRSAbi().Unpack(event, "Setup", receipt.Logs[0].Data)
+	eventIface, err := c.txHelper.ExtractEventFromTx(c.contract.drsAbi, "Setup", receipt.Logs[0])
 	if err != nil {
 		return nil, errors.Wrap(err, "fail to read event log")
+	}
+	event, ok := eventIface.(*vabi.DigitalReserveSystemSetup)
+	if !ok {
+		return nil, errors.New("fail to cast event")
 	}
 
 	return &SetupCreditOutput{

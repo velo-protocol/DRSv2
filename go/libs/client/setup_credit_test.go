@@ -1,7 +1,13 @@
 package vclient
 
 import (
+	"context"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	vabi "github.com/velo-protocol/DRSv2/go/abi"
 	"math/big"
 	"testing"
 )
@@ -87,22 +93,42 @@ func TestSetupCreditInput_ToAbiInput(t *testing.T) {
 
 func TestClient_SetupCredit(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		testHelper := testHelper()
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
 
-		result, err := testHelper.Client.SetupCredit(&SetupCreditInput{
+		input := &SetupCreditInput{
 			CollateralAssetCode: "VELO",
 			PeggedCurrency:      "USD",
 			AssetCode:           "vUSD",
 			PeggedValue:         "1.50",
-		})
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			Setup(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.CollateralAssetCode, abiInput.PeggedCurrency, abiInput.AssetCode, abiInput.PeggedValue).
+			Return(&types.Transaction{}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			Return(&types.Receipt{
+				Logs: []*types.Log{
+					{},
+				},
+			}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ExtractEventFromTx(gomock.AssignableToTypeOf(&abi.ABI{}), "Setup", gomock.AssignableToTypeOf(&types.Log{})).
+			Return(&vabi.DigitalReserveSystemSetup{}, nil)
+
+		result, err := testHelper.Client.SetupCredit(context.Background(), input)
 
 		assert.NoError(t, err)
-		assert.NotEmpty(t, result.Tx.Hash())
+		assert.NotNil(t, result.Tx)
+		assert.NotNil(t, result.Receipt)
+		assert.NotNil(t, result.Event)
 	})
 
 	t.Run("error, validation fail", func(t *testing.T) {
-		testHelper := testHelper()
-		_, err := testHelper.Client.SetupCredit(&SetupCreditInput{})
+		testHelper := testHelperWithMock(t)
+		_, err := testHelper.Client.SetupCredit(context.Background(), &SetupCreditInput{})
 
 		assert.Error(t, err)
 	})

@@ -6,10 +6,13 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/golang/mock/gomock"
 	"github.com/velo-protocol/DRSv2/go/abi"
 	"github.com/velo-protocol/DRSv2/go/constants"
+	"github.com/velo-protocol/DRSv2/go/libs/client/mocks"
 	"log"
 	"math/big"
+	"testing"
 )
 
 const (
@@ -41,9 +44,15 @@ type TestHelper struct {
 	GenesisAccount *bind.TransactOpts
 	Conn           *backends.SimulatedBackend
 	Client         *Client
+
+	MockController    *gomock.Controller
+	MockConnection    *mocks.MockConnection
+	MockDRSContract   *mocks.MockDRSContract
+	MockHeartContract *mocks.MockHeartContract
+	MockTxHelper      *mocks.MockTxHelper
 }
 
-func testHelper() *TestHelper {
+func testHelper(t *testing.T) *TestHelper {
 	opts := getOpts(privateKey1)
 	opts2 := getOpts(privateKey2)
 	alloc := make(core.GenesisAlloc)
@@ -60,14 +69,14 @@ func testHelper() *TestHelper {
 	}
 	conn := backends.NewSimulatedBackend(alloc, blockGasLimit)
 
-	//Deploy Heart contract
+	//Deploy heartAddress Contract
 	heartAddress, _, heartContract, _ := vabi.DeployHeart(
 		opts,
 		conn,
 	)
 	conn.Commit()
 
-	//Deploy DigitalReserveSystem contract
+	//Deploy DigitalReserveSystem Contract
 	drsAddress, _, drsContract, _ := vabi.DeployDigitalReserveSystem(
 		opts,
 		conn,
@@ -76,9 +85,9 @@ func testHelper() *TestHelper {
 
 	conn.Commit()
 
-	client, _ := NewClientWithEthClient(conn, privateKey1, ContractAddress{
-		DRS:   drsAddress.String(),
-		Heart: heartAddress.String(),
+	client, _ := NewClient("conn", privateKey1, ContractAddress{
+		drsAddress:   drsAddress.String(),
+		heartAddress: heartAddress.String(),
 	})
 
 	return &TestHelper{
@@ -89,5 +98,32 @@ func testHelper() *TestHelper {
 		GenesisAccount: opts,
 		Conn:           conn,
 		Client:         client,
+	}
+}
+
+func testHelperWithMock(t *testing.T) *TestHelper {
+	privKey, _ := crypto.HexToECDSA(privateKey1)
+
+	mockCtrl := gomock.NewController(t)
+	mockConnection := mocks.NewMockConnection(mockCtrl)
+	mockDrsContract := mocks.NewMockDRSContract(mockCtrl)
+	mockHeartContract := mocks.NewMockHeartContract(mockCtrl)
+	mockTxHelper := mocks.NewMockTxHelper(mockCtrl)
+
+	client := NewClientWithOptions(&ClientOptions{
+		PrivateKey:    *privKey,
+		Conn:          mockConnection,
+		DRSContract:   mockDrsContract,
+		HeartContract: mockHeartContract,
+		TxHelper:      mockTxHelper,
+	})
+
+	return &TestHelper{
+		Client:            client,
+		MockController:    mockCtrl,
+		MockConnection:    mockConnection,
+		MockHeartContract: mockHeartContract,
+		MockDRSContract:   mockDrsContract,
+		MockTxHelper:      mockTxHelper,
 	}
 }

@@ -10,3 +10,10 @@ abigen/gen/all:
 
 format:
 	go fmt ./...
+
+mockgen/all:
+	mockgen \
+		-source=./libs/client/interface.go \
+		-destination=./libs/client/mocks/mocked_interfaces.go \
+		-package mocks \
+		-mock_names Connection=MockConnection,DRSContract=MockDRSContract,HeartContract=MockHeartContract,TxHelper=MockTxHelper
