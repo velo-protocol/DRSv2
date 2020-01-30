@@ -24,3 +24,12 @@ func AmountToString(amount *big.Int) string {
 
 	return d.StringFixed(7)
 }
+
+func IsDecimalValid(s decimal.Decimal) bool {
+	d1 := s.Shift(7)
+	d2 := d1.Truncate(0)
+	if !d1.Equal(d2) {
+		return false
+	}
+	return true
+}
