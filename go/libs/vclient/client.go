@@ -82,26 +82,6 @@ func NewClientWithOptions(options *ClientOptions) *Client {
 	}
 }
 
-//func NewClientWithEthClient(conn Connection, privateKey string, contractAddress ContractAddress) (*Client, error) {
-//	privKey, err := crypto.HexToECDSA(privateKey)
-//	if err != nil {
-//		return nil, errors.Wrap(err, "invalid private key format")
-//	}
-//
-//	err = validateContractAddress(contractAddress)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	contract := NewContract()
-//
-//	return &Client{
-//		privateKey: *privKey,
-//		conn:       conn,
-//		contract:   contractAddress,
-//	}, nil
-//}
-
 func validateContractAddress(contractAddress ContractAddress) error {
 	if !common.IsHexAddress(contractAddress.drsAddress) {
 		return errors.New("invalid drsAddress address format")
