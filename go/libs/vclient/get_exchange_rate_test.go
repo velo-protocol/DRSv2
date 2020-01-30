@@ -9,6 +9,13 @@ import (
 )
 
 func TestValidateGetExchangeRate(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		getExchangeRateInput := &GetExchangeRateInput{AssetCode: "vUSD"}
+		err := getExchangeRateInput.Validate()
+
+		assert.Nil(t, err)
+	})
+
 	t.Run("fail, should throw error assetCode must not be blank", func(t *testing.T) {
 		getExchangeRateInput := &GetExchangeRateInput{AssetCode: ""}
 		err := getExchangeRateInput.Validate()
