@@ -34,3 +34,12 @@ func StringToByte32(s string) [32]byte {
 func Byte32ToString(b [32]byte) string {
 	return string(b[:])
 }
+
+func IsDecimalValid(s decimal.Decimal) bool {
+	d1 := s.Shift(7)
+	d2 := d1.Truncate(0)
+	if !d1.Equal(d2) {
+		return false
+	}
+	return true
+}
