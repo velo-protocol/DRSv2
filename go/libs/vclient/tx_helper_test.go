@@ -22,7 +22,3 @@ func TestTxHelper_ConfirmTx(t *testing.T) {
 		assert.NotNil(t, result)
 	})
 }
-
-func TestTxHelper_ExtractSetupEvent(t *testing.T) {
-
-}

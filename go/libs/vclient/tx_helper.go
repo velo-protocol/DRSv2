@@ -42,6 +42,7 @@ func (h *txHelper) ExtractSetupEvent(eventName string, log *types.Log) (*vabi.Di
 		return nil, errors.Wrap(err, "fail to read event log")
 	}
 
+	// extract indexed field
 	if len(log.Topics) > 1 {
 		return nil, errors.New("fail to parse indexed param of an event")
 	}

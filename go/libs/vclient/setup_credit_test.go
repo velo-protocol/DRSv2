@@ -177,7 +177,7 @@ func TestClient_SetupCredit(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-	t.Run("error, txHelper.ConfirmTx returns an error", func(t *testing.T) {
+	t.Run("error, txHelper.ExtractSetupEvent returns an error", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
