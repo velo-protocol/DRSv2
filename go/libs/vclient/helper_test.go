@@ -46,6 +46,7 @@ type TestHelper struct {
 	GenesisAccount *bind.TransactOpts
 	Conn           *backends.SimulatedBackend
 	Client         *Client
+	TxHelper       *txHelper
 
 	MockController    *gomock.Controller
 	MockConnection    *mocks.MockConnection
@@ -122,6 +123,7 @@ func testHelperWithMock(t *testing.T) *TestHelper {
 
 	return &TestHelper{
 		Client:            client,
+		TxHelper:          NewTxHelper(mockConnection),
 		MockController:    mockCtrl,
 		MockConnection:    mockConnection,
 		MockHeartContract: mockHeartContract,

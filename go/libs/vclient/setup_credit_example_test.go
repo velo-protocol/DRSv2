@@ -9,7 +9,7 @@ import (
 )
 
 func ExampleClient_SetupCredit() {
-	client, err := NewClient("http://127.0.0.1:7545", privateKey1, ContractAddress{
+	client, err := NewClient("http://127.0.0.1:7545", "<PRIVATE_KEY>", ContractAddress{
 		drsAddress:   "<DRS_CONTRACT_ADDRESS>",   // 0x4Db9c67836A3735f63c0eCe4cFBc486bB80732b0
 		heartAddress: "<HEART_CONTRACT_ADDRESS>", // 0x1F1247eDEa84dC392C857A7887203a5640f3f2Fd
 	})
@@ -32,7 +32,7 @@ func ExampleClient_SetupCredit() {
 	log.Println("Event.PeggedCurrency: ", utils.Byte32ToString(output.Event.PeggedCurrency))
 	log.Println("Event.PeggedValue: ", utils.AmountToString(output.Event.PeggedValue))
 	log.Println("Event.AssetCode: ", output.Event.AssetCode)
-	log.Println("Event.CollateralAssetCode: ", output.Event.CollateralAssetCode)
+	log.Println("Event.CollateralAssetCode: ", utils.Byte32ToString(output.Event.CollateralAssetCode))
 	log.Println("Event.AssetAddress: ", output.Event.AssetAddress.String())
 	// Output:
 	// Transaction Hash: 0x0d6658bf79d9e4541de0617a14c17e7d642169d3f00d7a035595136b59f6f8ac
