@@ -2,6 +2,7 @@ build
 node_modules
 coverage
 coverage.json
+.coverage.txt
 
 # IntelliJ project files
 .idea
