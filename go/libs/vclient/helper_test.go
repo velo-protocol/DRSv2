@@ -9,7 +9,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/velo-protocol/DRSv2/go/abi"
 	"github.com/velo-protocol/DRSv2/go/constants"
-	"github.com/velo-protocol/DRSv2/go/libs/client/mocks"
+	"github.com/velo-protocol/DRSv2/go/libs/vclient/mocks"
 	"log"
 	"math/big"
 	"testing"

@@ -34,7 +34,7 @@ func TestValidateWhitelistGovernorToAbiInput(t *testing.T) {
 
 func TestWhitelistGovernor(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		mockContract := testHelper(nil)
+		mockContract := testHelperWithMock(t)
 
 		tx, err := mockContract.Client.WhitelistGovernor(&WhitelistGovernorInput{Address: governorAddress})
 
