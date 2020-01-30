@@ -2,7 +2,6 @@ package vclient
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/golang/mock/gomock"
@@ -115,7 +114,7 @@ func TestClient_SetupCredit(t *testing.T) {
 				},
 			}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ExtractEventFromTx(gomock.AssignableToTypeOf(&abi.ABI{}), "Setup", gomock.AssignableToTypeOf(&types.Log{})).
+			ExtractSetupEvent("Setup", gomock.AssignableToTypeOf(&types.Log{})).
 			Return(&vabi.DigitalReserveSystemSetup{}, nil)
 
 		result, err := testHelper.Client.SetupCredit(context.Background(), input)

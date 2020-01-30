@@ -2,10 +2,10 @@ package vclient
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/velo-protocol/DRSv2/go/abi"
 	"math/big"
 )
 
@@ -23,5 +23,5 @@ type HeartContract interface {
 
 type TxHelper interface {
 	ConfirmTx(ctx context.Context, tx *types.Transaction) (*types.Receipt, error)
-	ExtractEventFromTx(contractAbi *abi.ABI, eventName string, log *types.Log) (interface{}, error)
+	ExtractSetupEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemSetup, error)
 }

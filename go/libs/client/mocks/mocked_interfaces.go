@@ -7,11 +7,11 @@ package mocks
 import (
 	context "context"
 	go_ethereum "github.com/ethereum/go-ethereum"
-	abi "github.com/ethereum/go-ethereum/accounts/abi"
 	bind "github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
 	types "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
+	abi "github.com/velo-protocol/DRSv2/go/abi"
 	big "math/big"
 	reflect "reflect"
 )
@@ -287,17 +287,17 @@ func (mr *MockTxHelperMockRecorder) ConfirmTx(ctx, tx interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmTx", reflect.TypeOf((*MockTxHelper)(nil).ConfirmTx), ctx, tx)
 }
 
-// ExtractEventFromTx mocks base method
-func (m *MockTxHelper) ExtractEventFromTx(contractAbi *abi.ABI, eventName string, log *types.Log) (interface{}, error) {
+// ExtractSetupEvent mocks base method
+func (m *MockTxHelper) ExtractSetupEvent(eventName string, log *types.Log) (*abi.DigitalReserveSystemSetup, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ExtractEventFromTx", contractAbi, eventName, log)
-	ret0, _ := ret[0].(interface{})
+	ret := m.ctrl.Call(m, "ExtractSetupEvent", eventName, log)
+	ret0, _ := ret[0].(*abi.DigitalReserveSystemSetup)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ExtractEventFromTx indicates an expected call of ExtractEventFromTx
-func (mr *MockTxHelperMockRecorder) ExtractEventFromTx(contractAbi, eventName, log interface{}) *gomock.Call {
+// ExtractSetupEvent indicates an expected call of ExtractSetupEvent
+func (mr *MockTxHelperMockRecorder) ExtractSetupEvent(eventName, log interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractEventFromTx", reflect.TypeOf((*MockTxHelper)(nil).ExtractEventFromTx), contractAbi, eventName, log)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractSetupEvent", reflect.TypeOf((*MockTxHelper)(nil).ExtractSetupEvent), eventName, log)
 }

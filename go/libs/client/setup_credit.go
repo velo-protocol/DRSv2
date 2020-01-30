@@ -90,13 +90,9 @@ func (c *Client) SetupCredit(ctx context.Context, input *SetupCreditInput) (*Set
 		return nil, err
 	}
 
-	eventIface, err := c.txHelper.ExtractEventFromTx(c.contract.drsAbi, "Setup", receipt.Logs[0])
+	event, err := c.txHelper.ExtractSetupEvent("Setup", receipt.Logs[0])
 	if err != nil {
-		return nil, errors.Wrap(err, "fail to read event log")
-	}
-	event, ok := eventIface.(*vabi.DigitalReserveSystemSetup)
-	if !ok {
-		return nil, errors.New("fail to cast event")
+		return nil, err
 	}
 
 	return &SetupCreditOutput{
