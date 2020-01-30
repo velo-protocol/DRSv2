@@ -25,16 +25,6 @@ func AmountToString(amount *big.Int) string {
 	return d.StringFixed(7)
 }
 
-func StringToByte32(s string) [32]byte {
-	var byteArr [32]byte
-	copy(byteArr[:], s)
-	return byteArr
-}
-
-func Byte32ToString(b [32]byte) string {
-	return string(b[:])
-}
-
 func IsDecimalValid(s decimal.Decimal) bool {
 	d1 := s.Shift(7)
 	d2 := d1.Truncate(0)

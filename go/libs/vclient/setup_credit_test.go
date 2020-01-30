@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/golang/mock/gomock"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	vabi "github.com/velo-protocol/DRSv2/go/abi"
 	"math/big"
@@ -128,6 +129,81 @@ func TestClient_SetupCredit(t *testing.T) {
 	t.Run("error, validation fail", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		_, err := testHelper.Client.SetupCredit(context.Background(), &SetupCreditInput{})
+
+		assert.Error(t, err)
+	})
+
+	t.Run("error, drs.Setup returns an error", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &SetupCreditInput{
+			CollateralAssetCode: "VELO",
+			PeggedCurrency:      "USD",
+			AssetCode:           "vUSD",
+			PeggedValue:         "1.50",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			Setup(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.CollateralAssetCode, abiInput.PeggedCurrency, abiInput.AssetCode, abiInput.PeggedValue).
+			Return(nil, errors.New("some error has occurred"))
+
+		_, err := testHelper.Client.SetupCredit(context.Background(), input)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("error, txHelper.ConfirmTx returns an error", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &SetupCreditInput{
+			CollateralAssetCode: "VELO",
+			PeggedCurrency:      "USD",
+			AssetCode:           "vUSD",
+			PeggedValue:         "1.50",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			Setup(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.CollateralAssetCode, abiInput.PeggedCurrency, abiInput.AssetCode, abiInput.PeggedValue).
+			Return(&types.Transaction{}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			Return(nil, errors.New("some error has occurred"))
+		_, err := testHelper.Client.SetupCredit(context.Background(), input)
+
+		assert.Error(t, err)
+	})
+
+	t.Run("error, txHelper.ExtractSetupEvent returns an error", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &SetupCreditInput{
+			CollateralAssetCode: "VELO",
+			PeggedCurrency:      "USD",
+			AssetCode:           "vUSD",
+			PeggedValue:         "1.50",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			Setup(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.CollateralAssetCode, abiInput.PeggedCurrency, abiInput.AssetCode, abiInput.PeggedValue).
+			Return(&types.Transaction{}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			Return(&types.Receipt{
+				Logs: []*types.Log{
+					{},
+				},
+			}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ExtractSetupEvent("Setup", gomock.AssignableToTypeOf(&types.Log{})).
+			Return(nil, errors.New("some error has occurred"))
+
+		_, err := testHelper.Client.SetupCredit(context.Background(), input)
 
 		assert.Error(t, err)
 	})
