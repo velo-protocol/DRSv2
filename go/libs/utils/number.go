@@ -18,8 +18,19 @@ func StringToAmount(number string) (*big.Int, error) {
 	return b, nil
 }
 
+func AmountToString(amount *big.Int) string {
+	d := decimal.NewFromInt(amount.Int64())
+	d = d.Shift(-7).Truncate(7)
+
+	return d.StringFixed(7)
+}
+
 func StringToByte32(s string) [32]byte {
 	var byteArr [32]byte
 	copy(byteArr[:], s)
 	return byteArr
+}
+
+func Byte32ToString(b [32]byte) string {
+	return string(b[:])
 }

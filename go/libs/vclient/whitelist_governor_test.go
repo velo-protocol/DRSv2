@@ -34,7 +34,7 @@ func TestValidateWhitelistGovernorToAbiInput(t *testing.T) {
 
 func TestWhitelistGovernor(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		mockContract := testHelper()
+		mockContract := testHelperWithMock(t)
 
 		tx, err := mockContract.Client.WhitelistGovernor(&WhitelistGovernorInput{Address: governorAddress})
 
@@ -44,7 +44,7 @@ func TestWhitelistGovernor(t *testing.T) {
 	})
 
 	t.Run("fail, should throw error address must not be blank", func(t *testing.T) {
-		mockContract := testHelper()
+		mockContract := testHelper(nil)
 
 		tx, err := mockContract.Client.WhitelistGovernor(&WhitelistGovernorInput{Address: ""})
 

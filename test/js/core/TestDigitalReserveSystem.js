@@ -82,18 +82,12 @@ contract("DigitalReserveSystem test", async accounts => {
         1
       );
 
-      truffleAssert.eventEmitted(result, 'Setup', async event => {
-        assert.equal(event.assetCode, "vUSD");
-        helper.assertEqualByteString(event.peggedCurrency, "USD");
-        assert.equal(event.peggedValue, 1);
-        helper.assertEqualByteString(event.collateralAssetCode, "VELO");
-        assert.ok(web3.utils.isAddress(event.assetAddress));
-
-        const stableCredit = await StableCredit.at(event.assetAddress);
-        const name = await stableCredit.name();
-        assert.equal(name, "vUSD");
-
-        return true;
+      truffleAssert.eventEmitted(result, 'Setup', event => {
+        return event.assetCode === "vUSD"
+          && web3.utils.hexToUtf8(event.peggedCurrency) === 'USD'
+          && web3.utils.hexToUtf8(event.collateralAssetCode) === 'VELO'
+          && new web3.utils.BN(event.peggedValue).toNumber() === 1
+          && web3.utils.isAddress(event.assetAddress);
       }, 'contract should emit the event correctly');
     });
 
@@ -1007,7 +1001,7 @@ contract("DigitalReserveSystem test", async accounts => {
       );
 
       await helper.assert.throwsWithMessage(async () => {
-         await drs.collateralHealthCheck("vUSD");
+        await drs.collateralHealthCheck("vUSD");
       }, 'Returned error: VM Exception while processing transaction: revert DigitalReserveSystem.collateralHealthCheck: collateralAssetCode does not exist');
     });
   });
@@ -1056,7 +1050,7 @@ contract("DigitalReserveSystem test", async accounts => {
       );
 
       const result = await drs.rebalance("vUSD");
-      truffleAssert.eventEmitted(result, 'Rebalance',  event => {
+      truffleAssert.eventEmitted(result, 'Rebalance', event => {
         const BN = web3.utils.BN;
         const eventRequiredAmount = new BN(event.requiredAmount).toNumber();
         const eventPresentAmount = new BN(event.presentAmount).toNumber();

@@ -35,7 +35,7 @@ func TestClient_WhitelistTrustedPartner(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		whitelistTrustedPartnerInput := &WhitelistTrustedPartnerInput{Address: trustedPartnerAddress}
 
-		testHelper := testHelper()
+		testHelper := testHelper(nil)
 
 		result, err := testHelper.Client.WhitelistTrustedPartner(whitelistTrustedPartnerInput)
 		assert.NoError(t, err)
@@ -46,7 +46,7 @@ func TestClient_WhitelistTrustedPartner(t *testing.T) {
 	t.Run("error, validation fail", func(t *testing.T) {
 		whitelistTrustedPartnerInput := &WhitelistTrustedPartnerInput{Address: invalidAddress}
 
-		testHelper := testHelper()
+		testHelper := testHelper(nil)
 
 		result, err := testHelper.Client.WhitelistTrustedPartner(whitelistTrustedPartnerInput)
 		assert.Error(t, err)

@@ -12,8 +12,8 @@ const (
 
 func ExampleClient_WhitelistGovernor() {
 	client, err := NewClient(smartContractUrl, privateKey, ContractAddress{
-		DRS:   "<DRS_CONTRACT_ADDRESS>", // 0xBdA518a6245480652d1A217192EBB299C94F623f
-		Heart: "<HEART_CONTRACT_ADDRESS>", // 0x1623C9c8600319E7CfAff0Ca1c4a05e1a61D954D
+		drsAddress:   "<DRS_CONTRACT_ADDRESS>",   // 0xBdA518a6245480652d1A217192EBB299C94F623f
+		heartAddress: "<HEART_CONTRACT_ADDRESS>", // 0x1623C9c8600319E7CfAff0Ca1c4a05e1a61D954D
 	})
 
 	if err != nil {

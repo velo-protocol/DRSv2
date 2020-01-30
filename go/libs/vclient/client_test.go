@@ -8,8 +8,8 @@ import (
 func TestNewClient(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		client, err := NewClient("http://127.0.0.1:7545", privateKey1, ContractAddress{
-			DRS:   drsAddress,
-			Heart: heartAddress,
+			drsAddress:   drsAddress,
+			heartAddress: heartAddress,
 		})
 
 		assert.NoError(t, err)
@@ -18,8 +18,8 @@ func TestNewClient(t *testing.T) {
 
 	t.Run("fail, bad rpc url", func(t *testing.T) {
 		_, err := NewClient("badshceme://127.0.0.1:7545", privateKey1, ContractAddress{
-			DRS:   drsAddress,
-			Heart: heartAddress,
+			drsAddress:   drsAddress,
+			heartAddress: heartAddress,
 		})
 
 		assert.Contains(t, err.Error(), "fail to initialize eth client")
@@ -27,8 +27,8 @@ func TestNewClient(t *testing.T) {
 
 	t.Run("fail, bad private key", func(t *testing.T) {
 		_, err := NewClient("http://127.0.0.1:7545", "bad_private_key", ContractAddress{
-			DRS:   drsAddress,
-			Heart: heartAddress,
+			drsAddress:   drsAddress,
+			heartAddress: heartAddress,
 		})
 
 		assert.Contains(t, err.Error(), "invalid private key format")
@@ -36,16 +36,16 @@ func TestNewClient(t *testing.T) {
 
 	t.Run("fail, bad drs address", func(t *testing.T) {
 		_, err := NewClient("http://127.0.0.1:7545", privateKey1, ContractAddress{
-			DRS:   "",
-			Heart: heartAddress})
+			drsAddress:   "",
+			heartAddress: heartAddress})
 
-		assert.Contains(t, err.Error(), "invalid DRS address format")
+		assert.Contains(t, err.Error(), "invalid drsAddress address format")
 	})
 
 	t.Run("fail, bad heart address", func(t *testing.T) {
 		_, err := NewClient("http://127.0.0.1:7545", privateKey1, ContractAddress{
-			DRS:   drsAddress,
-			Heart: "",
+			drsAddress:   drsAddress,
+			heartAddress: "",
 		})
 
 		assert.Contains(t, err.Error(), "invalid heart address format")

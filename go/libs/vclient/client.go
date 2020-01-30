@@ -2,7 +2,7 @@ package vclient
 
 import (
 	"crypto/ecdsa"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -12,19 +12,22 @@ import (
 
 // Client struct
 type Client struct {
-	rpcUrl          string
-	privateKey      ecdsa.PrivateKey
-	conn            bind.ContractBackend
-	contractAddress ContractAddress
+	rpcUrl     string
+	privateKey ecdsa.PrivateKey
+	conn       Connection
+	contract   *Contract
+	txHelper   TxHelper
 
 	// Contracts
-	drs   *vabi.DigitalReserveSystem
-	heart *vabi.Heart
+	drs      *vabi.DigitalReserveSystem
+	drsAbi   *abi.ABI
+	heart    *vabi.Heart
+	heartAbi *abi.ABI
 }
 
 type ContractAddress struct {
-	DRS   string
-	Heart string
+	drsAddress   string
+	heartAddress string
 }
 
 func NewClient(rpcUrl string, privateKey string, contractAddress ContractAddress) (*Client, error) {
@@ -43,55 +46,49 @@ func NewClient(rpcUrl string, privateKey string, contractAddress ContractAddress
 		return nil, err
 	}
 
-	return &Client{
-		rpcUrl:          rpcUrl,
-		privateKey:      *privKey,
-		conn:            conn,
-		contractAddress: contractAddress,
-	}, nil
-}
-
-func NewClientWithEthClient(conn bind.ContractBackend, privateKey string, contractAddress ContractAddress) (*Client, error) {
-	privKey, err := crypto.HexToECDSA(privateKey)
+	drsContract, err := vabi.NewDigitalReserveSystem(common.HexToAddress(contractAddress.drsAddress), conn)
 	if err != nil {
-		return nil, errors.Wrap(err, "invalid private key format")
+		return nil, err
 	}
 
-	err = validateContractAddress(contractAddress)
+	heartContract, err := vabi.NewHeart(common.HexToAddress(contractAddress.heartAddress), conn)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Client{
-		privateKey:      *privKey,
-		conn:            conn,
-		contractAddress: contractAddress,
+		rpcUrl:     rpcUrl,
+		privateKey: *privKey,
+		conn:       conn,
+		contract:   NewContract(drsContract, heartContract),
+		txHelper:   NewTxHelper(conn),
 	}, nil
 }
 
-func validateContractAddress(contractAddress ContractAddress) error {
-	if !common.IsHexAddress(contractAddress.DRS) {
-		return errors.New("invalid DRS address format")
+type ClientOptions struct {
+	PrivateKey    ecdsa.PrivateKey
+	Conn          Connection
+	DRSContract   DRSContract
+	HeartContract HeartContract
+	TxHelper      TxHelper
+}
+
+func NewClientWithOptions(options *ClientOptions) *Client {
+	return &Client{
+		privateKey: options.PrivateKey,
+		conn:       options.Conn,
+		contract:   NewContract(options.DRSContract, options.HeartContract),
+		txHelper:   options.TxHelper,
 	}
-	if !common.IsHexAddress(contractAddress.Heart) {
+}
+
+func validateContractAddress(contractAddress ContractAddress) error {
+	if !common.IsHexAddress(contractAddress.drsAddress) {
+		return errors.New("invalid drsAddress address format")
+	}
+	if !common.IsHexAddress(contractAddress.heartAddress) {
 		return errors.New("invalid heart address format")
 	}
 
 	return nil
-}
-
-func (c *Client) DRS() *vabi.DigitalReserveSystem {
-	if c.drs == nil {
-		c.drs, _ = vabi.NewDigitalReserveSystem(common.HexToAddress(c.contractAddress.DRS), c.conn)
-	}
-
-	return c.drs
-}
-
-func (c *Client) Heart() *vabi.Heart {
-	if c.heart == nil {
-		c.heart, _ = vabi.NewHeart(common.HexToAddress(c.contractAddress.Heart), c.conn)
-	}
-
-	return c.heart
 }

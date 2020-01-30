@@ -13,3 +13,11 @@ format:
 
 ci_test:
 	go test --tags="unit" ./... -v -coverprofile .coverage.txt
+
+
+mockgen/all:
+	mockgen \
+		-source=./libs/client/interface.go \
+		-destination=./libs/client/mocks/mocked_interfaces.go \
+		-package mocks \
+		-mock_names Connection=MockConnection,DRSContract=MockDRSContract,HeartContract=MockHeartContract,TxHelper=MockTxHelper

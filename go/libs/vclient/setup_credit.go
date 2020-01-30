@@ -1,10 +1,12 @@
 package vclient
 
 import (
+	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
+	vabi "github.com/velo-protocol/DRSv2/go/abi"
 	"github.com/velo-protocol/DRSv2/go/constants"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"math/big"
@@ -58,10 +60,12 @@ func (i *SetupCreditInput) ToAbiInput() *SetupCreditAbiInput {
 }
 
 type SetupCreditOutput struct {
-	Tx *types.Transaction
+	Tx      *types.Transaction
+	Receipt *types.Receipt
+	Event   *vabi.DigitalReserveSystemSetup
 }
 
-func (c *Client) SetupCredit(input *SetupCreditInput) (*SetupCreditOutput, error) {
+func (c *Client) SetupCredit(ctx context.Context, input *SetupCreditInput) (*SetupCreditOutput, error) {
 	err := input.Validate()
 	if err != nil {
 		return nil, err
@@ -70,7 +74,7 @@ func (c *Client) SetupCredit(input *SetupCreditInput) (*SetupCreditOutput, error
 	abiInput := input.ToAbiInput()
 	opt := bind.NewKeyedTransactor(&c.privateKey)
 	opt.GasLimit = constants.GasLimit
-	tx, err := c.DRS().Setup(
+	tx, err := c.contract.drs.Setup(
 		opt,
 		abiInput.CollateralAssetCode,
 		abiInput.PeggedCurrency,
@@ -81,7 +85,19 @@ func (c *Client) SetupCredit(input *SetupCreditInput) (*SetupCreditOutput, error
 		return nil, err
 	}
 
+	receipt, err := c.txHelper.ConfirmTx(ctx, tx)
+	if err != nil {
+		return nil, err
+	}
+
+	event, err := c.txHelper.ExtractSetupEvent("Setup", receipt.Logs[0])
+	if err != nil {
+		return nil, err
+	}
+
 	return &SetupCreditOutput{
-		Tx: tx,
+		Tx:      tx,
+		Receipt: receipt,
+		Event:   event,
 	}, nil
 }

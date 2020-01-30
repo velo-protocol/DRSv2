@@ -46,7 +46,7 @@ func (c *Client) WhitelistGovernor(input *WhitelistGovernorInput) (*WhitelistGov
 
 	opt := bind.NewKeyedTransactor(&c.privateKey)
 	opt.GasLimit = constants.GasLimit
-	tx, err := c.Heart().SetGovernor(opt, input.ToAbiInput().Address)
+	tx, err := c.heart.SetGovernor(opt, input.ToAbiInput().Address)
 	if err != nil {
 		return nil, err
 	}
