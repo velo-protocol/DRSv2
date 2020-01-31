@@ -26,8 +26,8 @@ type Client struct {
 }
 
 type ContractAddress struct {
-	drsAddress   string
-	heartAddress string
+	DrsAddress   string
+	HeartAddress string
 }
 
 func NewClient(rpcUrl string, privateKey string, contractAddress ContractAddress) (*Client, error) {
@@ -46,12 +46,12 @@ func NewClient(rpcUrl string, privateKey string, contractAddress ContractAddress
 		return nil, err
 	}
 
-	drsContract, err := vabi.NewDigitalReserveSystem(common.HexToAddress(contractAddress.drsAddress), conn)
+	drsContract, err := vabi.NewDigitalReserveSystem(common.HexToAddress(contractAddress.DrsAddress), conn)
 	if err != nil {
 		return nil, err
 	}
 
-	heartContract, err := vabi.NewHeart(common.HexToAddress(contractAddress.heartAddress), conn)
+	heartContract, err := vabi.NewHeart(common.HexToAddress(contractAddress.HeartAddress), conn)
 	if err != nil {
 		return nil, err
 	}
@@ -83,10 +83,10 @@ func NewClientWithOptions(options *ClientOptions) *Client {
 }
 
 func validateContractAddress(contractAddress ContractAddress) error {
-	if !common.IsHexAddress(contractAddress.drsAddress) {
+	if !common.IsHexAddress(contractAddress.DrsAddress) {
 		return errors.New("invalid drsAddress address format")
 	}
-	if !common.IsHexAddress(contractAddress.heartAddress) {
+	if !common.IsHexAddress(contractAddress.HeartAddress) {
 		return errors.New("invalid heart address format")
 	}
 

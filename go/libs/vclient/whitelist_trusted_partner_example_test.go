@@ -6,8 +6,8 @@ import "log"
 
 func ExampleClient_WhitelistTrustedPartner() {
 	client, err := NewClient("http://127.0.0.1:7545", "da17d295e2fd005747cca4de855bbb0493f2e0669753bba1e752700dbad4c78c", ContractAddress{
-		drsAddress:   "<DRS_CONTRACT_ADDRESS>",   // Ex: 0x604Ee3d8d9A734d4607E8aF2E4eb44D8e6c2Bf46
-		heartAddress: "<HEART_CONTRACT_ADDRESS>", // Ex: 0x1fCc1CEf04A0B0121faD5AF38C06F10c44240787
+		DrsAddress:   "<DRS_CONTRACT_ADDRESS>",   // Ex: 0x604Ee3d8d9A734d4607E8aF2E4eb44D8e6c2Bf46
+		HeartAddress: "<HEART_CONTRACT_ADDRESS>", // Ex: 0x1fCc1CEf04A0B0121faD5AF38C06F10c44240787
 	})
 	if err != nil {
 		panic(err)
