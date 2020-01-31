@@ -20,4 +20,5 @@ mockgen/all:
 		-source=./libs/vclient/interface.go \
 		-destination=./libs/vclient/mocks/mocked_interfaces.go \
 		-package mocks \
+		-imports vabi=github.com/velo-protocol/DRSv2/go/abi \
 		-mock_names Connection=MockConnection,DRSContract=MockDRSContract,HeartContract=MockHeartContract,TxHelper=MockTxHelper
