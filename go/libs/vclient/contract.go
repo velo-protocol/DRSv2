@@ -24,3 +24,11 @@ func NewContract(drs DRSContract, heart HeartContract) *Contract {
 		heartAbi: &heartAbi,
 	}
 }
+
+func (c *Contract) DRS() DRSContract {
+	return c.drs
+}
+
+func (c *Contract) Heart() HeartContract {
+	return c.heart
+}
