@@ -185,7 +185,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		assert.Contains(t, err.Error(), expectedMsg)
 	})
 
-	t.Run("error, txHelper.ExtractSetupEvent returns an error", func(t *testing.T) {
+	t.Run("error, txHelper.ExtractMintEvent returns an error", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 

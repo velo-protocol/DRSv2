@@ -82,7 +82,7 @@ func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintFromCo
 		return nil, err
 	}
 
-	event, err := c.txHelper.ExtractMintEvent("Mint", receipt.Logs[0])
+	event, err := c.txHelper.ExtractMintEvent("Mint", receipt.Logs[12])
 	if err != nil {
 		return nil, err
 	}

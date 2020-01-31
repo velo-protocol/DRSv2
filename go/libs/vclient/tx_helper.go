@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
 	"github.com/velo-protocol/DRSv2/go/abi"
@@ -58,9 +59,11 @@ func (h *txHelper) ExtractMintEvent(eventName string, log *types.Log) (*vabi.Dig
 	}
 
 	// extract indexed field
-	if len(log.Topics) > 1 {
+	if len(log.Topics) < 3 {
 		return nil, errors.New("fail to parse indexed param of an event")
 	}
-	event.CollateralAssetCode = utils.BytesToBytes32(log.Topics[1].Bytes())
+
+	event.AssetAddress = common.BytesToAddress(log.Topics[1].Bytes())
+	event.CollateralAssetCode = utils.BytesToBytes32(log.Topics[2].Bytes())
 	return event, nil
 }
