@@ -6,12 +6,12 @@ package mocks
 
 import (
 	context "context"
-	go_ethereum "github.com/ethereum/go-ethereum"
+	ethereum "github.com/ethereum/go-ethereum"
 	bind "github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
 	types "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
-	abi "github.com/velo-protocol/DRSv2/go/abi"
+	vabi "github.com/velo-protocol/DRSv2/go/abi"
 	big "math/big"
 	reflect "reflect"
 )
@@ -55,7 +55,7 @@ func (mr *MockConnectionMockRecorder) CodeAt(ctx, contract, blockNumber interfac
 }
 
 // CallContract mocks base method
-func (m *MockConnection) CallContract(ctx context.Context, call go_ethereum.CallMsg, blockNumber *big.Int) ([]byte, error) {
+func (m *MockConnection) CallContract(ctx context.Context, call ethereum.CallMsg, blockNumber *big.Int) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CallContract", ctx, call, blockNumber)
 	ret0, _ := ret[0].([]byte)
@@ -115,7 +115,7 @@ func (mr *MockConnectionMockRecorder) SuggestGasPrice(ctx interface{}) *gomock.C
 }
 
 // EstimateGas mocks base method
-func (m *MockConnection) EstimateGas(ctx context.Context, call go_ethereum.CallMsg) (uint64, error) {
+func (m *MockConnection) EstimateGas(ctx context.Context, call ethereum.CallMsg) (uint64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "EstimateGas", ctx, call)
 	ret0, _ := ret[0].(uint64)
@@ -144,7 +144,7 @@ func (mr *MockConnectionMockRecorder) SendTransaction(ctx, tx interface{}) *gomo
 }
 
 // FilterLogs mocks base method
-func (m *MockConnection) FilterLogs(ctx context.Context, query go_ethereum.FilterQuery) ([]types.Log, error) {
+func (m *MockConnection) FilterLogs(ctx context.Context, query ethereum.FilterQuery) ([]types.Log, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FilterLogs", ctx, query)
 	ret0, _ := ret[0].([]types.Log)
@@ -159,10 +159,10 @@ func (mr *MockConnectionMockRecorder) FilterLogs(ctx, query interface{}) *gomock
 }
 
 // SubscribeFilterLogs mocks base method
-func (m *MockConnection) SubscribeFilterLogs(ctx context.Context, query go_ethereum.FilterQuery, ch chan<- types.Log) (go_ethereum.Subscription, error) {
+func (m *MockConnection) SubscribeFilterLogs(ctx context.Context, query ethereum.FilterQuery, ch chan<- types.Log) (ethereum.Subscription, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SubscribeFilterLogs", ctx, query, ch)
-	ret0, _ := ret[0].(go_ethereum.Subscription)
+	ret0, _ := ret[0].(ethereum.Subscription)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -258,6 +258,23 @@ func (mr *MockDRSContractMockRecorder) GetExchange(opts, assetCode interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExchange", reflect.TypeOf((*MockDRSContract)(nil).GetExchange), opts, assetCode)
 }
 
+// CollateralHealthCheck mocks base method
+func (m *MockDRSContract) CollateralHealthCheck(opts *bind.CallOpts, assetCode string) ([32]byte, *big.Int, *big.Int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CollateralHealthCheck", opts, assetCode)
+	ret0, _ := ret[0].([32]byte)
+	ret1, _ := ret[1].(*big.Int)
+	ret2, _ := ret[2].(*big.Int)
+	ret3, _ := ret[3].(error)
+	return ret0, ret1, ret2, ret3
+}
+
+// CollateralHealthCheck indicates an expected call of CollateralHealthCheck
+func (mr *MockDRSContractMockRecorder) CollateralHealthCheck(opts, assetCode interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CollateralHealthCheck", reflect.TypeOf((*MockDRSContract)(nil).CollateralHealthCheck), opts, assetCode)
+}
+
 // MockHeartContract is a mock of HeartContract interface
 type MockHeartContract struct {
 	ctrl     *gomock.Controller
@@ -311,6 +328,89 @@ func (mr *MockHeartContractMockRecorder) SetTrustedPartner(opts, address interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetTrustedPartner", reflect.TypeOf((*MockHeartContract)(nil).SetTrustedPartner), opts, address)
 }
 
+// GetStableCreditCount mocks base method
+func (m *MockHeartContract) GetStableCreditCount(opts *bind.CallOpts) (uint8, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetStableCreditCount", opts)
+	ret0, _ := ret[0].(uint8)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetStableCreditCount indicates an expected call of GetStableCreditCount
+func (mr *MockHeartContractMockRecorder) GetStableCreditCount(opts interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStableCreditCount", reflect.TypeOf((*MockHeartContract)(nil).GetStableCreditCount), opts)
+}
+
+// GetRecentStableCredit mocks base method
+func (m *MockHeartContract) GetRecentStableCredit(opts *bind.CallOpts) (common.Address, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRecentStableCredit", opts)
+	ret0, _ := ret[0].(common.Address)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRecentStableCredit indicates an expected call of GetRecentStableCredit
+func (mr *MockHeartContractMockRecorder) GetRecentStableCredit(opts interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRecentStableCredit", reflect.TypeOf((*MockHeartContract)(nil).GetRecentStableCredit), opts)
+}
+
+// GetNextStableCredit mocks base method
+func (m *MockHeartContract) GetNextStableCredit(opts *bind.CallOpts, stableCreditId [32]byte) (common.Address, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNextStableCredit", opts, stableCreditId)
+	ret0, _ := ret[0].(common.Address)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNextStableCredit indicates an expected call of GetNextStableCredit
+func (mr *MockHeartContractMockRecorder) GetNextStableCredit(opts, stableCreditId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNextStableCredit", reflect.TypeOf((*MockHeartContract)(nil).GetNextStableCredit), opts, stableCreditId)
+}
+
+// MockStableCreditContract is a mock of StableCreditContract interface
+type MockStableCreditContract struct {
+	ctrl     *gomock.Controller
+	recorder *MockStableCreditContractMockRecorder
+}
+
+// MockStableCreditContractMockRecorder is the mock recorder for MockStableCreditContract
+type MockStableCreditContractMockRecorder struct {
+	mock *MockStableCreditContract
+}
+
+// NewMockStableCreditContract creates a new mock instance
+func NewMockStableCreditContract(ctrl *gomock.Controller) *MockStableCreditContract {
+	mock := &MockStableCreditContract{ctrl: ctrl}
+	mock.recorder = &MockStableCreditContractMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockStableCreditContract) EXPECT() *MockStableCreditContractMockRecorder {
+	return m.recorder
+}
+
+// StableCreditAssetCode mocks base method
+func (m *MockStableCreditContract) StableCreditAssetCode(opts *bind.CallOpts) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StableCreditAssetCode", opts)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// StableCreditAssetCode indicates an expected call of StableCreditAssetCode
+func (mr *MockStableCreditContractMockRecorder) StableCreditAssetCode(opts interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StableCreditAssetCode", reflect.TypeOf((*MockStableCreditContract)(nil).StableCreditAssetCode), opts)
+}
+
 // MockTxHelper is a mock of TxHelper interface
 type MockTxHelper struct {
 	ctrl     *gomock.Controller
@@ -350,10 +450,10 @@ func (mr *MockTxHelperMockRecorder) ConfirmTx(ctx, tx interface{}) *gomock.Call 
 }
 
 // ExtractSetupEvent mocks base method
-func (m *MockTxHelper) ExtractSetupEvent(eventName string, log *types.Log) (*abi.DigitalReserveSystemSetup, error) {
+func (m *MockTxHelper) ExtractSetupEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemSetup, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExtractSetupEvent", eventName, log)
-	ret0, _ := ret[0].(*abi.DigitalReserveSystemSetup)
+	ret0, _ := ret[0].(*vabi.DigitalReserveSystemSetup)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -365,10 +465,10 @@ func (mr *MockTxHelperMockRecorder) ExtractSetupEvent(eventName, log interface{}
 }
 
 // ExtractMintEvent mocks base method
-func (m *MockTxHelper) ExtractMintEvent(eventName string, log *types.Log) (*abi.DigitalReserveSystemMint, error) {
+func (m *MockTxHelper) ExtractMintEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemMint, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExtractMintEvent", eventName, log)
-	ret0, _ := ret[0].(*abi.DigitalReserveSystemMint)
+	ret0, _ := ret[0].(*vabi.DigitalReserveSystemMint)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -377,4 +477,20 @@ func (m *MockTxHelper) ExtractMintEvent(eventName string, log *types.Log) (*abi.
 func (mr *MockTxHelperMockRecorder) ExtractMintEvent(eventName, log interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractMintEvent", reflect.TypeOf((*MockTxHelper)(nil).ExtractMintEvent), eventName, log)
+}
+
+// StableCreditAssetCode mocks base method
+func (m *MockTxHelper) StableCreditAssetCode(addr common.Address) (*string, *[32]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StableCreditAssetCode", addr)
+	ret0, _ := ret[0].(*string)
+	ret1, _ := ret[1].(*[32]byte)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// StableCreditAssetCode indicates an expected call of StableCreditAssetCode
+func (mr *MockTxHelperMockRecorder) StableCreditAssetCode(addr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StableCreditAssetCode", reflect.TypeOf((*MockTxHelper)(nil).StableCreditAssetCode), addr)
 }
