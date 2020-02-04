@@ -8,11 +8,6 @@ import (
 	"regexp"
 )
 
-//	function redeem(
-//	uint256 amount,
-//	string calldata assetCode
-//) external returns (bool);
-
 type RedeemStableCreditInput struct {
 	RedeemAmount	string
 	AssetCode		string
@@ -53,17 +48,13 @@ func (c *Client) RedeemStableCredit(input *RedeemStableCreditInput) (bool, error
 		return false, err
 	}
 
-	assetCode, collateralAssetCode, priceInCollateralPerAssetUnit, err := c.contract.drs.GetExchange(
-		nil,
-		input.AssetCode,
-	)
+	abiInput := input.ToAbiInput()
+
+	redeemSuccess, err := c.contract.drs.Redeem(abiInput.RedeemAmount, abiInput.AssetCode)
+
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
-	return &RedeemStableCreditOutput{
-		AssetCode:                     assetCode,
-		CollateralAssetCode:           collateralAssetCode,
-		PriceInCollateralPerAssetUnit: priceInCollateralPerAssetUnit,
-	}, nil
+	return redeemSuccess, nil
 }
