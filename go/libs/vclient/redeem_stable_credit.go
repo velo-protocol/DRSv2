@@ -22,6 +22,10 @@ func (i *RedeemStableCreditInput) Validate() error {
 		return errors.New("RedeemAmount must be positive")
 	}
 
+	if len(i.AssetCode) == 0 {
+		return errors.New("assetCode must not be blank")
+	}
+
 	if matched, _ := regexp.MatchString(`^[A-Za-z0-9]{1,7}$`, i.AssetCode); !matched {
 		return errors.New("invalid assetCode format")
 	}
