@@ -9,8 +9,8 @@ import (
 )
 
 type RedeemStableCreditInput struct {
-	RedeemAmount	string
-	AssetCode		string
+	RedeemAmount    string
+	AssetCode       string
 }
 
 func (i *RedeemStableCreditInput) Validate() error {
@@ -30,15 +30,15 @@ func (i *RedeemStableCreditInput) Validate() error {
 }
 
 type RedeemStableCreditAbiInput struct {
-	RedeemAmount	*big.Int
-	AssetCode		string
+	RedeemAmount    *big.Int
+	AssetCode       string
 }
 
 func (i *RedeemStableCreditInput) ToAbiInput() *RedeemStableCreditAbiInput {
 	redeemAmount, _ := utils.StringToAmount(i.RedeemAmount)
 	return &RedeemStableCreditAbiInput{
-		AssetCode:			i.AssetCode,
-		RedeemAmount:		redeemAmount,
+		AssetCode:       i.AssetCode,
+		RedeemAmount:    redeemAmount,
 	}
 }
 
