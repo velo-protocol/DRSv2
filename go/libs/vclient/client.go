@@ -92,3 +92,11 @@ func validateContractAddress(contractAddress ContractAddress) error {
 
 	return nil
 }
+
+func (c *Client) Contract() *Contract {
+	return c.contract
+}
+
+func (c *Client) Conn() Connection {
+	return c.conn
+}
