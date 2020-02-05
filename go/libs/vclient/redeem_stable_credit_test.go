@@ -1,7 +1,13 @@
 package vclient
 
 import (
+	"context"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/golang/mock/gomock"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	vabi "github.com/velo-protocol/DRSv2/go/abi"
 	"testing"
 )
 
@@ -11,16 +17,6 @@ func TestValidateRedeemStableCredit(t *testing.T) {
 		err := redeemStableCreditInput.Validate()
 
 		assert.Nil(t, err)
-	})
-
-	t.Run("error, validation fail invalid collateralAmount is a number with greater than 7 decimal places", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "10.12345678",
-		}).Validate()
-
-		assert.Error(t, err)
-		assert.Equal(t, "invalid collateralAmount format", err.Error())
 	})
 
 	t.Run("fail, should throw error invalid RedeemAmount format", func(t *testing.T) {
@@ -67,6 +63,125 @@ func TestValidateRedeemStableCreditToAbiInput(t *testing.T) {
 	})
 }
 
-func TestRedeemStableCredit(t *testing.T) {
-	// TODO VELO-657
+
+func TestClient_RedeemStableCredit(t *testing.T) {
+
+	t.Run("Success", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &RedeemStableCreditInput{
+			RedeemAmount: "104",
+			AssetCode: "vUSD",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			Redeem(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.RedeemAmount, abiInput.AssetCode).
+			Return(&types.Transaction{}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			Return(&types.Receipt{
+				Logs: []*types.Log{
+					{},
+				},
+			}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ExtractRedeemEvent("Redeem", gomock.AssignableToTypeOf(&types.Log{})).
+			Return(&vabi.DigitalReserveSystemRedeem{}, nil)
+
+		result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
+		assert.NoError(t, err)
+		assert.NotNil(t, result.Tx)
+		assert.NotNil(t, result.Receipt)
+		assert.NotNil(t, result.Event)
+	})
+
+	t.Run("error, validation fail", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		result, err := testHelper.Client.RedeemStableCredit(context.Background(), &RedeemStableCreditInput{})
+		assert.Error(t, err)
+		assert.Nil(t, result)
+	})
+
+	t.Run("error, drs.RedeemStableCredit returns an error", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		expectedMsg := "some error has occurred"
+
+		input := &RedeemStableCreditInput{
+			RedeemAmount: "104",
+			AssetCode: "vUSD",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			Redeem(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.RedeemAmount, abiInput.AssetCode).
+			Return(nil, errors.New(expectedMsg))
+
+		result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Contains(t, err.Error(), expectedMsg)
+	})
+
+	t.Run("error, txHelper.ConfirmTx returns an error", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		expectedMsg := "some error has occurred"
+
+		input := &RedeemStableCreditInput{
+			RedeemAmount: "104",
+			AssetCode: "vUSD",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			Redeem(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.RedeemAmount, abiInput.AssetCode).
+			Return(&types.Transaction{}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			Return(nil, errors.New(expectedMsg))
+
+		result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Contains(t, err.Error(), expectedMsg)
+	})
+
+	t.Run("error, txHelper.ExtractRedeemEvent returns an error", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		expectedMsg := "some error has occurred"
+
+		input := &RedeemStableCreditInput{
+			RedeemAmount: "104",
+			AssetCode: "vUSD",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			Redeem(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.RedeemAmount, abiInput.AssetCode).
+			Return(&types.Transaction{}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			Return(&types.Receipt{
+				Logs: []*types.Log{
+					{},
+				},
+			}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ExtractRedeemEvent("Redeem", gomock.AssignableToTypeOf(&types.Log{})).
+			Return(nil, errors.New(expectedMsg))
+
+		result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Contains(t, err.Error(), expectedMsg)
+	})
 }
