@@ -13,11 +13,23 @@ func TestValidateRedeemStableCredit(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("fail, should throw error invalid RedeemAmount format", func(t *testing.T) {
-		redeemStableCreditInput := &RedeemStableCreditInput{RedeemAmount: "ABC", AssetCode: "vUSD"}
-		err := redeemStableCreditInput.Validate()
+	t.Run("error, validation fail invalid collateralAmount is a number with greater than 7 decimal places", func(t *testing.T) {
+		err := (&MintFromCollateralAmountInput{
+			AssetCode:        "vUSD",
+			CollateralAmount: "10.12345678",
+		}).Validate()
 
-		assert.NotNil(t, err)
+		assert.Error(t, err)
+		assert.Equal(t, "invalid collateralAmount format", err.Error())
+	})
+
+	t.Run("fail, should throw error invalid RedeemAmount format", func(t *testing.T) {
+		err := (&RedeemStableCreditInput{
+			RedeemAmount: "10.12345678",
+			AssetCode: "vUSD",
+		}).Validate()
+
+		assert.Error(t, err)
 		assert.Equal(t, "invalid RedeemAmount format", err.Error())
 	})
 
@@ -46,14 +58,14 @@ func TestValidateRedeemStableCredit(t *testing.T) {
 	})
 }
 
-func TestValidateRedeemStableCreditToAbiInput(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		redeemStableCreditInput := &RedeemStableCreditInput{AssetCode: "vUSD"}
-		abiInput := redeemStableCreditInput.ToAbiInput()
-
-		assert.NotNil(t, abiInput)
-	})
-}
+//func TestValidateRedeemStableCreditToAbiInput(t *testing.T) {
+//	t.Run("success", func(t *testing.T) {
+//		redeemStableCreditInput := &RedeemStableCreditInput{AssetCode: "vUSD"}
+//		abiInput := redeemStableCreditInput.ToAbiInput()
+//
+//		assert.NotNil(t, abiInput)
+//	})
+//}
 
 //func TestRedeemStableCredit(t *testing.T) {
 //	t.Run("success", func(t *testing.T) {

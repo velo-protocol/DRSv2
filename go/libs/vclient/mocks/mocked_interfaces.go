@@ -244,18 +244,18 @@ func (mr *MockDRSContractMockRecorder) GetExchange(opts, assetCode interface{}) 
 }
 
 // Redeem mocks base method
-func (m *MockDRSContract) Redeem(stableCreditAmount *big.Int, assetCode string) (bool, error) {
+func (m *MockDRSContract) Redeem(opts *bind.TransactOpts, stableCreditAmount *big.Int, assetCode string) (*types.Transaction, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Redeem", stableCreditAmount, assetCode)
-	ret0, _ := ret[0].(bool)
+	ret := m.ctrl.Call(m, "Redeem", opts, stableCreditAmount, assetCode)
+	ret0, _ := ret[0].(*types.Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Redeem indicates an expected call of Redeem
-func (mr *MockDRSContractMockRecorder) Redeem(stableCreditAmount, assetCode interface{}) *gomock.Call {
+func (mr *MockDRSContractMockRecorder) Redeem(opts, stableCreditAmount, assetCode interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Redeem", reflect.TypeOf((*MockDRSContract)(nil).Redeem), stableCreditAmount, assetCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Redeem", reflect.TypeOf((*MockDRSContract)(nil).Redeem), opts, stableCreditAmount, assetCode)
 }
 
 // MockHeartContract is a mock of HeartContract interface
@@ -362,4 +362,19 @@ func (m *MockTxHelper) ExtractSetupEvent(eventName string, log *types.Log) (*vab
 func (mr *MockTxHelperMockRecorder) ExtractSetupEvent(eventName, log interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractSetupEvent", reflect.TypeOf((*MockTxHelper)(nil).ExtractSetupEvent), eventName, log)
+}
+
+// ExtractRedeemEvent mocks base method
+func (m *MockTxHelper) ExtractRedeemEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemRedeem, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExtractRedeemEvent", eventName, log)
+	ret0, _ := ret[0].(*vabi.DigitalReserveSystemRedeem)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExtractRedeemEvent indicates an expected call of ExtractRedeemEvent
+func (mr *MockTxHelperMockRecorder) ExtractRedeemEvent(eventName, log interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractRedeemEvent", reflect.TypeOf((*MockTxHelper)(nil).ExtractRedeemEvent), eventName, log)
 }
