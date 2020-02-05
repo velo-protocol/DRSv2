@@ -92,6 +92,15 @@ pipeline {
                         )
                     }
                 }
+                stage('CD-Rename Env file') {
+                    steps {
+                        sh """
+                                echo "Rename .env.example file"
+                                mv .env.example .env
+                                cat .env
+                        """
+                    }
+                }
                 stage('CD-Create Env File') {
                     steps {
                         sh """
