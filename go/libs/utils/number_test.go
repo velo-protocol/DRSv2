@@ -6,31 +6,6 @@ import (
 	"testing"
 )
 
-var tests = []struct {
-	input     decimal.Decimal
-	isDecimal bool
-}{
-	{decimal.NewFromFloat(100000000000), true},
-	{decimal.NewFromFloat(10000000000), true},
-	{decimal.NewFromFloat(1000000000), true},
-	{decimal.NewFromFloat(100000000), true},
-	{decimal.NewFromFloat(10000000), true},
-	{decimal.NewFromFloat(1000000), true},
-	{decimal.NewFromFloat(100000), true},
-	{decimal.NewFromFloat(10000), true},
-	{decimal.NewFromFloat(1000), true},
-	{decimal.NewFromFloat(100), true},
-	{decimal.NewFromFloat(100.1), true},
-	{decimal.NewFromFloat(100.12), true},
-	{decimal.NewFromFloat(100.123), true},
-	{decimal.NewFromFloat(100.1234), true},
-	{decimal.NewFromFloat(100.12345), true},
-	{decimal.NewFromFloat(100.123456), true},
-	{decimal.NewFromFloat(100.1234567), true},
-	{decimal.NewFromFloat(100.12345678), false},
-	{decimal.NewFromFloat(100.123456789), false},
-}
-
 func TestIsDecimalValid(t *testing.T) {
 	type args struct {
 		s decimal.Decimal

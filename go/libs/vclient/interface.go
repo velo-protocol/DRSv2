@@ -16,6 +16,7 @@ type Connection interface {
 
 type DRSContract interface {
 	Setup(opts *bind.TransactOpts, collateralAssetCode [32]byte, peggedCurrency [32]byte, assetCode string, peggedValue *big.Int) (*types.Transaction, error)
+	MintFromCollateralAmount(opts *bind.TransactOpts, netCollateralAmount *big.Int, assetCode string) (*types.Transaction, error)
 	GetExchange(opts *bind.CallOpts, assetCode string) (string, [32]byte, *big.Int, error)
 }
 
@@ -27,4 +28,5 @@ type HeartContract interface {
 type TxHelper interface {
 	ConfirmTx(ctx context.Context, tx *types.Transaction) (*types.Receipt, error)
 	ExtractSetupEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemSetup, error)
+	ExtractMintEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemMint, error)
 }
