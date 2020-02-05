@@ -106,27 +106,27 @@ func TestClient_RedeemStableCredit(t *testing.T) {
 		assert.Nil(t, result)
 	})
 
-	t.Run("error, drs.RedeemStableCredit returns an error", func(t *testing.T) {
-		testHelper := testHelperWithMock(t)
-		defer testHelper.MockController.Finish()
-
-		expectedMsg := "some error has occurred"
-
-		input := &RedeemStableCreditInput{
-			RedeemAmount: "104",
-			AssetCode: "vUSD",
-		}
-		abiInput := input.ToAbiInput()
-
-		testHelper.MockDRSContract.EXPECT().
-			Redeem(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.RedeemAmount, abiInput.AssetCode).
-			Return(nil, errors.New(expectedMsg))
-
-		result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
-		assert.Error(t, err)
-		assert.Nil(t, result)
-		assert.Contains(t, err.Error(), expectedMsg)
-	})
+	//t.Run("error, drs.RedeemStableCredit returns an error", func(t *testing.T) {
+	//	testHelper := testHelperWithMock(t)
+	//	defer testHelper.MockController.Finish()
+	//
+	//	expectedMsg := "some error has occurred"
+	//
+	//	input := &RedeemStableCreditInput{
+	//		RedeemAmount: "104",
+	//		AssetCode: "vUSD",
+	//	}
+	//	abiInput := input.ToAbiInput()
+	//
+	//	testHelper.MockDRSContract.EXPECT().
+	//		Redeem(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.RedeemAmount, abiInput.AssetCode).
+	//		Return(nil, errors.New(expectedMsg))
+	//
+	//	result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
+	//	assert.Error(t, err)
+	//	assert.Nil(t, result)
+	//	assert.Contains(t, err.Error(), expectedMsg)
+	//})
 
 	t.Run("error, txHelper.ConfirmTx returns an error", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
