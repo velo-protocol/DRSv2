@@ -243,6 +243,21 @@ func (mr *MockDRSContractMockRecorder) GetExchange(opts, assetCode interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExchange", reflect.TypeOf((*MockDRSContract)(nil).GetExchange), opts, assetCode)
 }
 
+// Redeem mocks base method
+func (m *MockDRSContract) Redeem(stableCreditAmount *big.Int, assetCode string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Redeem", stableCreditAmount, assetCode)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Redeem indicates an expected call of Redeem
+func (mr *MockDRSContractMockRecorder) Redeem(stableCreditAmount, assetCode interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Redeem", reflect.TypeOf((*MockDRSContract)(nil).Redeem), stableCreditAmount, assetCode)
+}
+
 // MockHeartContract is a mock of HeartContract interface
 type MockHeartContract struct {
 	ctrl     *gomock.Controller
