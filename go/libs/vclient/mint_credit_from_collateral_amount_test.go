@@ -151,6 +151,28 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		assert.Nil(t, result)
 	})
 
+	t.Run("error, drs.MintFromCollateralAmount returns an error caller must be a trusted partner", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		expectedMsg := "The message sender is not found or does not have sufficient permission to perform mint stable credit"
+
+		input := &MintFromCollateralAmountInput{
+			AssetCode:        "vUSD",
+			CollateralAmount: "100",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			Return(nil, errors.New("revert DigitalReserveSystem.onlyTrustedPartner: caller must be a trusted partner"))
+
+		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Contains(t, err.Error(), expectedMsg)
+	})
+
 	t.Run("error, drs.MintFromCollateralAmount returns an error", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
