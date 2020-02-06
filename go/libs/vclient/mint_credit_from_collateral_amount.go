@@ -11,6 +11,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"math/big"
 	"regexp"
+	"strings"
 )
 
 type MintFromCollateralAmountInput struct {
@@ -93,6 +94,9 @@ func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintFromCo
 	opt.GasLimit = constants.GasLimit
 	tx, err := c.contract.drs.MintFromCollateralAmount(opt, abiInput.NetCollateralAmount, abiInput.AssetCode)
 	if err != nil {
+		if strings.Contains(err.Error(), "caller must be a trusted partner") {
+			return nil, errors.New("the message sender is not found or does not have sufficient permission to perform mint stable credit")
+		}
 		return nil, err
 	}
 
