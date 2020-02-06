@@ -44,6 +44,7 @@ func initTest(t *testing.T) *helper {
 		mockController: mockCtrl,
 		loggerHook:     hook,
 		done: func() {
+			mockCtrl.Finish()
 			hook.Reset()
 			monkey.UnpatchAll()
 		},

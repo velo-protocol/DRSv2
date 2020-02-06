@@ -21,6 +21,7 @@ mockgen/db:
 		-destination=./layers/mocks/database.go \
 		-mock_names Repository=MockDbRepo \
 		-package mocks
+
 mockgen/console:
 	mockgen \
 		-source=./utils/console/interface.go \

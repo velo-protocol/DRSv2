@@ -38,6 +38,7 @@ func initTest(t *testing.T) helper {
 		mockController:    mockCtrl,
 		logHook:           hook,
 		done: func() {
+			mockCtrl.Finish()
 		},
 	}
 }
