@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
 	"github.com/velo-protocol/DRSv2/go/abi"
@@ -68,14 +67,12 @@ type MintFromCollateralAmountEvent struct {
 }
 
 func (i *MintFromCollateralAmountEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemMint) error {
-	err := copier.Copy(i, eventAbi)
-	if err != nil {
-		return err
-	}
+	i.AssetCode = eventAbi.AssetCode
 	i.MintAmount = utils.AmountToString(eventAbi.MintAmount)
 	i.AssetAddress = eventAbi.AssetAddress.String()
 	i.CollateralAssetCode = utils.Byte32ToString(eventAbi.CollateralAssetCode)
 	i.CollateralAmount = utils.AmountToString(eventAbi.CollateralAmount)
+	i.Raw = eventAbi.Raw
 	return nil
 }
 
