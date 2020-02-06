@@ -1,11 +1,13 @@
 package vclient
 
 import (
+	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
 	"github.com/velo-protocol/DRSv2/go/constants"
+	"strings"
 )
 
 type WhitelistGovernorInput struct {
@@ -13,7 +15,8 @@ type WhitelistGovernorInput struct {
 }
 
 type WhitelistGovernorOutput struct {
-	Tx *types.Transaction
+	Tx      *types.Transaction
+	Receipt *types.Receipt
 }
 
 type WhitelistGovernorAbiInput struct {
@@ -38,20 +41,37 @@ func (i *WhitelistGovernorInput) ToAbiInput() WhitelistGovernorAbiInput {
 	}
 }
 
-func (c *Client) WhitelistGovernor(input *WhitelistGovernorInput) (*WhitelistGovernorOutput, error) {
+func (c *Client) WhitelistGovernor(ctx context.Context, input *WhitelistGovernorInput) (*WhitelistGovernorOutput, error) {
 	err := input.Validate()
 	if err != nil {
 		return nil, err
+	}
+
+	isGovernor, err := c.contract.heart.IsGovernor(nil, input.ToAbiInput().Address)
+	if err != nil {
+		return nil, err
+	}
+	if isGovernor {
+		return nil, errors.Errorf("the address %s has already been whitelisted as governor", input.Address)
 	}
 
 	opt := bind.NewKeyedTransactor(&c.privateKey)
 	opt.GasLimit = constants.GasLimit
 	tx, err := c.contract.heart.SetGovernor(opt, input.ToAbiInput().Address)
 	if err != nil {
+		if strings.Contains(err.Error(), "the message sender is not found or does not have sufficient permission") {
+			return nil, errors.New("the message sender is not found or does not have sufficient permission to perform whitelist user")
+		}
+		return nil, err
+	}
+
+	receipt, err := c.txHelper.ConfirmTx(ctx, tx)
+	if err != nil {
 		return nil, err
 	}
 
 	return &WhitelistGovernorOutput{
-		Tx: tx,
+		Tx:      tx,
+		Receipt: receipt,
 	}, nil
 }
