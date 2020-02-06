@@ -3,6 +3,7 @@
 package vclient
 
 import (
+	"context"
 	"log"
 )
 
@@ -20,7 +21,7 @@ func ExampleClient_WhitelistGovernor() {
 		panic(err)
 	}
 
-	result, err := client.WhitelistGovernor(&WhitelistGovernorInput{Address: "0xcB74De0a5c8E24E81bEd76D57C4D89fcAfa7B6f"})
+	result, err := client.WhitelistGovernor(context.Background(), &WhitelistGovernorInput{Address: "0xcB74De0a5c8E24E81bEd76D57C4D89fcAfa7B6f"})
 	if err != nil {
 		panic(err)
 	}

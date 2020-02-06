@@ -24,7 +24,9 @@ type DRSContract interface {
 
 type HeartContract interface {
 	SetGovernor(opts *bind.TransactOpts, address common.Address) (*types.Transaction, error)
+	IsGovernor(opts *bind.CallOpts, addr common.Address) (bool, error)
 	SetTrustedPartner(opts *bind.TransactOpts, address common.Address) (*types.Transaction, error)
+	IsTrustedPartner(opts *bind.CallOpts, addr common.Address) (bool, error)
 
 	GetStableCreditCount(opts *bind.CallOpts) (uint8, error)
 	GetRecentStableCredit(opts *bind.CallOpts) (common.Address, error)

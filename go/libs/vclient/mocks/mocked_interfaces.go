@@ -313,6 +313,21 @@ func (mr *MockHeartContractMockRecorder) SetGovernor(opts, address interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetGovernor", reflect.TypeOf((*MockHeartContract)(nil).SetGovernor), opts, address)
 }
 
+// IsGovernor mocks base method
+func (m *MockHeartContract) IsGovernor(opts *bind.CallOpts, addr common.Address) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsGovernor", opts, addr)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// IsGovernor indicates an expected call of IsGovernor
+func (mr *MockHeartContractMockRecorder) IsGovernor(opts, addr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsGovernor", reflect.TypeOf((*MockHeartContract)(nil).IsGovernor), opts, addr)
+}
+
 // SetTrustedPartner mocks base method
 func (m *MockHeartContract) SetTrustedPartner(opts *bind.TransactOpts, address common.Address) (*types.Transaction, error) {
 	m.ctrl.T.Helper()
@@ -326,6 +341,21 @@ func (m *MockHeartContract) SetTrustedPartner(opts *bind.TransactOpts, address c
 func (mr *MockHeartContractMockRecorder) SetTrustedPartner(opts, address interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetTrustedPartner", reflect.TypeOf((*MockHeartContract)(nil).SetTrustedPartner), opts, address)
+}
+
+// IsTrustedPartner mocks base method
+func (m *MockHeartContract) IsTrustedPartner(opts *bind.CallOpts, addr common.Address) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsTrustedPartner", opts, addr)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// IsTrustedPartner indicates an expected call of IsTrustedPartner
+func (mr *MockHeartContractMockRecorder) IsTrustedPartner(opts, addr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsTrustedPartner", reflect.TypeOf((*MockHeartContract)(nil).IsTrustedPartner), opts, addr)
 }
 
 // GetStableCreditCount mocks base method
