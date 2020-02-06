@@ -2,6 +2,7 @@ package vclient
 
 import (
 	"context"
+	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -237,11 +238,13 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		}
 		abiInput := input.ToAbiInput()
 
+		tx := new(types.Transaction)
+
 		testHelper.MockDRSContract.EXPECT().
 			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
-			Return(&types.Transaction{}, nil)
+			Return(tx, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(tx)).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{},
@@ -251,6 +254,6 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
-		assert.Equal(t, "no mint log emitting", err.Error())
+		assert.Equal(t, fmt.Sprintf("cannot find mint event from transaction receipt %s", tx.Hash().String()), err.Error())
 	})
 }
