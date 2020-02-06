@@ -22,7 +22,7 @@ func TestValidateRedeemStableCredit(t *testing.T) {
 	t.Run("fail, should throw error invalid RedeemAmount format", func(t *testing.T) {
 		err := (&RedeemStableCreditInput{
 			RedeemAmount: "10.12345678",
-			AssetCode: "vUSD",
+			AssetCode:    "vUSD",
 		}).Validate()
 
 		assert.Error(t, err)
@@ -63,7 +63,6 @@ func TestValidateRedeemStableCreditToAbiInput(t *testing.T) {
 	})
 }
 
-
 func TestClient_RedeemStableCredit(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
@@ -72,7 +71,7 @@ func TestClient_RedeemStableCredit(t *testing.T) {
 
 		input := &RedeemStableCreditInput{
 			RedeemAmount: "104",
-			AssetCode: "vUSD",
+			AssetCode:    "vUSD",
 		}
 		abiInput := input.ToAbiInput()
 
@@ -114,7 +113,7 @@ func TestClient_RedeemStableCredit(t *testing.T) {
 
 		input := &RedeemStableCreditInput{
 			RedeemAmount: "104",
-			AssetCode: "vUSD",
+			AssetCode:    "vUSD",
 		}
 		abiInput := input.ToAbiInput()
 
@@ -139,7 +138,7 @@ func TestClient_RedeemStableCredit(t *testing.T) {
 
 		input := &RedeemStableCreditInput{
 			RedeemAmount: "104",
-			AssetCode: "vUSD",
+			AssetCode:    "vUSD",
 		}
 		abiInput := input.ToAbiInput()
 
