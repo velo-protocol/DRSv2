@@ -10,6 +10,7 @@ require (
 	github.com/fatih/color v1.7.0
 	github.com/golang/mock v1.4.0
 	github.com/jarcoal/httpmock v1.0.4 // indirect
+	github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a
 	github.com/manifoldco/promptui v0.7.0
 	github.com/olekukonko/tablewriter v0.0.2-0.20190409134802-7e037d187b0c
 	github.com/pkg/errors v0.8.1

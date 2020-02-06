@@ -126,7 +126,13 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 			}, nil)
 		testHelper.MockTxHelper.EXPECT().
 			ExtractMintEvent("Mint", gomock.AssignableToTypeOf(&types.Log{})).
-			Return(&vabi.DigitalReserveSystemMint{}, nil)
+			Return(&vabi.DigitalReserveSystemMint{
+				AssetCode:           "vUSD",
+				MintAmount:          big.NewInt(1000000000),
+				AssetAddress:        common.Address{},
+				CollateralAssetCode: [32]byte{},
+				CollateralAmount:    big.NewInt(1000000000),
+			}, nil)
 
 		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
 		assert.NoError(t, err)

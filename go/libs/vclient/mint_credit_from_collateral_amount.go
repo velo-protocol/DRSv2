@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
 	"github.com/velo-protocol/DRSv2/go/abi"
@@ -57,10 +58,31 @@ func (i *MintFromCollateralAmountInput) ToAbiInput() *MintFromCollateralAmountAb
 	}
 }
 
+type MintFromCollateralAmountEvent struct {
+	AssetCode           string
+	MintAmount          string
+	AssetAddress        string
+	CollateralAssetCode string
+	CollateralAmount    string
+	Raw                 types.Log
+}
+
+func (i *MintFromCollateralAmountEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemMint) error {
+	err := copier.Copy(i, eventAbi)
+	if err != nil {
+		return err
+	}
+	i.MintAmount = utils.AmountToString(eventAbi.MintAmount)
+	i.AssetAddress = eventAbi.AssetAddress.String()
+	i.CollateralAssetCode = utils.Byte32ToString(eventAbi.CollateralAssetCode)
+	i.CollateralAmount = utils.AmountToString(eventAbi.CollateralAmount)
+	return nil
+}
+
 type MintFromCollateralAmountCreditOutput struct {
 	Tx      *types.Transaction
 	Receipt *types.Receipt
-	Event   *vabi.DigitalReserveSystemMint
+	Event   *MintFromCollateralAmountEvent
 }
 
 func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintFromCollateralAmountInput) (*MintFromCollateralAmountCreditOutput, error) {
@@ -87,7 +109,14 @@ func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintFromCo
 		return nil, errors.Errorf("cannot find mint event from transaction receipt %s", tx.Hash().String())
 	}
 
-	event, err := c.txHelper.ExtractMintEvent("Mint", eventLog)
+	eventAbi, err := c.txHelper.ExtractMintEvent("Mint", eventLog)
+	if err != nil {
+		return nil, err
+	}
+
+	event := new(MintFromCollateralAmountEvent)
+
+	err = event.ToEventOutput(eventAbi)
 	if err != nil {
 		return nil, err
 	}
