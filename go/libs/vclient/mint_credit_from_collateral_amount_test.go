@@ -155,7 +155,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		expectedMsg := "The message sender is not found or does not have sufficient permission to perform mint stable credit"
+		expectedMsg := "the message sender is not found or does not have sufficient permission to perform mint stable credit"
 
 		input := &MintFromCollateralAmountInput{
 			AssetCode:        "vUSD",
