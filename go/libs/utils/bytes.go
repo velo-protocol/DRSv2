@@ -1,5 +1,7 @@
 package utils
 
+import "bytes"
+
 func StringToByte32(s string) [32]byte {
 	var byteArr [32]byte
 	copy(byteArr[:], s)
@@ -7,7 +9,7 @@ func StringToByte32(s string) [32]byte {
 }
 
 func Byte32ToString(b [32]byte) string {
-	return string(b[:])
+	return string(bytes.Trim(b[:], "\x00"))
 }
 
 func BytesToBytes32(b []byte) [32]byte {
