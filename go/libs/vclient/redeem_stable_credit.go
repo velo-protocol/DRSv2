@@ -3,7 +3,6 @@ package vclient
 import (
 	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
@@ -63,26 +62,17 @@ func (i *RedeemStableCreditInput) ToAbiInput() *RedeemStableCreditAbiInput {
 type RedeemStableCreditEvent struct {
 	// all fields must be string formatted
 	AssetCode              string
-	StableCreditAmount     *big.Int
-	CollateralAssetAddress common.Address
-	CollateralAssetCode    [32]byte
-	CollateralAmount       *big.Int
-	Raw                    types.Log // Blockchain specific contextual infos
+	StableCreditAmount     string
+	CollateralAssetAddress string
+	CollateralAssetCode    string
+	CollateralAmount       string
+	Raw                    types.Log
 }
 
 type RedeemStableCreditOutput struct {
 	Tx      *types.Transaction
 	Receipt *types.Receipt
 	Event   *RedeemStableCreditEvent
-	// DigitalReserveSystemRedeem represents a Redeem event raised by the DigitalReserveSystem contract.
-	//type DigitalReserveSystemRedeem struct {
-	//	AssetCode              string
-	//	StableCreditAmount     *big.Int
-	//	CollateralAssetAddress common.Address
-	//	CollateralAssetCode    [32]byte
-	//	CollateralAmount       *big.Int
-	//	Raw                    types.Log // Blockchain specific contextual infos
-	//}
 }
 
 func (c *Client) RedeemStableCredit(ctx context.Context, input *RedeemStableCreditInput) (*RedeemStableCreditOutput, error) {
@@ -110,10 +100,14 @@ func (c *Client) RedeemStableCredit(ctx context.Context, input *RedeemStableCred
 	if err != nil {
 		return nil, err
 	}
-
-	// TODO convert from vabi.DigitalReserveSystemRedeem to RedeemStableCreditEvent
+	
 	redeemStableCreditEvent := &RedeemStableCreditEvent{
 		AssetCode:event.AssetCode,
+		StableCreditAmount:event.StableCreditAmount.String(),
+		CollateralAssetAddress:event.CollateralAssetAddress.String(),
+		CollateralAssetCode:string(event.CollateralAssetCode[:]),
+		CollateralAmount:event.CollateralAmount.String(),
+		Raw:event.Raw,
 	}
 	return &RedeemStableCreditOutput{
 		Tx:      tx,
