@@ -108,3 +108,18 @@ func (cfg *configuration) GetAccountDbPath() string {
 	}
 	return cfg.envBasedConfig.GetString(constants.CfgKeyAccountDbPath)
 }
+
+func (cfg *configuration) GetDefaultAccount() string {
+	if cfg.envBasedConfig == nil {
+		return ""
+	}
+	return cfg.envBasedConfig.GetString(constants.CfgKeyDefaultAccount)
+}
+
+func (cfg *configuration) SetDefaultAccount(account string) error {
+	if cfg.envBasedConfig == nil {
+		return errors.New("envBasedConfig is empty")
+	}
+	cfg.envBasedConfig.Set(constants.CfgKeyDefaultAccount, account)
+	return cfg.envBasedConfig.WriteConfig()
+}
