@@ -19,22 +19,22 @@ func TestValidateRedeemStableCredit(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("fail, should throw error invalid RedeemAmount format", func(t *testing.T) {
+	t.Run("fail, should throw error invalid redeemAmount format", func(t *testing.T) {
 		err := (&RedeemStableCreditInput{
 			RedeemAmount: "10.12345678",
 			AssetCode:    "vUSD",
 		}).Validate()
 
 		assert.Error(t, err)
-		assert.Equal(t, "invalid RedeemAmount format", err.Error())
+		assert.Equal(t, "invalid redeemAmount format", err.Error())
 	})
 
-	t.Run("fail, should throw error RedeemAmount must be positive", func(t *testing.T) {
+	t.Run("fail, should throw error redeemAmount must be positive", func(t *testing.T) {
 		redeemStableCreditInput := &RedeemStableCreditInput{RedeemAmount: "-2", AssetCode: "vUSD"}
 		err := redeemStableCreditInput.Validate()
 
 		assert.NotNil(t, err)
-		assert.Equal(t, "RedeemAmount must be positive", err.Error())
+		assert.Equal(t, "redeemAmount must be positive", err.Error())
 	})
 
 	t.Run("fail, should throw error assetCode must not be blank", func(t *testing.T) {

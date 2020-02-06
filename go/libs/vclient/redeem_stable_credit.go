@@ -3,10 +3,10 @@ package vclient
 import (
 	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
-	vabi "github.com/velo-protocol/DRSv2/go/abi"
 	"github.com/velo-protocol/DRSv2/go/constants"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"math/big"
@@ -21,18 +21,18 @@ type RedeemStableCreditInput struct {
 func (i *RedeemStableCreditInput) Validate() error {
 	// validate RedeemAmount
 	if i.RedeemAmount == "" {
-		return errors.New("RedeemAmount must not be blank")
+		return errors.New("redeemAmount must not be blank")
 	}
 
 	amount, err := decimal.NewFromString(i.RedeemAmount)
 	if err != nil {
-		return errors.Wrap(err, "invalid RedeemAmount format")
+		return errors.Wrap(err, "invalid redeemAmount format")
 	}
 	if !utils.IsDecimalValid(amount) {
-		return errors.New("invalid RedeemAmount format")
+		return errors.New("invalid redeemAmount format")
 	}
 	if !amount.IsPositive() {
-		return errors.New("RedeemAmount must be positive")
+		return errors.New("redeemAmount must be positive")
 	}
 
 	// validate AssetCode
@@ -60,10 +60,29 @@ func (i *RedeemStableCreditInput) ToAbiInput() *RedeemStableCreditAbiInput {
 	}
 }
 
+type RedeemStableCreditEvent struct {
+	// all fields must be string formatted
+	AssetCode              string
+	StableCreditAmount     *big.Int
+	CollateralAssetAddress common.Address
+	CollateralAssetCode    [32]byte
+	CollateralAmount       *big.Int
+	Raw                    types.Log // Blockchain specific contextual infos
+}
+
 type RedeemStableCreditOutput struct {
 	Tx      *types.Transaction
 	Receipt *types.Receipt
-	Event   *vabi.DigitalReserveSystemRedeem
+	Event   *RedeemStableCreditEvent
+	// DigitalReserveSystemRedeem represents a Redeem event raised by the DigitalReserveSystem contract.
+	//type DigitalReserveSystemRedeem struct {
+	//	AssetCode              string
+	//	StableCreditAmount     *big.Int
+	//	CollateralAssetAddress common.Address
+	//	CollateralAssetCode    [32]byte
+	//	CollateralAmount       *big.Int
+	//	Raw                    types.Log // Blockchain specific contextual infos
+	//}
 }
 
 func (c *Client) RedeemStableCredit(ctx context.Context, input *RedeemStableCreditInput) (*RedeemStableCreditOutput, error) {
@@ -92,9 +111,13 @@ func (c *Client) RedeemStableCredit(ctx context.Context, input *RedeemStableCred
 		return nil, err
 	}
 
+	// TODO convert from vabi.DigitalReserveSystemRedeem to RedeemStableCreditEvent
+	redeemStableCreditEvent := &RedeemStableCreditEvent{
+		AssetCode:event.AssetCode,
+	}
 	return &RedeemStableCreditOutput{
 		Tx:      tx,
 		Receipt: receipt,
-		Event:   event,
+		Event:   redeemStableCreditEvent,
 	}, nil
 }

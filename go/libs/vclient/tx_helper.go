@@ -76,7 +76,7 @@ func (h *txHelper) ExtractRedeemEvent(eventName string, log *types.Log) (*vabi.D
 	}
 
 	// extract indexed field
-	if len(log.Topics) > 1 {
+	if len(log.Topics) < 3 {
 		return nil, errors.New("fail to parse indexed param of an event")
 	}
 	event.CollateralAssetCode = utils.BytesToBytes32(log.Topics[1].Bytes())
