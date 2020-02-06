@@ -82,7 +82,12 @@ func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintFromCo
 		return nil, err
 	}
 
-	event, err := c.txHelper.ExtractMintEvent("Mint", receipt.Logs[12])
+	eventLog := utils.FindLogEvent(receipt.Logs, "Mint(string,uint256,address,bytes32,uint256)")
+	if eventLog == nil {
+		return nil, errors.New("no mint log emitting")
+	}
+
+	event, err := c.txHelper.ExtractMintEvent("Mint", eventLog)
 	if err != nil {
 		return nil, err
 	}

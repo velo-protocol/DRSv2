@@ -3,7 +3,9 @@ package vclient
 import (
 	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
@@ -114,7 +116,11 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
-					{},
+					{
+						Topics: []common.Hash{
+							crypto.Keccak256Hash([]byte("Mint(string,uint256,address,bytes32,uint256)")),
+						},
+					},
 				},
 			}, nil)
 		testHelper.MockTxHelper.EXPECT().
@@ -204,7 +210,11 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
-					{},
+					{
+						Topics: []common.Hash{
+							crypto.Keccak256Hash([]byte("Mint(string,uint256,address,bytes32,uint256)")),
+						},
+					},
 				},
 			}, nil)
 		testHelper.MockTxHelper.EXPECT().
@@ -215,5 +225,32 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Contains(t, err.Error(), expectedMsg)
+	})
+
+	t.Run("error, no mint log emitting", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &MintFromCollateralAmountInput{
+			AssetCode:        "vUSD",
+			CollateralAmount: "100",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			Return(&types.Transaction{}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			Return(&types.Receipt{
+				Logs: []*types.Log{
+					{},
+				},
+			}, nil)
+
+		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Equal(t, "no mint log emitting", err.Error())
 	})
 }
