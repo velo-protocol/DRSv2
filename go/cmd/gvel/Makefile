@@ -21,28 +21,6 @@ mockgen/db:
 		-destination=./layers/mocks/database.go \
 		-mock_names Repository=MockDbRepo \
 		-package mocks
-
-mockgen/stellar:
-	mockgen \
-		-source=./layers/repositories/stellar/interface.go \
-		-destination=./layers/mocks/stellar.go \
-		-mock_names Repository=MockStellarRepo \
-		-package mocks
-
-mockgen/velo:
-	mockgen \
-		-source=./layers/repositories/velo/interface.go \
-		-destination=./layers/mocks/velo.go \
-		-mock_names Repository=MockVeloRepo \
-		-package mocks \
-		-imports vclient=github.com/velo-protocol/DRSv1/libs/client
-	mockgen \
-		-source=../../libs/client/interface.go \
-		-destination=./layers/mocks/velo_client.go \
-		-mock_names ClientInterface=MockVeloClient \
-		-imports vtxnbuild=github.com/velo-protocol/DRSv1/libs/txnbuild \
-		-package mocks
-
 mockgen/console:
 	mockgen \
 		-source=./utils/console/interface.go \
