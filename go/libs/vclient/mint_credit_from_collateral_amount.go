@@ -94,10 +94,17 @@ func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintFromCo
 	opt.GasLimit = constants.GasLimit
 	tx, err := c.contract.drs.MintFromCollateralAmount(opt, abiInput.NetCollateralAmount, abiInput.AssetCode)
 	if err != nil {
-		if strings.Contains(err.Error(), "caller must be a trusted partner") {
+		msg := err.Error()
+		switch {
+		case strings.Contains(msg, "caller must be a trusted partner"):
 			return nil, errors.New("the message sender is not found or does not have sufficient permission to perform mint stable credit")
+		case strings.Contains(msg, "stableCredit not exist"):
+			return nil, errors.Errorf("the stable credit %s is not found", input.AssetCode)
+		case strings.Contains(msg, "transfer amount exceeds balance"):
+			return nil, errors.New("the collateral in your address is insufficient")
+		default:
+			return nil, err
 		}
-		return nil, err
 	}
 
 	receipt, err := c.txHelper.ConfirmTx(ctx, tx)

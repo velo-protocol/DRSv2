@@ -155,8 +155,6 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		expectedMsg := "the message sender is not found or does not have sufficient permission to perform mint stable credit"
-
 		input := &MintFromCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "100",
@@ -170,7 +168,47 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
-		assert.Contains(t, err.Error(), expectedMsg)
+		assert.Contains(t, err.Error(), "the message sender is not found or does not have sufficient permission to perform mint stable credit")
+	})
+
+	t.Run("error, drs.MintFromCollateralAmount returns an error stableCredit not exist", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &MintFromCollateralAmountInput{
+			AssetCode:        "vUSD",
+			CollateralAmount: "100",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			Return(nil, errors.New("revert DigitalReserveSystem._validateAssetCode: stableCredit not exist"))
+
+		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Contains(t, err.Error(), "the stable credit vUSD is not found")
+	})
+
+	t.Run("error, drs.MintFromCollateralAmount returns an error transfer amount exceeds balance", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &MintFromCollateralAmountInput{
+			AssetCode:        "vUSD",
+			CollateralAmount: "100",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			Return(nil, errors.New("revert ERC20: transfer amount exceeds balance"))
+
+		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Contains(t, err.Error(), "the collateral in your address is insufficient")
 	})
 
 	t.Run("error, drs.MintFromCollateralAmount returns an error", func(t *testing.T) {
