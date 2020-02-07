@@ -275,6 +275,21 @@ func (mr *MockDRSContractMockRecorder) CollateralHealthCheck(opts, assetCode int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CollateralHealthCheck", reflect.TypeOf((*MockDRSContract)(nil).CollateralHealthCheck), opts, assetCode)
 }
 
+// Rebalance mocks base method
+func (m *MockDRSContract) Rebalance(opts *bind.TransactOpts, assetCode string) (*types.Transaction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Rebalance", opts, assetCode)
+	ret0, _ := ret[0].(*types.Transaction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Rebalance indicates an expected call of Rebalance
+func (mr *MockDRSContractMockRecorder) Rebalance(opts, assetCode interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rebalance", reflect.TypeOf((*MockDRSContract)(nil).Rebalance), opts, assetCode)
+}
+
 // MockHeartContract is a mock of HeartContract interface
 type MockHeartContract struct {
 	ctrl     *gomock.Controller
