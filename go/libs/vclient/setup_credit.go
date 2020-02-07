@@ -23,16 +23,16 @@ type SetupCreditInput struct {
 
 func (i *SetupCreditInput) Validate() error {
 	if len(i.CollateralAssetCode) == 0 {
-		return errors.Errorf("%s must not be blank", "CollateralAssetCode")
+		return errors.Errorf("%s must not be blank", "collateralAssetCode")
 	}
 	if len(i.PeggedCurrency) == 0 {
-		return errors.Errorf("%s must not be blank", "PeggedCurrency")
+		return errors.Errorf("%s must not be blank", "peggedCurrency")
 	}
 	if len(i.AssetCode) == 0 {
-		return errors.Errorf("%s must not be blank", "AssetCode")
+		return errors.Errorf("%s must not be blank", "assetCode")
 	}
 	if len(i.PeggedValue) == 0 {
-		return errors.Errorf("%s must not be blank", "PeggedValue")
+		return errors.Errorf("%s must not be blank", "peggedValue")
 	}
 
 	if matched, _ := regexp.MatchString(`^[A-Za-z0-9]{1,7}$`, i.CollateralAssetCode); !matched {

@@ -30,7 +30,7 @@ func TestSetupCreditInput_Validate(t *testing.T) {
 			AssetCode:           "vUSD",
 			PeggedValue:         "1.50",
 		}).Validate()
-		assert.EqualError(t, errCollateralAssetCode, "CollateralAssetCode must not be blank")
+		assert.EqualError(t, errCollateralAssetCode, "collateralAssetCode must not be blank")
 
 		errPeggedCurrency := (&SetupCreditInput{
 			CollateralAssetCode: "VELO",
@@ -38,7 +38,7 @@ func TestSetupCreditInput_Validate(t *testing.T) {
 			AssetCode:           "vUSD",
 			PeggedValue:         "1.50",
 		}).Validate()
-		assert.EqualError(t, errPeggedCurrency, "PeggedCurrency must not be blank")
+		assert.EqualError(t, errPeggedCurrency, "peggedCurrency must not be blank")
 
 		errAssetCode := (&SetupCreditInput{
 			CollateralAssetCode: "VELO",
@@ -46,7 +46,7 @@ func TestSetupCreditInput_Validate(t *testing.T) {
 			AssetCode:           "",
 			PeggedValue:         "1.50",
 		}).Validate()
-		assert.EqualError(t, errAssetCode, "AssetCode must not be blank")
+		assert.EqualError(t, errAssetCode, "assetCode must not be blank")
 
 		errPeggedValue := (&SetupCreditInput{
 			CollateralAssetCode: "VELO",
@@ -54,7 +54,7 @@ func TestSetupCreditInput_Validate(t *testing.T) {
 			AssetCode:           "vUSD",
 			PeggedValue:         "",
 		}).Validate()
-		assert.EqualError(t, errPeggedValue, "PeggedValue must not be blank")
+		assert.EqualError(t, errPeggedValue, "peggedValue must not be blank")
 	})
 	t.Run("error, invalid peggedValue with more than 7 decimal places is not allowed", func(t *testing.T) {
 		err := (&SetupCreditInput{
