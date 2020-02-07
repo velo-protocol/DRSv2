@@ -23,7 +23,7 @@ func (i *MintFromCollateralAmountInput) Validate() error {
 	if i.AssetCode == "" {
 		return errors.New("assetCode must not be blank")
 	}
-	if matched, _ := regexp.MatchString(`^[A-Za-z0-9]{1,7}$`, i.AssetCode); !matched {
+	if matched, _ := regexp.MatchString(`^[A-Za-z0-9]{1,12}$`, i.AssetCode); !matched {
 		return errors.New("invalid assetCode format")
 	}
 
