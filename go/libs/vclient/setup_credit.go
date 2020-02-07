@@ -11,6 +11,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"math/big"
 	"regexp"
+	"strings"
 )
 
 type SetupCreditInput struct {
@@ -21,13 +22,26 @@ type SetupCreditInput struct {
 }
 
 func (i *SetupCreditInput) Validate() error {
+	if len(i.CollateralAssetCode) == 0 {
+		return errors.Errorf("%s must not be blank", "collateralAssetCode")
+	}
+	if len(i.PeggedCurrency) == 0 {
+		return errors.Errorf("%s must not be blank", "peggedCurrency")
+	}
+	if len(i.AssetCode) == 0 {
+		return errors.Errorf("%s must not be blank", "assetCode")
+	}
+	if len(i.PeggedValue) == 0 {
+		return errors.Errorf("%s must not be blank", "peggedValue")
+	}
+
 	if matched, _ := regexp.MatchString(`^[A-Za-z0-9]{1,7}$`, i.CollateralAssetCode); !matched {
 		return errors.New("invalid collateralAssetCode format")
 	}
 	if matched, _ := regexp.MatchString(`^[A-Za-z0-9]{3}$`, i.PeggedCurrency); !matched {
 		return errors.New("invalid peggedCurrency format")
 	}
-	if matched, _ := regexp.MatchString(`^[A-Za-z0-9]{1,7}$`, i.AssetCode); !matched {
+	if matched, _ := regexp.MatchString(`^[A-Za-z0-9]{1,12}$`, i.AssetCode); !matched {
 		return errors.New("invalid assetCode format")
 	}
 
@@ -35,8 +49,11 @@ func (i *SetupCreditInput) Validate() error {
 	if err != nil {
 		return errors.Wrap(err, "invalid peggedValue format")
 	}
+	if !utils.IsDecimalValid(peggedValue) {
+		return errors.New("peggedValue with more than 7 decimal places is not allowed")
+	}
 	if !peggedValue.IsPositive() {
-		return errors.New("peggedValue must be positive")
+		return errors.New("peggedValue must be greater than 0")
 	}
 
 	return nil
@@ -82,6 +99,9 @@ func (c *Client) SetupCredit(ctx context.Context, input *SetupCreditInput) (*Set
 		abiInput.PeggedValue,
 	)
 	if err != nil {
+		if strings.Contains(err.Error(), "caller must be a trusted partner") {
+			return nil, errors.New("the message sender is not found or does not have sufficient permission to perform setup stable credit")
+		}
 		return nil, err
 	}
 
