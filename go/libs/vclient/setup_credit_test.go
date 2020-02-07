@@ -23,6 +23,48 @@ func TestSetupCreditInput_Validate(t *testing.T) {
 
 		assert.NoError(t, err)
 	})
+	t.Run("error, input parameters must not be blank", func(t *testing.T) {
+		errCollateralAssetCode := (&SetupCreditInput{
+			CollateralAssetCode: "",
+			PeggedCurrency:      "USD",
+			AssetCode:           "vUSD",
+			PeggedValue:         "1.50",
+		}).Validate()
+		assert.EqualError(t, errCollateralAssetCode, "CollateralAssetCode must not be blank")
+
+		errPeggedCurrency := (&SetupCreditInput{
+			CollateralAssetCode: "VELO",
+			PeggedCurrency:      "",
+			AssetCode:           "vUSD",
+			PeggedValue:         "1.50",
+		}).Validate()
+		assert.EqualError(t, errPeggedCurrency, "PeggedCurrency must not be blank")
+
+		errAssetCode := (&SetupCreditInput{
+			CollateralAssetCode: "VELO",
+			PeggedCurrency:      "USD",
+			AssetCode:           "",
+			PeggedValue:         "1.50",
+		}).Validate()
+		assert.EqualError(t, errAssetCode, "AssetCode must not be blank")
+
+		errPeggedValue := (&SetupCreditInput{
+			CollateralAssetCode: "VELO",
+			PeggedCurrency:      "USD",
+			AssetCode:           "vUSD",
+			PeggedValue:         "",
+		}).Validate()
+		assert.EqualError(t, errPeggedValue, "PeggedValue must not be blank")
+	})
+	t.Run("error, invalid peggedValue with more than 7 decimal places is not allowed", func(t *testing.T) {
+		err := (&SetupCreditInput{
+			CollateralAssetCode: "VELO",
+			PeggedCurrency:      "USD",
+			AssetCode:           "vUSD",
+			PeggedValue:         "1.12345678",
+		}).Validate()
+		assert.EqualError(t, err, "peggedValue with more than 7 decimal places is not allowed")
+	})
 	t.Run("error, invalid collateralAssetCode format", func(t *testing.T) {
 		err := (&SetupCreditInput{
 			CollateralAssetCode: "BAD_VELO!",
@@ -71,7 +113,7 @@ func TestSetupCreditInput_Validate(t *testing.T) {
 			PeggedValue:         "-1.50",
 		}).Validate()
 
-		assert.Contains(t, err.Error(), "peggedValue must be positive")
+		assert.Contains(t, err.Error(), "peggedValue must be greater than 0")
 	})
 }
 
@@ -152,6 +194,28 @@ func TestClient_SetupCredit(t *testing.T) {
 		_, err := testHelper.Client.SetupCredit(context.Background(), input)
 
 		assert.Error(t, err)
+	})
+
+	t.Run("error, drs.Setup returns an error revert DigitalReserveSystem.onlyTrustedPartner: caller must be a trusted partner", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &SetupCreditInput{
+			CollateralAssetCode: "VELO",
+			PeggedCurrency:      "USD",
+			AssetCode:           "vUSD",
+			PeggedValue:         "1.50",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			Setup(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.CollateralAssetCode, abiInput.PeggedCurrency, abiInput.AssetCode, abiInput.PeggedValue).
+			Return(nil, errors.New("VM Exception while processing transaction: revert DigitalReserveSystem.onlyTrustedPartner: caller must be a trusted partner"))
+
+		_, err := testHelper.Client.SetupCredit(context.Background(), input)
+
+		assert.Error(t, err)
+		assert.Equal(t, "the message sender is not found or does not have sufficient permission to perform setup stable credit", err.Error())
 	})
 
 	t.Run("error, txHelper.ConfirmTx returns an error", func(t *testing.T) {
