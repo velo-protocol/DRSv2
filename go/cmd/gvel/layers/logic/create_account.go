@@ -14,7 +14,8 @@ func (lo *logic) CreateAccount(input *entity.CreateAccountInput) (*entity.Create
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to random a new key pair")
 	}
-	// Show loading bar
+
+	// * Show loading bar
 	console.StartLoading("Creating account with %s.", pubAddress)
 	defer console.StopLoading()
 
@@ -38,7 +39,7 @@ func (lo *logic) CreateAccount(input *entity.CreateAccountInput) (*entity.Create
 	// 4. Save account to db
 	err = lo.DB.Save([]byte(pubAddress), accountBytes)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to save stellar account")
+		return nil, errors.Wrap(err, "failed to save an account")
 	}
 
 	// 5. Set default account

@@ -6,6 +6,7 @@ package mocks
 
 import (
 	gomock "github.com/golang/mock/gomock"
+	entity "github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
 	reflect "reflect"
 )
 
@@ -44,4 +45,19 @@ func (m *MockLogic) Init(configFilePath string) error {
 func (mr *MockLogicMockRecorder) Init(configFilePath interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Init", reflect.TypeOf((*MockLogic)(nil).Init), configFilePath)
+}
+
+// CreateAccount mocks base method
+func (m *MockLogic) CreateAccount(input *entity.CreateAccountInput) (*entity.CreateAccountOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateAccount", input)
+	ret0, _ := ret[0].(*entity.CreateAccountOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateAccount indicates an expected call of CreateAccount
+func (mr *MockLogicMockRecorder) CreateAccount(input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAccount", reflect.TypeOf((*MockLogic)(nil).CreateAccount), input)
 }

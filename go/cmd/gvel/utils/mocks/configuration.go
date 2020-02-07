@@ -87,3 +87,31 @@ func (mr *MockConfigurationMockRecorder) GetAccountDbPath() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccountDbPath", reflect.TypeOf((*MockConfiguration)(nil).GetAccountDbPath))
 }
+
+// GetDefaultAccount mocks base method
+func (m *MockConfiguration) GetDefaultAccount() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDefaultAccount")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetDefaultAccount indicates an expected call of GetDefaultAccount
+func (mr *MockConfigurationMockRecorder) GetDefaultAccount() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDefaultAccount", reflect.TypeOf((*MockConfiguration)(nil).GetDefaultAccount))
+}
+
+// SetDefaultAccount mocks base method
+func (m *MockConfiguration) SetDefaultAccount(account string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetDefaultAccount", account)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetDefaultAccount indicates an expected call of SetDefaultAccount
+func (mr *MockConfigurationMockRecorder) SetDefaultAccount(account interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetDefaultAccount", reflect.TypeOf((*MockConfiguration)(nil).SetDefaultAccount), account)
+}

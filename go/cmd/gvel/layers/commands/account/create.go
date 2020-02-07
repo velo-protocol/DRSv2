@@ -22,5 +22,5 @@ func (accountCommand *CommandHandler) Create(cmd *cobra.Command, _ []string) {
 		console.ExitWithError(console.ExitError, err)
 	}
 
-	console.Logger.Printf("A new account is created with address %s Please remember to keep your passphrase safe. You will not be able to recover this passphrase.", output.PublicAddress)
+	console.Logger.Printf("A new account is created with address %s. Please remember to keep your passphrase safe. You will not be able to recover this passphrase.", output.PublicAddress)
 }
