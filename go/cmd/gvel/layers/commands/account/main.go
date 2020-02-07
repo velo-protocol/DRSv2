@@ -35,7 +35,19 @@ func (accountCommand *CommandHandler) Command() *cobra.Command {
 		},
 	}
 
-	command.AddCommand()
+	command.AddCommand(
+		accountCommand.GetCreateCommand(),
+	)
+	return command
+}
 
+func (accountCommand *CommandHandler) GetCreateCommand() *cobra.Command {
+	command := &cobra.Command{
+		Use:   constants.CmdAccountCreate,
+		Short: "Create an account and store on your disk",
+		Run:   accountCommand.Create,
+	}
+
+	command.Flags().BoolP(constants.FlagDefault, "d", false, "set as default account")
 	return command
 }

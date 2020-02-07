@@ -1,7 +1,8 @@
 package constants
 
 const (
-	CfgKeyCurrentEnv    = "currentEnv"
-	CfgKeyInitialized   = "initialized"
-	CfgKeyAccountDbPath = "accountDbPath"
+	CfgKeyCurrentEnv     = "currentEnv"
+	CfgKeyInitialized    = "initialized"
+	CfgKeyAccountDbPath  = "accountDbPath"
+	CfgKeyDefaultAccount = "defaultAccount"
 )

@@ -5,4 +5,6 @@ type Configuration interface {
 	InitEnvBasedConfig(baseDir string, envName string) error
 	Exists() bool
 	GetAccountDbPath() string
+	GetDefaultAccount() string
+	SetDefaultAccount(account string) error
 }
