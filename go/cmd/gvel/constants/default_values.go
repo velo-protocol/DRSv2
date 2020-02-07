@@ -8,3 +8,10 @@ const (
 const (
 	DefaultCurrentEnv = EnvTestNet
 )
+
+var (
+	DefaultEnvList = []string{
+		EnvTestNet,
+		EnvMainNet,
+	}
+)
