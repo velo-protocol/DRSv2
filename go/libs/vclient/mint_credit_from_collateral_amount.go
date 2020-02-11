@@ -64,7 +64,7 @@ type MintFromCollateralAmountEvent struct {
 	AssetAddress        string
 	CollateralAssetCode string
 	CollateralAmount    string
-	Raw                 types.Log
+	Raw                 *types.Log
 }
 
 func (i *MintFromCollateralAmountEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemMint) {
@@ -73,7 +73,7 @@ func (i *MintFromCollateralAmountEvent) ToEventOutput(eventAbi *vabi.DigitalRese
 	i.AssetAddress = eventAbi.AssetAddress.String()
 	i.CollateralAssetCode = utils.Byte32ToString(eventAbi.CollateralAssetCode)
 	i.CollateralAmount = utils.AmountToString(eventAbi.CollateralAmount)
-	i.Raw = eventAbi.Raw
+	i.Raw = &eventAbi.Raw
 }
 
 type MintFromCollateralAmountCreditOutput struct {
