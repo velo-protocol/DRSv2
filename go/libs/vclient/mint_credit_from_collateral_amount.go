@@ -67,14 +67,13 @@ type MintFromCollateralAmountEvent struct {
 	Raw                 types.Log
 }
 
-func (i *MintFromCollateralAmountEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemMint) error {
+func (i *MintFromCollateralAmountEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemMint) {
 	i.AssetCode = eventAbi.AssetCode
 	i.MintAmount = utils.AmountToString(eventAbi.MintAmount)
 	i.AssetAddress = eventAbi.AssetAddress.String()
 	i.CollateralAssetCode = utils.Byte32ToString(eventAbi.CollateralAssetCode)
 	i.CollateralAmount = utils.AmountToString(eventAbi.CollateralAmount)
 	i.Raw = eventAbi.Raw
-	return nil
 }
 
 type MintFromCollateralAmountCreditOutput struct {
@@ -126,10 +125,7 @@ func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintFromCo
 
 	event := new(MintFromCollateralAmountEvent)
 
-	err = event.ToEventOutput(eventAbi)
-	if err != nil {
-		return nil, err
-	}
+	event.ToEventOutput(eventAbi)
 
 	return &MintFromCollateralAmountCreditOutput{
 		Tx:      tx,

@@ -211,7 +211,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		assert.Contains(t, err.Error(), "the collateral in your address is insufficient")
 	})
 
-	t.Run("error, drs.MintFromCollateralAmount returns an error transfer amount exceeds balance", func(t *testing.T) {
+	t.Run("error, drs.MintFromCollateralAmount returns an error stable credit does not belong to you", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
