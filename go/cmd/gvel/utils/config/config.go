@@ -8,6 +8,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 	"os"
 	"path"
+	"strings"
 )
 
 type configuration struct {
@@ -39,7 +40,7 @@ func (cfg *configuration) LoadDefault() error {
 		return nil
 	}
 
-	envName := cfg.sharedConfig.GetString(constants.CfgKeyCurrentEnv)
+	envName := cfg.GetCurrentEnv()
 	if envName == "" {
 		return errors.New("could not read currentEnv from shared-config.json")
 	}
@@ -66,8 +67,10 @@ func (cfg *configuration) InitSharedConfig(baseDir string) error {
 	// Set default config
 	v := viper.New()
 	v.SetConfigType("json")
-	v.SetDefault(constants.CfgKeyInitialized, true)                       // a flag to check for config file existence
-	v.SetDefault(constants.CfgKeyCurrentEnv, constants.DefaultCurrentEnv) // a flag to check for config file existence
+	v.SetDefault(constants.CfgKeyInitialized, true) // a flag to check for config file existence
+	v.SetDefault(constants.CfgKeyCurrentEnv, constants.DefaultCurrentEnv)
+	v.SetDefault(constants.CfgKeyEnvList, constants.DefaultEnvList)
+
 	err = v.WriteConfigAs(constants.FsSharedConfigFile)
 	if err != nil {
 		return errors.Wrap(err, "failed to write a config to the disk")
@@ -77,6 +80,8 @@ func (cfg *configuration) InitSharedConfig(baseDir string) error {
 }
 
 func (cfg *configuration) InitEnvBasedConfig(baseDir string, envName string) error {
+	envName = strings.ToLower(envName)
+
 	err := os.MkdirAll(path.Join(baseDir, envName, "/db/account"), os.ModePerm)
 	if err != nil {
 		return errors.Wrap(err, "failed to create a db folder")
@@ -122,4 +127,26 @@ func (cfg *configuration) SetDefaultAccount(account string) error {
 	}
 	cfg.envBasedConfig.Set(constants.CfgKeyDefaultAccount, account)
 	return cfg.envBasedConfig.WriteConfig()
+}
+
+func (cfg *configuration) GetCurrentEnv() string {
+	if cfg.sharedConfig == nil {
+		return ""
+	}
+	return cfg.sharedConfig.GetString(constants.CfgKeyCurrentEnv)
+}
+
+func (cfg *configuration) SetCurrentEnv(envName string) error {
+	if cfg.sharedConfig == nil {
+		return errors.New("sharedConfig is empty")
+	}
+	cfg.sharedConfig.Set(constants.CfgKeyCurrentEnv, envName)
+	return cfg.sharedConfig.WriteConfig()
+}
+
+func (cfg *configuration) GetEnvList() []string {
+	if cfg.sharedConfig == nil {
+		return []string{}
+	}
+	return cfg.sharedConfig.GetStringSlice(constants.CfgKeyEnvList)
 }

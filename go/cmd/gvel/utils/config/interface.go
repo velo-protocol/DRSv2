@@ -7,4 +7,7 @@ type Configuration interface {
 	GetAccountDbPath() string
 	GetDefaultAccount() string
 	SetDefaultAccount(account string) error
+	GetCurrentEnv() string
+	SetCurrentEnv(account string) error
+	GetEnvList() []string
 }

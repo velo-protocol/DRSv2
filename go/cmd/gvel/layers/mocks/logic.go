@@ -61,3 +61,17 @@ func (mr *MockLogicMockRecorder) CreateAccount(input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAccount", reflect.TypeOf((*MockLogic)(nil).CreateAccount), input)
 }
+
+// SetEnv mocks base method
+func (m *MockLogic) SetEnv(input *entity.SetEnvInput) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetEnv", input)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetEnv indicates an expected call of SetEnv
+func (mr *MockLogicMockRecorder) SetEnv(input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetEnv", reflect.TypeOf((*MockLogic)(nil).SetEnv), input)
+}
