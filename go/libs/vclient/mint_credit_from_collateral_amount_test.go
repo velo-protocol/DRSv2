@@ -211,6 +211,26 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		assert.Contains(t, err.Error(), "the collateral in your address is insufficient")
 	})
 
+	t.Run("error, drs.MintFromCollateralAmount returns an error transfer amount exceeds balance", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &MintFromCollateralAmountInput{
+			AssetCode:        "vUSD",
+			CollateralAmount: "100",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			Return(nil, errors.New("revert DigitalReserveSystem.mintFromCollateralAmount: the stable credit does not belong to you"))
+
+		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Contains(t, err.Error(), "The stable credit vUSD does not belong to you")
+	})
+
 	t.Run("error, drs.MintFromCollateralAmount returns an error", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
