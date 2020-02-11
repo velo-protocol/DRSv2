@@ -30,11 +30,13 @@ module.exports = {
   },
   compilers: {
     solc: {
+      version: '0.5.15',
       settings: {
-       optimizer: {
-         enabled: true,
-         runs: 200
-       },
+        optimizer: {
+          enabled: true,
+          runs: 200
+        },
+        evmVersion: 'constantinople',
       }
     }
   },
