@@ -241,6 +241,21 @@ func (mr *MockDRSContractMockRecorder) MintFromCollateralAmount(opts, netCollate
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintFromCollateralAmount", reflect.TypeOf((*MockDRSContract)(nil).MintFromCollateralAmount), opts, netCollateralAmount, assetCode)
 }
 
+// MintFromStableCreditAmount mocks base method
+func (m *MockDRSContract) MintFromStableCreditAmount(opts *bind.TransactOpts, mintAmount *big.Int, assetCode string) (*types.Transaction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MintFromStableCreditAmount", opts, mintAmount, assetCode)
+	ret0, _ := ret[0].(*types.Transaction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// MintFromStableCreditAmount indicates an expected call of MintFromStableCreditAmount
+func (mr *MockDRSContractMockRecorder) MintFromStableCreditAmount(opts, mintAmount, assetCode interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintFromStableCreditAmount", reflect.TypeOf((*MockDRSContract)(nil).MintFromStableCreditAmount), opts, mintAmount, assetCode)
+}
+
 // GetExchange mocks base method
 func (m *MockDRSContract) GetExchange(opts *bind.CallOpts, assetCode string) (string, [32]byte, *big.Int, error) {
 	m.ctrl.T.Helper()
