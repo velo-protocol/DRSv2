@@ -14,51 +14,53 @@ import (
 	"strings"
 )
 
-type MintFromCollateralAmountInput struct {
-	AssetCode        string
-	CollateralAmount string
+type MintFromStableCreditAmountInput struct {
+	AssetCode  string
+	MintAmount string
 }
 
-func (i *MintFromCollateralAmountInput) Validate() error {
+func (i *MintFromStableCreditAmountInput) Validate() error {
 	if i.AssetCode == "" {
 		return errors.New("assetCode must not be blank")
 	}
+
 	if matched, _ := regexp.MatchString(`^[A-Za-z0-9]{1,12}$`, i.AssetCode); !matched {
 		return errors.New("invalid assetCode format")
 	}
 
-	if i.CollateralAmount == "" {
-		return errors.New("collateralAmount must not be blank")
+	if i.MintAmount == "" {
+		return errors.New("mintAmount must not be blank")
 	}
 
-	amount, err := decimal.NewFromString(i.CollateralAmount)
+	amount, err := decimal.NewFromString(i.MintAmount)
 	if err != nil {
-		return errors.Wrap(err, "invalid collateralAmount format")
+		return errors.Wrap(err, "invalid mintAmount format")
 	}
 	if !utils.IsDecimalValid(amount) {
-		return errors.New("invalid collateralAmount format")
+		return errors.New("invalid mintAmount format")
 	}
 	if !amount.IsPositive() {
-		return errors.New("collateralAmount must be greater than 0")
+		return errors.New("mintAmount must be greater than 0")
 	}
 
 	return nil
 }
 
-type MintFromCollateralAmountAbiInput struct {
-	NetCollateralAmount *big.Int
-	AssetCode           string
+type MintFromStableCreditAmountAbiInput struct {
+	MintAmount *big.Int
+	AssetCode  string
 }
 
-func (i *MintFromCollateralAmountInput) ToAbiInput() *MintFromCollateralAmountAbiInput {
-	netAmount, _ := utils.StringToAmount(i.CollateralAmount)
-	return &MintFromCollateralAmountAbiInput{
-		NetCollateralAmount: netAmount,
-		AssetCode:           i.AssetCode,
+func (i *MintFromStableCreditAmountInput) ToAbiInput() *MintFromStableCreditAmountAbiInput {
+
+	MintAmount, _ := utils.StringToAmount(i.MintAmount)
+	return &MintFromStableCreditAmountAbiInput{
+		MintAmount: MintAmount,
+		AssetCode:  i.AssetCode,
 	}
 }
 
-type MintFromCollateralAmountEvent struct {
+type MintFromStableCreditAmountEvent struct {
 	AssetCode           string
 	MintAmount          string
 	AssetAddress        string
@@ -67,7 +69,7 @@ type MintFromCollateralAmountEvent struct {
 	Raw                 *types.Log
 }
 
-func (i *MintFromCollateralAmountEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemMint) {
+func (i *MintFromStableCreditAmountEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemMint) {
 	i.AssetCode = eventAbi.AssetCode
 	i.MintAmount = utils.AmountToString(eventAbi.MintAmount)
 	i.AssetAddress = eventAbi.AssetAddress.String()
@@ -76,13 +78,13 @@ func (i *MintFromCollateralAmountEvent) ToEventOutput(eventAbi *vabi.DigitalRese
 	i.Raw = &eventAbi.Raw
 }
 
-type MintFromCollateralAmountCreditOutput struct {
+type MintFromStableCreditAmountCreditOutput struct {
 	Tx      *types.Transaction
 	Receipt *types.Receipt
-	Event   *MintFromCollateralAmountEvent
+	Event   *MintFromStableCreditAmountEvent
 }
 
-func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintFromCollateralAmountInput) (*MintFromCollateralAmountCreditOutput, error) {
+func (c *Client) MintFromStableCreditAmount(ctx context.Context, input *MintFromStableCreditAmountInput) (*MintFromStableCreditAmountCreditOutput, error) {
 	err := input.Validate()
 	if err != nil {
 		return nil, err
@@ -91,7 +93,7 @@ func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintFromCo
 	abiInput := input.ToAbiInput()
 	opt := bind.NewKeyedTransactor(&c.privateKey)
 	opt.GasLimit = constants.GasLimit
-	tx, err := c.contract.drs.MintFromCollateralAmount(opt, abiInput.NetCollateralAmount, abiInput.AssetCode)
+	tx, err := c.contract.drs.MintFromStableCreditAmount(opt, abiInput.MintAmount, abiInput.AssetCode)
 	if err != nil {
 		msg := err.Error()
 		switch {
@@ -123,13 +125,14 @@ func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintFromCo
 		return nil, err
 	}
 
-	event := new(MintFromCollateralAmountEvent)
+	event := new(MintFromStableCreditAmountEvent)
 
 	event.ToEventOutput(eventAbi)
 
-	return &MintFromCollateralAmountCreditOutput{
+	return &MintFromStableCreditAmountCreditOutput{
 		Tx:      tx,
 		Receipt: receipt,
 		Event:   event,
 	}, nil
+
 }

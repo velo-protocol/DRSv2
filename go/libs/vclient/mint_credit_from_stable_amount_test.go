@@ -15,20 +15,19 @@ import (
 	"testing"
 )
 
-func TestMintFromCollateralAmountInput_Validate(t *testing.T) {
-
-	t.Run("Success", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "100",
+func TestMintFromStableCreditAmountInput_Validate(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		err := (&MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "100",
 		}).Validate()
 
 		assert.NoError(t, err)
 	})
 
 	t.Run("error, validation fail assetCode must not be blank", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
-			CollateralAmount: "100",
+		err := (&MintFromStableCreditAmountInput{
+			MintAmount: "100",
 		}).Validate()
 
 		assert.Error(t, err)
@@ -36,82 +35,78 @@ func TestMintFromCollateralAmountInput_Validate(t *testing.T) {
 	})
 
 	t.Run("error, validation fail invalid assetCode format", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
-			AssetCode:        "AssetCodee!@",
-			CollateralAmount: "100",
+		err := (&MintFromStableCreditAmountInput{
+			AssetCode:  "AssetCodee!@",
+			MintAmount: "100",
 		}).Validate()
 
 		assert.Error(t, err)
 		assert.Equal(t, "invalid assetCode format", err.Error())
 	})
 
-	t.Run("error, validation fail collateralAmount must not be blank", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
+	t.Run("error, validation fail mintAmount must not be blank", func(t *testing.T) {
+		err := (&MintFromStableCreditAmountInput{
 			AssetCode: "vUSD",
 		}).Validate()
 
 		assert.Error(t, err)
-		assert.Equal(t, "collateralAmount must not be blank", err.Error())
+		assert.Equal(t, "mintAmount must not be blank", err.Error())
 	})
 
-	t.Run("error, validation fail invalid collateralAmount format", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "amount",
+	t.Run("error, validation fail invalid mintAmount format", func(t *testing.T) {
+		err := (&MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "amount",
 		}).Validate()
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid collateralAmount format")
-	})
+		assert.Contains(t, err.Error(), "invalid mintAmount format")
 
-	t.Run("error, validation fail collateralAmount must be greater than 0", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "0",
+		err = (&MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "100.00000001",
 		}).Validate()
 
 		assert.Error(t, err)
-		assert.Equal(t, "collateralAmount must be greater than 0", err.Error())
+		assert.Contains(t, err.Error(), "invalid mintAmount format")
 	})
 
-	t.Run("error, validation fail invalid collateralAmount is a number with greater than 7 decimal places", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "10.12345678",
+	t.Run("error, validation fail mintAmount must be greater than 0", func(t *testing.T) {
+		err := (&MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "0",
 		}).Validate()
 
 		assert.Error(t, err)
-		assert.Equal(t, "invalid collateralAmount format", err.Error())
+		assert.Equal(t, "mintAmount must be greater than 0", err.Error())
 	})
 }
 
-func TestMintFromCollateralAmountInput_ToAbiInput(t *testing.T) {
-
+func TestMintFromStableCreditAmountInput_ToAbiInput(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		abiInput := (&MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "100",
+		abiInput := (&MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "100",
 		}).ToAbiInput()
 
 		assert.Equal(t, "vUSD", abiInput.AssetCode)
-		assert.Equal(t, big.NewInt(1000000000), abiInput.NetCollateralAmount)
+		assert.Equal(t, big.NewInt(1000000000), abiInput.MintAmount)
 	})
 }
 
-func TestClient_MintFromCollateralAmount(t *testing.T) {
+func TestClient_MintFromStableCreditAmount(t *testing.T) {
 
-	t.Run("Success", func(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "100",
+		input := &MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
-
 		testHelper.MockDRSContract.EXPECT().
-			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			MintFromStableCreditAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.MintAmount, abiInput.AssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
 			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
@@ -134,7 +129,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 				CollateralAmount:    big.NewInt(1000000000),
 			}, nil)
 
-		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		result, err := testHelper.Client.MintFromStableCreditAmount(context.Background(), input)
 		assert.NoError(t, err)
 		assert.NotNil(t, result.Tx)
 		assert.NotNil(t, result.Receipt)
@@ -146,108 +141,108 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), &MintFromCollateralAmountInput{})
+		result, err := testHelper.Client.MintFromStableCreditAmount(context.Background(), &MintFromStableCreditAmountInput{})
 		assert.Error(t, err)
 		assert.Nil(t, result)
 	})
 
-	t.Run("error, drs.MintFromCollateralAmount returns an error caller must be a trusted partner", func(t *testing.T) {
+	t.Run("error, drs.MintFromStableCreditAmount returns an error caller must be a trusted partner", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "100",
+		input := &MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
 		testHelper.MockDRSContract.EXPECT().
-			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			MintFromStableCreditAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.MintAmount, abiInput.AssetCode).
 			Return(nil, errors.New("revert DigitalReserveSystem.onlyTrustedPartner: caller must be a trusted partner"))
 
-		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		result, err := testHelper.Client.MintFromStableCreditAmount(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Contains(t, err.Error(), "the message sender is not found or does not have sufficient permission to perform mint stable credit")
 	})
 
-	t.Run("error, drs.MintFromCollateralAmount returns an error stableCredit not exist", func(t *testing.T) {
+	t.Run("error, drs.MintFromStableCreditAmount returns an error stableCredit not exist", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "100",
+		input := &MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
 		testHelper.MockDRSContract.EXPECT().
-			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			MintFromStableCreditAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.MintAmount, abiInput.AssetCode).
 			Return(nil, errors.New("revert DigitalReserveSystem._validateAssetCode: stableCredit not exist"))
 
-		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		result, err := testHelper.Client.MintFromStableCreditAmount(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Contains(t, err.Error(), "the stable credit vUSD is not found")
 	})
 
-	t.Run("error, drs.MintFromCollateralAmount returns an error transfer amount exceeds balance", func(t *testing.T) {
+	t.Run("error, drs.MintFromStableCreditAmount returns an error transfer amount exceeds balance", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "100",
+		input := &MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
 		testHelper.MockDRSContract.EXPECT().
-			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			MintFromStableCreditAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.MintAmount, abiInput.AssetCode).
 			Return(nil, errors.New("revert ERC20: transfer amount exceeds balance"))
 
-		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		result, err := testHelper.Client.MintFromStableCreditAmount(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Contains(t, err.Error(), "the collateral in your address is insufficient")
 	})
 
-	t.Run("error, drs.MintFromCollateralAmount returns an error stable credit does not belong to you", func(t *testing.T) {
+	t.Run("error, drs.MintFromStableCreditAmount returns an error stable credit does not belong to you", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "100",
+		input := &MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
 		testHelper.MockDRSContract.EXPECT().
-			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
-			Return(nil, errors.New("revert DigitalReserveSystem.mintFromCollateralAmount: the stable credit does not belong to you"))
+			MintFromStableCreditAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.MintAmount, abiInput.AssetCode).
+			Return(nil, errors.New("revert DigitalReserveSystem.MintFromStableCreditAmount: the stable credit does not belong to you"))
 
-		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		result, err := testHelper.Client.MintFromStableCreditAmount(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Contains(t, err.Error(), "The stable credit vUSD does not belong to you")
 	})
 
-	t.Run("error, drs.MintFromCollateralAmount returns an error", func(t *testing.T) {
+	t.Run("error, drs.MintFromStableCreditAmount returns an error", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
 		expectedMsg := "some error has occurred"
 
-		input := &MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "100",
+		input := &MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
 		testHelper.MockDRSContract.EXPECT().
-			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			MintFromStableCreditAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.MintAmount, abiInput.AssetCode).
 			Return(nil, errors.New(expectedMsg))
 
-		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		result, err := testHelper.Client.MintFromStableCreditAmount(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Contains(t, err.Error(), expectedMsg)
@@ -259,20 +254,20 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 
 		expectedMsg := "some error has occurred"
 
-		input := &MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "100",
+		input := &MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
 		testHelper.MockDRSContract.EXPECT().
-			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			MintFromStableCreditAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.MintAmount, abiInput.AssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
 			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
 			Return(nil, errors.New(expectedMsg))
 
-		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		result, err := testHelper.Client.MintFromStableCreditAmount(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Contains(t, err.Error(), expectedMsg)
@@ -284,14 +279,14 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 
 		expectedMsg := "some error has occurred"
 
-		input := &MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "100",
+		input := &MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
 		testHelper.MockDRSContract.EXPECT().
-			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			MintFromStableCreditAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.MintAmount, abiInput.AssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
 			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
@@ -308,7 +303,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 			ExtractMintEvent("Mint", gomock.AssignableToTypeOf(&types.Log{})).
 			Return(nil, errors.New(expectedMsg))
 
-		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		result, err := testHelper.Client.MintFromStableCreditAmount(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Contains(t, err.Error(), expectedMsg)
@@ -318,16 +313,16 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &MintFromCollateralAmountInput{
-			AssetCode:        "vUSD",
-			CollateralAmount: "100",
+		input := &MintFromStableCreditAmountInput{
+			AssetCode:  "vUSD",
+			MintAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
 		tx := new(types.Transaction)
 
 		testHelper.MockDRSContract.EXPECT().
-			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			MintFromStableCreditAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.MintAmount, abiInput.AssetCode).
 			Return(tx, nil)
 		testHelper.MockTxHelper.EXPECT().
 			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(tx)).
@@ -337,7 +332,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 				},
 			}, nil)
 
-		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		result, err := testHelper.Client.MintFromStableCreditAmount(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, fmt.Sprintf("cannot find mint event from transaction receipt %s", tx.Hash().String()), err.Error())
