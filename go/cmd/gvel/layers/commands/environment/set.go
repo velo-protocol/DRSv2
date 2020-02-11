@@ -39,9 +39,9 @@ func (envCommand *CommandHandler) Set(_ *cobra.Command, _ []string) {
 
 	switch chosenEnv {
 	case constants.EnvTestNet:
-		console.Logger.Printf("Switched to TESTNET. This is for testing. The tokens holds no value and should not be used to do real transaction.\n")
+		console.Logger.Printf("Switch to TESTNET. This is for testing. The tokens holds no value and should not be used to do real transaction.\n")
 	case constants.EnvMainNet:
-		console.Logger.Printf("Switched to MAINNET. Warning: All commands will be executed on MAINNET chain. Please take care when executing transaction.\n")
+		console.Logger.Printf("Switch to MAINNET. Warning: All commands will be executed on MAINNET chain. Please take care when executing transaction.\n")
 	default:
 		console.Logger.Printf("Using env %s\n", strings.ToUpper(chosenEnv))
 	}

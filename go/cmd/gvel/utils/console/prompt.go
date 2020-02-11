@@ -79,7 +79,7 @@ func (prompt *prompt) RequestConfirmation(label string) bool {
 func (prompt *prompt) RequestChoice(label string, choices []string, currentChoice string) int {
 	labelledChoices := make([]string, len(choices))
 	for i, choice := range choices {
-		if currentChoice == choice {
+		if strings.ToLower(currentChoice) == strings.ToLower(choice) {
 			choice = fmt.Sprintf("%s (Current)", choice)
 		}
 
