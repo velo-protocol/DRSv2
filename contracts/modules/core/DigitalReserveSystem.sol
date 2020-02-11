@@ -100,6 +100,9 @@ contract DigitalReserveSystem is IDRS {
     ) external onlyTrustedPartner payable returns (bool) {
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
 
+        // validate stable credit belong to the message sender
+        require(msg.sender == stableCredit.creditOwner(), "DigitalReserveSystem.mintFromCollateralAmount: the stable credit does not belong to you");
+
         (uint256 mintAmount, uint256 actualCollateralAmount, uint256 reserveCollateralAmount, uint256 fee) = _calMintAmountFromCollateral(
             netCollateralAmount,
             heart.getPriceFeeders().getMedianPrice(linkId),
@@ -129,6 +132,9 @@ contract DigitalReserveSystem is IDRS {
         string calldata assetCode
     ) external onlyTrustedPartner payable returns (bool) {
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
+
+        // validate stable credit belong to the message sender
+        require(msg.sender == stableCredit.creditOwner(), "DigitalReserveSystem.mintFromStableCreditAmount: the stable credit does not belong to you");
 
         (uint256 netCollateralAmount, uint256 actualCollateralAmount, uint256 reserveCollateralAmount, uint256 fee) = _calMintAmountFromStableCredit(
             mintAmount,
