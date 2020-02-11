@@ -1,7 +1,6 @@
 package account_test
 
 import (
-	"bou.ke/monkey"
 	"github.com/golang/mock/gomock"
 	"github.com/sirupsen/logrus/hooks/test"
 	"github.com/spf13/cobra"
@@ -9,7 +8,6 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/mocks"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/mocks"
-	"os"
 	"testing"
 )
 
@@ -27,7 +25,7 @@ type helper struct {
 	createCmd *cobra.Command
 	//listCmd    *cobra.Command
 	//defaultCmd *cobra.Command
-	//importCmd  *cobra.Command
+	importCmd *cobra.Command
 	//exportCmd  *cobra.Command
 }
 
@@ -48,9 +46,6 @@ func initTest(t *testing.T) *helper {
 	tableLogger, tableLogHook := test.NewNullLogger()
 	console.TableLogger = tableLogger
 
-	// overwrite os.Exit
-	monkey.Patch(os.Exit, func(code int) { panic(code) })
-
 	// to omit what loader print
 	console.DefaultLoadWriter = console.Logger.Out
 
@@ -65,10 +60,10 @@ func initTest(t *testing.T) *helper {
 		done: func() {
 			mockCtrl.Finish()
 			hook.Reset()
-			monkey.UnpatchAll()
 		},
 
 		cmd:       cmd,
 		createCmd: cmd.Commands()[0],
+		importCmd: cmd.Commands()[1],
 	}
 }

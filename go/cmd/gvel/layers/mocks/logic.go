@@ -62,6 +62,21 @@ func (mr *MockLogicMockRecorder) CreateAccount(input interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAccount", reflect.TypeOf((*MockLogic)(nil).CreateAccount), input)
 }
 
+// ImportAccount mocks base method
+func (m *MockLogic) ImportAccount(input *entity.ImportAccountInput) (*entity.ImportAccountOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ImportAccount", input)
+	ret0, _ := ret[0].(*entity.ImportAccountOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ImportAccount indicates an expected call of ImportAccount
+func (mr *MockLogicMockRecorder) ImportAccount(input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ImportAccount", reflect.TypeOf((*MockLogic)(nil).ImportAccount), input)
+}
+
 // SetEnv mocks base method
 func (m *MockLogic) SetEnv(input *entity.SetEnvInput) error {
 	m.ctrl.T.Helper()

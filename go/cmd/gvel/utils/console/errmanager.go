@@ -1,6 +1,7 @@
 package console
 
 import (
+	"flag"
 	"os"
 )
 
@@ -27,5 +28,13 @@ const (
 func ExitWithError(code int, err error) {
 	StopLoading()
 	Logger.Error(err.Error())
-	os.Exit(code)
+
+	// check if running test
+	if flag.Lookup("test.v") == nil {
+		// kill the process (when using gvel through command line)
+		os.Exit(code)
+	} else {
+		// just panic
+		panic(code)
+	}
 }

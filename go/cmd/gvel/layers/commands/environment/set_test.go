@@ -36,7 +36,7 @@ func TestCommandHandler_Set(t *testing.T) {
 		})
 
 		logEntries := h.loggerHook.AllEntries()
-		assert.Equal(t, "Switched to MAINNET. Warning: All commands will be executed on MAINNET chain. Please take care when executing transaction.\n", logEntries[0].Message)
+		assert.Equal(t, "Switch to MAINNET. Warning: All commands will be executed on MAINNET chain. Please take care when executing transaction.\n", logEntries[0].Message)
 	})
 
 	t.Run("success, select testnet", func(t *testing.T) {
@@ -61,7 +61,7 @@ func TestCommandHandler_Set(t *testing.T) {
 		})
 
 		logEntries := h.loggerHook.AllEntries()
-		assert.Equal(t, "Switched to TESTNET. This is for testing. The tokens holds no value and should not be used to do real transaction.\n", logEntries[0].Message)
+		assert.Equal(t, "Switch to TESTNET. This is for testing. The tokens holds no value and should not be used to do real transaction.\n", logEntries[0].Message)
 	})
 	t.Run("success, select mainnet but cancel confirmation", func(t *testing.T) {
 		h := initTest(t)

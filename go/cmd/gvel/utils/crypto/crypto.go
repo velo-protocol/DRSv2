@@ -81,3 +81,15 @@ func Decrypt(cipherText []byte, passphrase string) ([]byte, error) {
 
 	return plaintext, nil
 }
+
+func PrivateKeyToKeyPair(privateKey string) (*string, *string, error) {
+	privKey, err := crypto.HexToECDSA(privateKey)
+	if err != nil {
+		return nil, nil, errors.New("invalid private key format")
+	}
+
+	publicKeyECDSA := privKey.Public().(*ecdsa.PublicKey)
+	address := crypto.PubkeyToAddress(*publicKeyECDSA).Hex()
+
+	return &address, &privateKey, nil
+}
