@@ -8,4 +8,7 @@ type Logic interface {
 
 	// Account module
 	CreateAccount(input *entity.CreateAccountInput) (*entity.CreateAccountOutput, error)
+
+	// Environment module
+	SetEnv(input *entity.SetEnvInput) error
 }

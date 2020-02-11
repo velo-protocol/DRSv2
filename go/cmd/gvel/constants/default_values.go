@@ -1,5 +1,7 @@
 package constants
 
+import "strings"
+
 const (
 	EnvMainNet = "mainnet"
 	EnvTestNet = "testnet"
@@ -11,7 +13,7 @@ const (
 
 var (
 	DefaultEnvList = []string{
-		EnvTestNet,
-		EnvMainNet,
+		strings.ToUpper(EnvTestNet),
+		strings.ToUpper(EnvMainNet),
 	}
 )

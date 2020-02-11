@@ -8,6 +8,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 	"os"
 	"path"
+	"strings"
 )
 
 type configuration struct {
@@ -79,6 +80,8 @@ func (cfg *configuration) InitSharedConfig(baseDir string) error {
 }
 
 func (cfg *configuration) InitEnvBasedConfig(baseDir string, envName string) error {
+	envName = strings.ToLower(envName)
+
 	err := os.MkdirAll(path.Join(baseDir, envName, "/db/account"), os.ModePerm)
 	if err != nil {
 		return errors.Wrap(err, "failed to create a db folder")
