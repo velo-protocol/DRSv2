@@ -5,6 +5,9 @@ const (
 
 	CmdInit = "init"
 
+	CmdEnv    = "env"
+	CmdEnvSet = "set"
+
 	CmdAccount        = "account"
 	CmdAccountCreate  = "create"
 	CmdAccountDefault = "default"

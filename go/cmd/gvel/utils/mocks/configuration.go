@@ -115,3 +115,45 @@ func (mr *MockConfigurationMockRecorder) SetDefaultAccount(account interface{}) 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetDefaultAccount", reflect.TypeOf((*MockConfiguration)(nil).SetDefaultAccount), account)
 }
+
+// GetCurrentEnv mocks base method
+func (m *MockConfiguration) GetCurrentEnv() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCurrentEnv")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetCurrentEnv indicates an expected call of GetCurrentEnv
+func (mr *MockConfigurationMockRecorder) GetCurrentEnv() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrentEnv", reflect.TypeOf((*MockConfiguration)(nil).GetCurrentEnv))
+}
+
+// SetCurrentEnv mocks base method
+func (m *MockConfiguration) SetCurrentEnv(account string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetCurrentEnv", account)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetCurrentEnv indicates an expected call of SetCurrentEnv
+func (mr *MockConfigurationMockRecorder) SetCurrentEnv(account interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetCurrentEnv", reflect.TypeOf((*MockConfiguration)(nil).SetCurrentEnv), account)
+}
+
+// GetEnvList mocks base method
+func (m *MockConfiguration) GetEnvList() []string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetEnvList")
+	ret0, _ := ret[0].([]string)
+	return ret0
+}
+
+// GetEnvList indicates an expected call of GetEnvList
+func (mr *MockConfigurationMockRecorder) GetEnvList() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEnvList", reflect.TypeOf((*MockConfiguration)(nil).GetEnvList))
+}

@@ -5,6 +5,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/constants"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/commands/account"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/commands/credit"
+	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/commands/environment"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/commands/initialize"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/logic"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/config"
@@ -15,6 +16,7 @@ type GvelHandler struct {
 	Logic          logic.Logic
 	RootCommand    *cobra.Command
 	InitCommand    *cobra.Command
+	EnvCommand     *cobra.Command
 	AccountCommand *cobra.Command
 	CreditCommand  *cobra.Command
 	Prompt         console.Prompt
@@ -44,6 +46,13 @@ func (gvelHandler *GvelHandler) Init() {
 			Command()
 	}
 
+	// env InitCommand
+	if gvelHandler.EnvCommand == nil {
+		gvelHandler.EnvCommand = environment.
+			NewCommandHandler(gvelHandler.Logic, gvelHandler.Prompt, gvelHandler.AppConfig).
+			Command()
+	}
+
 	// init AccountCommand
 	if gvelHandler.AccountCommand == nil {
 		gvelHandler.AccountCommand = account.
@@ -61,6 +70,7 @@ func (gvelHandler *GvelHandler) Init() {
 	// Add commands to root
 	gvelHandler.RootCommand.AddCommand(
 		gvelHandler.InitCommand,
+		gvelHandler.EnvCommand,
 		gvelHandler.AccountCommand,
 		gvelHandler.CreditCommand,
 	)
