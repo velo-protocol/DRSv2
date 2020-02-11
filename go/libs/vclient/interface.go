@@ -20,6 +20,7 @@ type DRSContract interface {
 	GetExchange(opts *bind.CallOpts, assetCode string) (string, [32]byte, *big.Int, error)
 
 	CollateralHealthCheck(opts *bind.CallOpts, assetCode string) ([32]byte, *big.Int, *big.Int, error)
+	Rebalance(opts *bind.TransactOpts, assetCode string) (*types.Transaction, error)
 }
 
 type HeartContract interface {
