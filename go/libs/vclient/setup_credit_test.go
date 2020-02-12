@@ -3,11 +3,13 @@ package vclient
 import (
 	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
-	vabi "github.com/velo-protocol/DRSv2/go/abi"
+	"github.com/velo-protocol/DRSv2/go/abi"
 	"math/big"
 	"testing"
 )
@@ -103,6 +105,7 @@ func TestSetupCreditInput_Validate(t *testing.T) {
 			PeggedValue:         "I_am_a_number!",
 		}).Validate()
 
+		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "invalid peggedValue format")
 	})
 	t.Run("error, peggedValue must be positive", func(t *testing.T) {
@@ -113,6 +116,7 @@ func TestSetupCreditInput_Validate(t *testing.T) {
 			PeggedValue:         "-1.50",
 		}).Validate()
 
+		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "peggedValue must be greater than 0")
 	})
 }
@@ -153,12 +157,22 @@ func TestClient_SetupCredit(t *testing.T) {
 			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
-					{},
+					{
+						Topics: []common.Hash{
+							crypto.Keccak256Hash([]byte("Setup(string,bytes32,uint256,bytes32,address)")),
+						},
+					},
 				},
 			}, nil)
 		testHelper.MockTxHelper.EXPECT().
 			ExtractSetupEvent("Setup", gomock.AssignableToTypeOf(&types.Log{})).
-			Return(&vabi.DigitalReserveSystemSetup{}, nil)
+			Return(&vabi.DigitalReserveSystemSetup{
+				AssetCode:           "vUSD",
+				PeggedCurrency:      [32]byte{},
+				PeggedValue:         big.NewInt(10000000),
+				CollateralAssetCode: [32]byte{},
+				AssetAddress:        common.Address{},
+			}, nil)
 
 		result, err := testHelper.Client.SetupCredit(context.Background(), input)
 

@@ -2,7 +2,7 @@ package vclient
 
 import (
 	"github.com/pkg/errors"
-	"math/big"
+	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"regexp"
 )
 
@@ -12,8 +12,8 @@ type GetExchangeRateInput struct {
 
 type GetExchangeRateOutput struct {
 	AssetCode                     string
-	CollateralAssetCode           [32]byte
-	PriceInCollateralPerAssetUnit *big.Int
+	CollateralAssetCode           string
+	PriceInCollateralPerAssetUnit string
 }
 
 type GetExchangeRateAbiInput struct {
@@ -54,7 +54,7 @@ func (c *Client) GetExchangeRate(input *GetExchangeRateInput) (*GetExchangeRateO
 
 	return &GetExchangeRateOutput{
 		AssetCode:                     assetCode,
-		CollateralAssetCode:           collateralAssetCode,
-		PriceInCollateralPerAssetUnit: priceInCollateralPerAssetUnit,
+		CollateralAssetCode:           utils.Byte32ToString(collateralAssetCode),
+		PriceInCollateralPerAssetUnit: utils.AmountToString(priceInCollateralPerAssetUnit),
 	}, nil
 }

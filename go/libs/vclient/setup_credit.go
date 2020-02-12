@@ -76,10 +76,28 @@ func (i *SetupCreditInput) ToAbiInput() *SetupCreditAbiInput {
 	}
 }
 
+type SetupCreditEvent struct {
+	AssetCode           string
+	PeggedCurrency      string
+	PeggedValue         string
+	CollateralAssetCode string
+	AssetAddress        string
+	Raw                 *types.Log
+}
+
+func (i *SetupCreditEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemSetup) {
+	i.AssetCode = eventAbi.AssetCode
+	i.PeggedCurrency = utils.Byte32ToString(eventAbi.PeggedCurrency)
+	i.PeggedValue = utils.AmountToString(eventAbi.PeggedValue)
+	i.CollateralAssetCode = utils.Byte32ToString(eventAbi.CollateralAssetCode)
+	i.AssetAddress = eventAbi.AssetAddress.String()
+	i.Raw = &eventAbi.Raw
+}
+
 type SetupCreditOutput struct {
 	Tx      *types.Transaction
 	Receipt *types.Receipt
-	Event   *vabi.DigitalReserveSystemSetup
+	Event   *SetupCreditEvent
 }
 
 func (c *Client) SetupCredit(ctx context.Context, input *SetupCreditInput) (*SetupCreditOutput, error) {
@@ -110,10 +128,13 @@ func (c *Client) SetupCredit(ctx context.Context, input *SetupCreditInput) (*Set
 		return nil, err
 	}
 
-	event, err := c.txHelper.ExtractSetupEvent("Setup", receipt.Logs[0])
+	eventAbi, err := c.txHelper.ExtractSetupEvent("Setup", receipt.Logs[0])
 	if err != nil {
 		return nil, err
 	}
+
+	event := new(SetupCreditEvent)
+	event.ToEventOutput(eventAbi)
 
 	return &SetupCreditOutput{
 		Tx:      tx,
