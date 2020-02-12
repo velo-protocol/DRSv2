@@ -63,8 +63,8 @@ func TestGetExchangeRate(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Equal(t, "vUSD", result.AssetCode)
-		assert.Equal(t, utils.StringToByte32("VELO"), result.CollateralAssetCode)
-		assert.Equal(t, "10000000", result.PriceInCollateralPerAssetUnit.String())
+		assert.Equal(t, "VELO", result.CollateralAssetCode)
+		assert.Equal(t, "1.0000000", result.PriceInCollateralPerAssetUnit)
 	})
 
 	t.Run("fail, should throw error assetCode must not be blank", func(t *testing.T) {
