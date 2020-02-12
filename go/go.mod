@@ -3,8 +3,6 @@ module github.com/velo-protocol/DRSv2/go
 go 1.12
 
 require (
-	bou.ke/monkey v1.0.1
-	github.com/bgentry/speakeasy v0.1.0
 	github.com/briandowns/spinner v1.8.0
 	github.com/ethereum/go-ethereum v1.9.10
 	github.com/fatih/color v1.7.0
