@@ -5,6 +5,7 @@ import "../interfaces/IDRS.sol";
 import "../interfaces/IRM.sol";
 import "../interfaces/IStableCredit.sol";
 import "../interfaces/ICollateralAsset.sol";
+import "../book-room/Hasher.sol";
 
 contract DigitalReserveSystem is IDRS {
     using SafeMath for uint256;

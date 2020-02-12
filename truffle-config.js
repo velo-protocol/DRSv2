@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const PrivateKeyProvider = require("truffle-privatekey-provider");
+const web3 = require('web3');
 
 module.exports = {
   networks: {
@@ -15,6 +16,14 @@ module.exports = {
       gasPrice: 1000000000,
       gas: 6357193,
       production: false
+    },
+    evry: {
+      provider: () => new PrivateKeyProvider(process.env.EVRY_SCC_PK, process.env.EVRY_SCC_HOST),
+      network_id: process.env.EVRY_NETWORK_ID,
+      gas: 8000000,
+      gasPrice: web3.utils.toWei("1", "gwei"),
+      production: false,
+      confirmations: 1,
     },
     coverage: {
       host: "localhost",

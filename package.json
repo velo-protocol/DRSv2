@@ -5,6 +5,7 @@
   "scripts": {
     "reset": "truffle migrate --reset --network local",
     "reset:dev": "truffle migrate --reset --network dev",
+    "reset:evry": "truffle migrate --reset --network evry",
     "test": "truffle test --network local",
     "test:js": "truffle test --network local test/js/**/Test**.js",
     "test:sol": "truffle test --network local test/sol/**/Test**.sol",
