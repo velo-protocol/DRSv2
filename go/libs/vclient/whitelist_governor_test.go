@@ -48,6 +48,10 @@ func TestWhitelistGovernor(t *testing.T) {
 		abiInput := input.ToAbiInput()
 
 		testHelper.MockHeartContract.EXPECT().
+			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), testHelper.Client.publicKey).
+			Return(true, nil)
+
+		testHelper.MockHeartContract.EXPECT().
 			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), abiInput.Address).
 			Return(false, nil)
 
@@ -85,6 +89,43 @@ func TestWhitelistGovernor(t *testing.T) {
 		assert.Equal(t, "address must not be blank", err.Error())
 	})
 
+	t.Run("fail, should throw error the message sender is not found or does not have sufficient permission to perform whitelist user", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &WhitelistGovernorInput{
+			Address: governorAddress,
+		}
+
+		testHelper.MockHeartContract.EXPECT().
+			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), testHelper.Client.publicKey).
+			Return(false, nil)
+
+		result, err := testHelper.Client.WhitelistGovernor(context.Background(), input)
+
+		assert.NotNil(t, err)
+		assert.Nil(t, result)
+		assert.Equal(t, "the message sender is not found or does not have sufficient permission to perform whitelist user", err.Error())
+	})
+
+	t.Run("fail, should throw error call heart.contract.IsGovernor validate sender", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &WhitelistGovernorInput{
+			Address: governorAddress,
+		}
+
+		testHelper.MockHeartContract.EXPECT().
+			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), testHelper.Client.publicKey).
+			Return(false, errors.New("error here"))
+
+		result, err := testHelper.Client.WhitelistGovernor(context.Background(), input)
+
+		assert.NotNil(t, err)
+		assert.Nil(t, result)
+	})
+
 	t.Run("fail, should throw error The address ${address} has already been whitelisted as governor", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
@@ -93,6 +134,10 @@ func TestWhitelistGovernor(t *testing.T) {
 			Address: governorAddress,
 		}
 		abiInput := input.ToAbiInput()
+
+		testHelper.MockHeartContract.EXPECT().
+			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), testHelper.Client.publicKey).
+			Return(true, nil)
 
 		testHelper.MockHeartContract.EXPECT().
 			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), abiInput.Address).
@@ -115,6 +160,10 @@ func TestWhitelistGovernor(t *testing.T) {
 		abiInput := input.ToAbiInput()
 
 		testHelper.MockHeartContract.EXPECT().
+			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), testHelper.Client.publicKey).
+			Return(true, nil)
+
+		testHelper.MockHeartContract.EXPECT().
 			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), abiInput.Address).
 			Return(true, errors.New("error here"))
 
@@ -132,6 +181,10 @@ func TestWhitelistGovernor(t *testing.T) {
 			Address: governorAddress,
 		}
 		abiInput := input.ToAbiInput()
+
+		testHelper.MockHeartContract.EXPECT().
+			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), testHelper.Client.publicKey).
+			Return(true, nil)
 
 		testHelper.MockHeartContract.EXPECT().
 			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), abiInput.Address).
@@ -157,6 +210,10 @@ func TestWhitelistGovernor(t *testing.T) {
 		abiInput := input.ToAbiInput()
 
 		testHelper.MockHeartContract.EXPECT().
+			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), testHelper.Client.publicKey).
+			Return(true, nil)
+
+		testHelper.MockHeartContract.EXPECT().
 			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), abiInput.Address).
 			Return(false, nil)
 
@@ -179,6 +236,10 @@ func TestWhitelistGovernor(t *testing.T) {
 			Address: governorAddress,
 		}
 		abiInput := input.ToAbiInput()
+
+		testHelper.MockHeartContract.EXPECT().
+			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), testHelper.Client.publicKey).
+			Return(true, nil)
 
 		testHelper.MockHeartContract.EXPECT().
 			IsGovernor(gomock.AssignableToTypeOf(&bind.CallOpts{}), abiInput.Address).
