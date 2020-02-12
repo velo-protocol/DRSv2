@@ -2,7 +2,10 @@
 
 package vclient
 
-import "log"
+import (
+	"context"
+	"log"
+)
 
 func ExampleClient_WhitelistTrustedPartner() {
 	client, err := NewClient("http://127.0.0.1:7545", "da17d295e2fd005747cca4de855bbb0493f2e0669753bba1e752700dbad4c78c", ContractAddress{
@@ -14,7 +17,7 @@ func ExampleClient_WhitelistTrustedPartner() {
 		return
 	}
 
-	result, err := client.WhitelistTrustedPartner(&WhitelistTrustedPartnerInput{
+	result, err := client.WhitelistTrustedPartner(context.Background(), &WhitelistTrustedPartnerInput{
 		Address: "<TRUSTED_PARTNER_ADDRESS>", // Ex: 0xf9955C6A38f74f0bfFD63141E840BB77FF3F3d38
 	})
 	if err != nil {

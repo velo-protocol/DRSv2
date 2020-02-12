@@ -7,6 +7,7 @@ abigen/gen/all:
 	yarn --cwd ./.. run abi:extract
 	abigen --abi ../build/contracts/abi/DigitalReserveSystem.abi --bin ../build/contracts/bin/DigitalReserveSystem.bin --pkg vabi --type DigitalReserveSystem --out abi/digital_reserve_system.go
 	abigen --abi ../build/contracts/abi/Heart.abi --bin ../build/contracts/bin/Heart.bin --pkg vabi --type Heart --out abi/heart.go
+	abigen --abi ../build/contracts/abi/StableCredit.abi --bin ../build/contracts/bin/StableCredit.bin --pkg vabi --type StableCredit --out abi/stable_credit.go
 
 format:
 	go fmt ./...

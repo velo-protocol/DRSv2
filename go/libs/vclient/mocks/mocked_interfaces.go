@@ -241,6 +241,21 @@ func (mr *MockDRSContractMockRecorder) MintFromCollateralAmount(opts, netCollate
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintFromCollateralAmount", reflect.TypeOf((*MockDRSContract)(nil).MintFromCollateralAmount), opts, netCollateralAmount, assetCode)
 }
 
+// MintFromStableCreditAmount mocks base method
+func (m *MockDRSContract) MintFromStableCreditAmount(opts *bind.TransactOpts, mintAmount *big.Int, assetCode string) (*types.Transaction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MintFromStableCreditAmount", opts, mintAmount, assetCode)
+	ret0, _ := ret[0].(*types.Transaction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// MintFromStableCreditAmount indicates an expected call of MintFromStableCreditAmount
+func (mr *MockDRSContractMockRecorder) MintFromStableCreditAmount(opts, mintAmount, assetCode interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintFromStableCreditAmount", reflect.TypeOf((*MockDRSContract)(nil).MintFromStableCreditAmount), opts, mintAmount, assetCode)
+}
+
 // GetExchange mocks base method
 func (m *MockDRSContract) GetExchange(opts *bind.CallOpts, assetCode string) (string, [32]byte, *big.Int, error) {
 	m.ctrl.T.Helper()
@@ -262,6 +277,34 @@ func (mr *MockDRSContractMockRecorder) GetExchange(opts, assetCode interface{}) 
 func (m *MockDRSContract) Redeem(opts *bind.TransactOpts, stableCreditAmount *big.Int, assetCode string) (*types.Transaction, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Redeem", opts, stableCreditAmount, assetCode)
+	ret0, _ := ret[0].([32]byte)
+	ret1, _ := ret[1].(*big.Int)
+	ret2, _ := ret[2].(*big.Int)
+	ret3, _ := ret[3].(error)
+	return ret0, ret1, ret2, ret3
+}
+
+// CollateralHealthCheck mocks base method
+func (m *MockDRSContract) CollateralHealthCheck(opts *bind.CallOpts, assetCode string) ([32]byte, *big.Int, *big.Int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CollateralHealthCheck", opts, assetCode)
+	ret0, _ := ret[0].([32]byte)
+	ret1, _ := ret[1].(*big.Int)
+	ret2, _ := ret[2].(*big.Int)
+	ret3, _ := ret[3].(error)
+	return ret0, ret1, ret2, ret3
+}
+
+// CollateralHealthCheck indicates an expected call of CollateralHealthCheck
+func (mr *MockDRSContractMockRecorder) CollateralHealthCheck(opts, assetCode interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CollateralHealthCheck", reflect.TypeOf((*MockDRSContract)(nil).CollateralHealthCheck), opts, assetCode)
+}
+
+// Rebalance mocks base method
+func (m *MockDRSContract) Rebalance(opts *bind.TransactOpts, assetCode string) (*types.Transaction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Rebalance", opts, assetCode)
 	ret0, _ := ret[0].(*types.Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -271,6 +314,12 @@ func (m *MockDRSContract) Redeem(opts *bind.TransactOpts, stableCreditAmount *bi
 func (mr *MockDRSContractMockRecorder) Redeem(opts, stableCreditAmount, assetCode interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Redeem", reflect.TypeOf((*MockDRSContract)(nil).Redeem), opts, stableCreditAmount, assetCode)
+}
+
+// Rebalance indicates an expected call of Rebalance
+func (mr *MockDRSContractMockRecorder) Rebalance(opts, assetCode interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rebalance", reflect.TypeOf((*MockDRSContract)(nil).Rebalance), opts, assetCode)
 }
 
 // MockHeartContract is a mock of HeartContract interface
@@ -311,6 +360,21 @@ func (mr *MockHeartContractMockRecorder) SetGovernor(opts, address interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetGovernor", reflect.TypeOf((*MockHeartContract)(nil).SetGovernor), opts, address)
 }
 
+// IsGovernor mocks base method
+func (m *MockHeartContract) IsGovernor(opts *bind.CallOpts, addr common.Address) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsGovernor", opts, addr)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// IsGovernor indicates an expected call of IsGovernor
+func (mr *MockHeartContractMockRecorder) IsGovernor(opts, addr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsGovernor", reflect.TypeOf((*MockHeartContract)(nil).IsGovernor), opts, addr)
+}
+
 // SetTrustedPartner mocks base method
 func (m *MockHeartContract) SetTrustedPartner(opts *bind.TransactOpts, address common.Address) (*types.Transaction, error) {
 	m.ctrl.T.Helper()
@@ -324,6 +388,104 @@ func (m *MockHeartContract) SetTrustedPartner(opts *bind.TransactOpts, address c
 func (mr *MockHeartContractMockRecorder) SetTrustedPartner(opts, address interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetTrustedPartner", reflect.TypeOf((*MockHeartContract)(nil).SetTrustedPartner), opts, address)
+}
+
+// IsTrustedPartner mocks base method
+func (m *MockHeartContract) IsTrustedPartner(opts *bind.CallOpts, addr common.Address) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsTrustedPartner", opts, addr)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// IsTrustedPartner indicates an expected call of IsTrustedPartner
+func (mr *MockHeartContractMockRecorder) IsTrustedPartner(opts, addr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsTrustedPartner", reflect.TypeOf((*MockHeartContract)(nil).IsTrustedPartner), opts, addr)
+}
+
+// GetStableCreditCount mocks base method
+func (m *MockHeartContract) GetStableCreditCount(opts *bind.CallOpts) (uint8, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetStableCreditCount", opts)
+	ret0, _ := ret[0].(uint8)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetStableCreditCount indicates an expected call of GetStableCreditCount
+func (mr *MockHeartContractMockRecorder) GetStableCreditCount(opts interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStableCreditCount", reflect.TypeOf((*MockHeartContract)(nil).GetStableCreditCount), opts)
+}
+
+// GetRecentStableCredit mocks base method
+func (m *MockHeartContract) GetRecentStableCredit(opts *bind.CallOpts) (common.Address, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRecentStableCredit", opts)
+	ret0, _ := ret[0].(common.Address)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRecentStableCredit indicates an expected call of GetRecentStableCredit
+func (mr *MockHeartContractMockRecorder) GetRecentStableCredit(opts interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRecentStableCredit", reflect.TypeOf((*MockHeartContract)(nil).GetRecentStableCredit), opts)
+}
+
+// GetNextStableCredit mocks base method
+func (m *MockHeartContract) GetNextStableCredit(opts *bind.CallOpts, stableCreditId [32]byte) (common.Address, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNextStableCredit", opts, stableCreditId)
+	ret0, _ := ret[0].(common.Address)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNextStableCredit indicates an expected call of GetNextStableCredit
+func (mr *MockHeartContractMockRecorder) GetNextStableCredit(opts, stableCreditId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNextStableCredit", reflect.TypeOf((*MockHeartContract)(nil).GetNextStableCredit), opts, stableCreditId)
+}
+
+// MockStableCreditContract is a mock of StableCreditContract interface
+type MockStableCreditContract struct {
+	ctrl     *gomock.Controller
+	recorder *MockStableCreditContractMockRecorder
+}
+
+// MockStableCreditContractMockRecorder is the mock recorder for MockStableCreditContract
+type MockStableCreditContractMockRecorder struct {
+	mock *MockStableCreditContract
+}
+
+// NewMockStableCreditContract creates a new mock instance
+func NewMockStableCreditContract(ctrl *gomock.Controller) *MockStableCreditContract {
+	mock := &MockStableCreditContract{ctrl: ctrl}
+	mock.recorder = &MockStableCreditContractMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockStableCreditContract) EXPECT() *MockStableCreditContractMockRecorder {
+	return m.recorder
+}
+
+// StableCreditAssetCode mocks base method
+func (m *MockStableCreditContract) StableCreditAssetCode(opts *bind.CallOpts) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StableCreditAssetCode", opts)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// StableCreditAssetCode indicates an expected call of StableCreditAssetCode
+func (mr *MockStableCreditContractMockRecorder) StableCreditAssetCode(opts interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StableCreditAssetCode", reflect.TypeOf((*MockStableCreditContract)(nil).StableCreditAssetCode), opts)
 }
 
 // MockTxHelper is a mock of TxHelper interface
@@ -407,4 +569,20 @@ func (m *MockTxHelper) ExtractRedeemEvent(eventName string, log *types.Log) (*va
 func (mr *MockTxHelperMockRecorder) ExtractRedeemEvent(eventName, log interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractRedeemEvent", reflect.TypeOf((*MockTxHelper)(nil).ExtractRedeemEvent), eventName, log)
+}
+
+// StableCreditAssetCode mocks base method
+func (m *MockTxHelper) StableCreditAssetCode(addr common.Address) (*string, *[32]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StableCreditAssetCode", addr)
+	ret0, _ := ret[0].(*string)
+	ret1, _ := ret[1].(*[32]byte)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// StableCreditAssetCode indicates an expected call of StableCreditAssetCode
+func (mr *MockTxHelperMockRecorder) StableCreditAssetCode(addr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StableCreditAssetCode", reflect.TypeOf((*MockTxHelper)(nil).StableCreditAssetCode), addr)
 }

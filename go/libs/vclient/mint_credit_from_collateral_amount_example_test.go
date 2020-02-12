@@ -8,9 +8,9 @@ import (
 )
 
 func ExampleClient_MintFromCollateralAmount() {
-	client, err := NewClient(smartContractUrl, "6bc0e50d09b273bf7cc5193eeee57fe807011b33ab0ea9a05c922f5eac099642", ContractAddress{
-		DrsAddress:   "0xCa2ab1d86B115771c7C2fAF17d58E5D258BE0F6F", // 0xBdA518a6245480652d1A217192EBB299C94F623f
-		HeartAddress: "0x7B047A389b2CDCAf7FE0e1eE04E6a04E77D00Ba8", // 0x1623C9c8600319E7CfAff0Ca1c4a05e1a61D954D
+	client, err := NewClient(smartContractUrl, "<PRIVATE_KEY>", ContractAddress{
+		DrsAddress:   "<DRS_CONTRACT_ADDRESS>",   // 0xBdA518a6245480652d1A217192EBB299C94F623f
+		HeartAddress: "<HEART_CONTRACT_ADDRESS>", // 0x1623C9c8600319E7CfAff0Ca1c4a05e1a61D954D
 	})
 
 	if err != nil {
@@ -33,4 +33,9 @@ func ExampleClient_MintFromCollateralAmount() {
 	log.Println("Mint Amount: ", result.Event.MintAmount)
 	// Output:
 	// Mint From Collateral Amount Transaction Hash: 0x0d6658bf79d9e4541de0617a14c17e7d642169d3f00d7a035595136b59f6f8ac
+	// Asset Address: 0x23Cf6f4656218Bd25733f27aadBEe009A0f6C3Fd
+	// Asset Code: vUSD
+	// Collateral Amount:  2.0000000
+	// Collateral Asset Code: VELO
+	// Mint Amount: 4.0000000
 }

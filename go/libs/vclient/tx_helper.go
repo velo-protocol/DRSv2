@@ -13,18 +13,21 @@ import (
 )
 
 type txHelper struct {
-	conn     Connection
-	drsAbi   *abi.ABI
-	heartAbi *abi.ABI
+	conn            Connection
+	drsAbi          *abi.ABI
+	heartAbi        *abi.ABI
+	stableCreditAbi *abi.ABI
 }
 
 func NewTxHelper(conn Connection) *txHelper {
 	drsAbi, _ := abi.JSON(strings.NewReader(vabi.DigitalReserveSystemABI))
 	heartAbi, _ := abi.JSON(strings.NewReader(vabi.HeartABI))
+	stableCreditAbi, _ := abi.JSON(strings.NewReader(vabi.StableCreditABI))
 	return &txHelper{
-		conn:     conn,
-		drsAbi:   &drsAbi,
-		heartAbi: &heartAbi,
+		conn:            conn,
+		drsAbi:          &drsAbi,
+		heartAbi:        &heartAbi,
+		stableCreditAbi: &stableCreditAbi,
 	}
 }
 
@@ -44,11 +47,30 @@ func (h *txHelper) ExtractSetupEvent(eventName string, log *types.Log) (*vabi.Di
 	}
 
 	// extract indexed field
-	if len(log.Topics) > 1 {
+	if len(log.Topics) <= 1 {
 		return nil, errors.New("fail to parse indexed param of an event")
 	}
 	event.CollateralAssetCode = utils.BytesToBytes32(log.Topics[1].Bytes())
 	return event, nil
+}
+
+func (h *txHelper) StableCreditAssetCode(addr common.Address) (*string, *[32]byte, error) {
+	stableCreditContract, err := vabi.NewStableCredit(addr, h.conn)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "fail to call stableCreditContract")
+	}
+
+	assetCode, err := stableCreditContract.AssetCode(nil)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "fail to call stableCreditContract.AssetCode")
+	}
+
+	stableCreditId, err := stableCreditContract.GetId(nil)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "fail to call stableCreditContract.GetId")
+	}
+
+	return &assetCode, &stableCreditId, nil
 }
 
 func (h *txHelper) ExtractMintEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemMint, error) {
