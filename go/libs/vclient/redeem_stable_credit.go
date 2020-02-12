@@ -39,7 +39,7 @@ func (i *RedeemStableCreditInput) Validate() error {
 		return errors.New("assetCode must not be blank")
 	}
 
-	if matched, _ := regexp.MatchString(`^[A-Za-z0-9]{1,7}$`, i.AssetCode); !matched {
+	if matched, _ := regexp.MatchString(`^[A-Za-z0-9]{1,12}$`, i.AssetCode); !matched {
 		return errors.New("invalid assetCode format")
 	}
 
@@ -100,12 +100,12 @@ func (c *Client) RedeemStableCredit(ctx context.Context, input *RedeemStableCred
 	if err != nil {
 		return nil, err
 	}
-	
+
 	redeemStableCreditEvent := &RedeemStableCreditEvent{
 		AssetCode:event.AssetCode,
-		StableCreditAmount:event.StableCreditAmount.String(),
+		StableCreditAmount:utils.AmountToString(event.StableCreditAmount),
 		CollateralAssetAddress:event.CollateralAssetAddress.String(),
-		CollateralAssetCode:string(event.CollateralAssetCode[:]),
+		CollateralAssetCode:utils.Byte32ToString(event.CollateralAssetCode),
 		CollateralAmount:event.CollateralAmount.String(),
 		Raw:event.Raw,
 	}
