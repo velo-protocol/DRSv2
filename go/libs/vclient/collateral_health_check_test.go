@@ -216,7 +216,7 @@ func TestCollateralHealthCheck(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
-		assert.Equal(t, "stableCredit not found", err.Error())
+		assert.Equal(t, "stable credit not found", err.Error())
 	})
 
 	t.Run("fail, call Heart Contract GetRecentStableCredit", func(t *testing.T) {
