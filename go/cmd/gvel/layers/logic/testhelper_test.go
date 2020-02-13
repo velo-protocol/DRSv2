@@ -1,11 +1,14 @@
 package logic_test
 
 import (
+	"encoding/json"
 	"github.com/golang/mock/gomock"
 	"github.com/sirupsen/logrus/hooks/test"
+	"github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/logic"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/mocks"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
+	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/crypto"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/mocks"
 	"testing"
 )
@@ -40,5 +43,27 @@ func initTest(t *testing.T) helper {
 		done: func() {
 			mockCtrl.Finish()
 		},
+	}
+}
+
+func arrayOfAccountsBytes() [][]byte {
+	return [][]byte{
+		accountsBytes(),
+	}
+}
+
+func accountsBytes() []byte {
+	accountBytes, _ := json.Marshal(accountEntity())
+	return accountBytes
+}
+
+func accountEntity() entity.Account {
+	encryptedPrivateKey, nonce, _ := crypto.Encrypt([]byte("SBR25NMQRKQ4RLGNV5XB3MMQB4ADVYSMPGVBODQVJE7KPTDR6KGK3XMX"), "password")
+
+	return entity.Account{
+		PublicAddress:       "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+		EncryptedPrivateKey: encryptedPrivateKey,
+		Nonce:               nonce,
+		IsDefault:           true,
 	}
 }

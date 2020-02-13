@@ -38,6 +38,7 @@ func (accountCommand *CommandHandler) Command() *cobra.Command {
 	command.AddCommand(
 		accountCommand.GetCreateCommand(),
 		accountCommand.GetImportCommand(),
+		accountCommand.GetListCommand(),
 	)
 	return command
 }
@@ -62,4 +63,12 @@ func (accountCommand *CommandHandler) GetImportCommand() *cobra.Command {
 
 	command.Flags().BoolP(constants.FlagDefault, "d", false, "set as default account")
 	return command
+}
+
+func (accountCommand *CommandHandler) GetListCommand() *cobra.Command {
+	return &cobra.Command{
+		Use:   constants.CmdAccountList,
+		Short: "Print all accounts that were created",
+		Run:   accountCommand.List,
+	}
 }
