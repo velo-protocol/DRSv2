@@ -4,6 +4,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"regexp"
+	"strings"
 )
 
 type GetExchangeRateInput struct {
@@ -25,7 +26,7 @@ func (i *GetExchangeRateInput) Validate() error {
 		return errors.New("assetCode must not be blank")
 	}
 
-	if matched, _ := regexp.MatchString(`^[A-Za-z0-9]{1,7}$`, i.AssetCode); !matched {
+	if matched, _ := regexp.MatchString(`^[A-Za-z0-9]{1,12}$`, i.AssetCode); !matched {
 		return errors.New("invalid assetCode format")
 	}
 
@@ -49,6 +50,9 @@ func (c *Client) GetExchangeRate(input *GetExchangeRateInput) (*GetExchangeRateO
 		input.AssetCode,
 	)
 	if err != nil {
+		if strings.Contains(err.Error(), "stableCredit not exist") {
+			return nil, errors.Errorf("the stable credit %s does not exist", input.AssetCode)
+		}
 		return nil, err
 	}
 
