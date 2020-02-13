@@ -208,7 +208,7 @@ func TestRebalance(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
-		assert.Equal(t, "not found stableCredit", err.Error())
+		assert.Equal(t, "stableCredit not found", err.Error())
 	})
 
 	t.Run("fail, call Heart Contract GetRecentStableCredit", func(t *testing.T) {
