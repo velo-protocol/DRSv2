@@ -36,7 +36,7 @@ func (c *Client) Rebalance(ctx context.Context, input *RebalanceInput) (*Rebalan
 	}
 
 	if stableCreditSize == 0 {
-		return nil, errors.New("not found stableCredit")
+		return nil, errors.New("stableCredit not found")
 	}
 
 	var curStableCreditAddress common.Address
