@@ -497,7 +497,7 @@ contract("DigitalReserveSystem test", async accounts => {
           "vUSD"
         );
       } catch (err) {
-        assert.equal("DigitalReserveSystem._validateAssetCode: price of link must have value more than 0", err.reason)
+        assert.equal("DigitalReserveSystem._validateAssetCode: valid price not found", err.reason)
       }
     });
   });
@@ -701,7 +701,7 @@ contract("DigitalReserveSystem test", async accounts => {
           "vUSD"
         );
       } catch (err) {
-        assert.equal("DigitalReserveSystem._validateAssetCode: price of link must have value more than 0", err.reason)
+        assert.equal("DigitalReserveSystem._validateAssetCode: valid price not found", err.reason)
       }
     });
   });
@@ -837,7 +837,7 @@ contract("DigitalReserveSystem test", async accounts => {
         await drs.redeem(10000000, "vTHB")
       }, 'DigitalReserveSystem.redeem: collateralAssetCode does not exist');
     });
-    it("should fail, price of link must have value more than 0", async () => {
+    it("should fail, valid price not found", async () => {
 
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
@@ -863,7 +863,7 @@ contract("DigitalReserveSystem test", async accounts => {
       try {
         await drs.redeem(10000000, "vTHB");
       } catch (err) {
-        assert.equal("DigitalReserveSystem._validateAssetCode: price of link must have value more than 0", err.reason)
+        assert.equal("DigitalReserveSystem._validateAssetCode: valid price not found", err.reason)
       }
     });
   });
@@ -940,7 +940,7 @@ contract("DigitalReserveSystem test", async accounts => {
       }
     });
 
-    it("should fail, price of link must have value more than 0", async () => {
+    it("should fail, valid price not found", async () => {
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
         stableCreditVUSD.address
@@ -965,7 +965,7 @@ contract("DigitalReserveSystem test", async accounts => {
       try {
         await drs.getExchange("vUSD");
       } catch (err) {
-        assert.equal("Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: price of link must have value more than 0", err)
+        assert.equal("Error: Returned error: VM Exception while processing transaction: revert DigitalReserveSystem._validateAssetCode: valid price not found", err)
       }
     });
   });
