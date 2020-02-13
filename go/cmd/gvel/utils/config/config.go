@@ -91,6 +91,13 @@ func (cfg *configuration) InitEnvBasedConfig(baseDir string, envName string) err
 	v := viper.New()
 	v.SetConfigType("json")
 	v.SetDefault(constants.CfgKeyAccountDbPath, path.Join(baseDir, envName, "/db/account"))
+	v.SetDefault(constants.CfgKeyRpcUrl, constants.TestNetRpcUrl)
+	v.SetDefault(constants.CfgKeyDrsAddress, constants.TestNetDrsAddress)
+	v.SetDefault(constants.CfgKeyHeartAddress, constants.TestNetHeartAddress)
+
+	v.SetDefault(constants.CfgKeyRpcUrl, constants.MainNetRpcUrl)
+	v.SetDefault(constants.CfgKeyDrsAddress, constants.MainNetDrsAddress)
+	v.SetDefault(constants.CfgKeyHeartAddress, constants.MainNetHeartAddress)
 
 	err = v.WriteConfigAs(fmt.Sprintf(constants.FsConfigFileNameFormat, envName))
 	if err != nil {

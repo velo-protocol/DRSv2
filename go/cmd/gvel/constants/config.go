@@ -6,4 +6,7 @@ const (
 	CfgKeyInitialized    = "initialized"
 	CfgKeyAccountDbPath  = "accountDbPath"
 	CfgKeyDefaultAccount = "defaultAccount"
+	CfgKeyRpcUrl         = "rpcUrl"
+	CfgKeyDrsAddress     = "drsAddress"
+	CfgKeyHeartAddress   = "heartAddress"
 )
