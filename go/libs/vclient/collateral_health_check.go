@@ -38,7 +38,7 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 	}
 
 	if stableCreditSize == 0 {
-		return nil, errors.New("stableCredit not found")
+		return nil, errors.New("stable credit not found")
 	}
 
 	var curStableCreditAddress common.Address
