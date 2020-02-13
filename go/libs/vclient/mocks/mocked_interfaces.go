@@ -277,11 +277,15 @@ func (mr *MockDRSContractMockRecorder) GetExchange(opts, assetCode interface{}) 
 func (m *MockDRSContract) Redeem(opts *bind.TransactOpts, stableCreditAmount *big.Int, assetCode string) (*types.Transaction, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Redeem", opts, stableCreditAmount, assetCode)
-	ret0, _ := ret[0].([32]byte)
-	ret1, _ := ret[1].(*big.Int)
-	ret2, _ := ret[2].(*big.Int)
-	ret3, _ := ret[3].(error)
-	return ret0, ret1, ret2, ret3
+	ret0, _ := ret[0].(*types.Transaction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Redeem indicates an expected call of Redeem
+func (mr *MockDRSContractMockRecorder) Redeem(opts, stableCreditAmount, assetCode interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Redeem", reflect.TypeOf((*MockDRSContract)(nil).Redeem), opts, stableCreditAmount, assetCode)
 }
 
 // CollateralHealthCheck mocks base method
@@ -308,12 +312,6 @@ func (m *MockDRSContract) Rebalance(opts *bind.TransactOpts, assetCode string) (
 	ret0, _ := ret[0].(*types.Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
-}
-
-// Redeem indicates an expected call of Redeem
-func (mr *MockDRSContractMockRecorder) Redeem(opts, stableCreditAmount, assetCode interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Redeem", reflect.TypeOf((*MockDRSContract)(nil).Redeem), opts, stableCreditAmount, assetCode)
 }
 
 // Rebalance indicates an expected call of Rebalance
