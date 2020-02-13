@@ -104,7 +104,7 @@ func (c *Client) MintFromStableCreditAmount(ctx context.Context, input *MintFrom
 		case strings.Contains(msg, "transfer amount exceeds balance"):
 			return nil, errors.New("the collateral in your address is insufficient")
 		case strings.Contains(msg, "the stable credit does not belong to you"):
-			return nil, errors.Errorf("The stable credit %s does not belong to you", input.AssetCode)
+			return nil, errors.Errorf("the stable credit %s does not belong to you", input.AssetCode)
 		default:
 			return nil, err
 		}

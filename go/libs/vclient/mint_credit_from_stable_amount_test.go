@@ -223,7 +223,7 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 		result, err := testHelper.Client.MintFromStableCreditAmount(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
-		assert.Contains(t, err.Error(), "The stable credit vUSD does not belong to you")
+		assert.Contains(t, err.Error(), "the stable credit vUSD does not belong to you")
 	})
 
 	t.Run("error, drs.MintFromStableCreditAmount returns an error", func(t *testing.T) {
