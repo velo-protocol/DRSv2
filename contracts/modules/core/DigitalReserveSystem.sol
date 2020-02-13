@@ -70,9 +70,6 @@ contract DigitalReserveSystem is IDRS {
         bytes32 linkId = Hasher.linkId(collateralAssetCode, peggedCurrency);
         require(heart.isLinkAllowed(linkId), "DigitalReserveSystem.setup: collateralAssetCode - peggedCurrency pair does not exist");
 
-        // validate link price
-        require(heart.getPriceFeeders().getMedianPrice(linkId) > 0, "DigitalReserveSystem.setup: price of link must have value more than 0");
-
         StableCredit newStableCredit = new StableCredit(
             peggedCurrency,
             msg.sender,
@@ -167,7 +164,7 @@ contract DigitalReserveSystem is IDRS {
         require(collateralAsset == stableCredit.collateral(), "DigitalReserveSystem._validateAssetCode: collateralAsset must be the same");
 
         bytes32 linkId = Hasher.linkId(collateralAssetCode, stableCredit.peggedCurrency());
-        require(heart.getPriceFeeders().getMedianPrice(linkId) > 0, "DigitalReserveSystem._validateAssetCode: price of link must have value more than 0");
+        require(heart.getPriceFeeders().getMedianPrice(linkId) > 0, "DigitalReserveSystem._validateAssetCode: valid price not found");
 
         return (stableCredit, collateralAsset, collateralAssetCode, linkId);
     }
