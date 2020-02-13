@@ -14,7 +14,8 @@ func TestGvelHandler_Init(t *testing.T) {
 
 	assert.True(t, gvelHandler.AccountCommand == gvelHandler.RootCommand.Commands()[0])
 	assert.True(t, gvelHandler.CreditCommand == gvelHandler.RootCommand.Commands()[1])
-	assert.True(t, gvelHandler.InitCommand == gvelHandler.RootCommand.Commands()[2])
+	assert.True(t, gvelHandler.EnvCommand == gvelHandler.RootCommand.Commands()[2])
+	assert.True(t, gvelHandler.InitCommand == gvelHandler.RootCommand.Commands()[3])
 
 	assert.Len(t, gvelHandler.InitCommand.Commands(), 0)
 }

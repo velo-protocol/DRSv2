@@ -4,7 +4,6 @@ package vclient
 
 import (
 	"context"
-	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"log"
 )
 
@@ -29,11 +28,11 @@ func ExampleClient_SetupCredit() {
 
 	log.Println("Transaction Hash: ", output.Tx.Hash().String())
 	log.Println("Block Number: ", output.Receipt.BlockNumber.String())
-	log.Println("Event.PeggedCurrency: ", utils.Byte32ToString(output.Event.PeggedCurrency))
-	log.Println("Event.PeggedValue: ", utils.AmountToString(output.Event.PeggedValue))
+	log.Println("Event.PeggedCurrency: ", output.Event.PeggedCurrency)
+	log.Println("Event.PeggedValue: ", output.Event.PeggedValue)
 	log.Println("Event.AssetCode: ", output.Event.AssetCode)
-	log.Println("Event.CollateralAssetCode: ", utils.Byte32ToString(output.Event.CollateralAssetCode))
-	log.Println("Event.AssetAddress: ", output.Event.AssetAddress.String())
+	log.Println("Event.CollateralAssetCode: ", output.Event.CollateralAssetCode)
+	log.Println("Event.AssetAddress: ", output.Event.AssetAddress)
 	// Output:
 	// Transaction Hash: 0x0d6658bf79d9e4541de0617a14c17e7d642169d3f00d7a035595136b59f6f8ac
 	// Block Number: 10

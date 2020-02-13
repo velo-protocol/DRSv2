@@ -23,7 +23,7 @@ contract("DigitalReserveSystem test", async accounts => {
       reserveManager: await MockContract.new(),
       veloCollateralAsset: await MockContract.new(),
       otherCollateralAsset: await MockContract.new(),
-      stableCreditvUSD: await MockContract.new(),
+      stableCreditVUSD: await MockContract.new(),
       stableCreditVTHB: await MockContract.new(),
     };
 
@@ -32,7 +32,7 @@ contract("DigitalReserveSystem test", async accounts => {
     reserveManager = await ReserveManager.at(mocks.reserveManager.address);
     veloCollateralAsset = await Token.at(mocks.veloCollateralAsset.address);
     otherCollateralAsset = await Token.at(mocks.otherCollateralAsset.address);
-    stableCreditVUSD = await StableCredit.at(mocks.stableCreditvUSD.address);
+    stableCreditVUSD = await StableCredit.at(mocks.stableCreditVUSD.address);
     stableCreditVTHB = await StableCredit.at(mocks.stableCreditVTHB.address);
   });
 
@@ -263,7 +263,27 @@ contract("DigitalReserveSystem test", async accounts => {
 
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("stableCreditId")).encodeABI(),
-        stableCredit.address
+        stableCreditVTHB.address
+      );
+
+      await mocks.stableCreditVTHB.givenMethodReturnAddress(
+        stableCreditVTHB.contract.methods.creditOwner().encodeABI(),
+        accounts[0]
+      );
+
+      await mocks.stableCreditVTHB.givenMethodReturn(
+        stableCreditVTHB.contract.methods.collateralAssetCode().encodeABI(),
+        '0x' + abi.rawEncode(['bytes32'], ['VELO']).toString("hex")
+      );
+
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("VELO")).encodeABI(),
+        veloCollateralAsset.address
+      );
+
+      await mocks.stableCreditVTHB.givenMethodReturnAddress(
+        stableCreditVTHB.contract.methods.collateral().encodeABI(),
+        veloCollateralAsset.address
       );
 
       await mocks.heart.givenMethodReturnAddress(
@@ -286,10 +306,11 @@ contract("DigitalReserveSystem test", async accounts => {
         10000000
       );
 
-      await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("VELO")).encodeABI(),
-        veloCollateralAsset.address
+      await mocks.stableCreditVTHB.givenMethodReturnUint(
+        stableCreditVTHB.contract.methods.peggedValue().encodeABI(),
+        15000000
       );
+
       await mocks.veloCollateralAsset.givenMethodReturnBool(
         veloCollateralAsset.contract.methods.transferFrom(accounts[0], heart.address, 1).encodeABI(),
         true
@@ -303,11 +324,6 @@ contract("DigitalReserveSystem test", async accounts => {
       await mocks.veloCollateralAsset.givenMethodReturnBool(
         veloCollateralAsset.contract.methods.transferFrom(accounts[0], drs.address, 8).encodeABI(),
         true
-      );
-
-      await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getDrsAddress().encodeABI(),
-        drs.address
       );
 
       await mocks.veloCollateralAsset.givenMethodReturnBool(
@@ -329,9 +345,9 @@ contract("DigitalReserveSystem test", async accounts => {
 
       truffleAssert.eventEmitted(result, 'Mint', event => {
         return event.assetCode === "vTHB"
-          && new web3.utils.BN(event.mintAmount).toNumber() === 990000000
+          && new web3.utils.BN(event.mintAmount).toNumber() === 66000000
           && new web3.utils.BN(event.collateralAmount).toNumber() === 100000000
-          && event.assetAddress === stableCredit.address
+          && event.assetAddress === stableCreditVTHB.address
           && event.collateralAssetCode === web3.utils.padRight(web3.utils.utf8ToHex("VELO"), 64);
       }, 'contract should emit the event correctly');
 
@@ -371,16 +387,7 @@ contract("DigitalReserveSystem test", async accounts => {
       }
     });
 
-    it("should fail, collateralAsset must be the same", async () => {
-      const stableCredit = await StableCredit.new(
-        Web3.utils.fromAscii("USD"),
-        accounts[1],
-        Web3.utils.fromAscii("VELO"),
-        veloCollateralAsset.address,
-        'vUSD',
-        1000000,
-        heart.address
-      );
+    it("should fail, the stable credit does not belong to you", async () => {
 
       await mocks.heart.givenMethodReturnBool(
         heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
@@ -388,7 +395,56 @@ contract("DigitalReserveSystem test", async accounts => {
       );
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
-        stableCredit.address
+        stableCreditVTHB.address
+      );
+      await mocks.stableCreditVTHB.givenMethodReturn(
+        stableCreditVTHB.contract.methods.collateralAssetCode().encodeABI(),
+        '0x' + abi.rawEncode(['bytes32'], ['VELO']).toString("hex")
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("VELO")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.stableCreditVTHB.givenMethodReturnAddress(
+        stableCreditVTHB.contract.methods.collateral().encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
+      );
+      await mocks.priceFeeder.givenMethodReturnUint(
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
+      );
+      await mocks.stableCreditVTHB.givenMethodReturnAddress(
+        stableCreditVTHB.contract.methods.creditOwner().encodeABI(),
+        accounts[1]
+      );
+
+      try {
+        await drs.mintFromCollateralAmount(
+          1,
+          "vUSD"
+        );
+      } catch (err) {
+        assert.equal("DigitalReserveSystem.mintFromCollateralAmount: the stable credit does not belong to you", err.reason)
+      }
+    });
+
+    it("should fail, collateralAsset must be the same", async () => {
+
+      await mocks.heart.givenMethodReturnBool(
+        heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
+        true
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCreditVTHB.address
+      );
+      await mocks.stableCreditVTHB.givenMethodReturnAddress(
+        stableCreditVTHB.contract.methods.creditOwner().encodeABI(),
+        accounts[0]
       );
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
@@ -406,15 +462,6 @@ contract("DigitalReserveSystem test", async accounts => {
     });
 
     it("should fail, median price ref mut not be zero", async () => {
-      const stableCredit = await StableCredit.new(
-        Web3.utils.fromAscii("USD"),
-        accounts[1],
-        Web3.utils.fromAscii("VELO"),
-        veloCollateralAsset.address,
-        'vUSD',
-        1000000,
-        heart.address
-      );
 
       await mocks.heart.givenMethodReturnBool(
         heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
@@ -422,10 +469,18 @@ contract("DigitalReserveSystem test", async accounts => {
       );
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
-        stableCredit.address
+        stableCreditVTHB.address
+      );
+      await mocks.stableCreditVTHB.givenMethodReturnAddress(
+        stableCreditVTHB.contract.methods.creditOwner().encodeABI(),
+        accounts[0]
       );
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.stableCreditVTHB.givenMethodReturnAddress(
+        stableCreditVTHB.contract.methods.collateral().encodeABI(),
         veloCollateralAsset.address
       );
       await mocks.heart.givenMethodReturnAddress(
@@ -449,15 +504,6 @@ contract("DigitalReserveSystem test", async accounts => {
 
   describe("MintFromStableCreditAmount", async () => {
     it("should mint from stable credit correctly", async () => {
-      const stableCredit = await StableCredit.new(
-        Web3.utils.fromAscii('USD'),
-        accounts[1],
-        Web3.utils.fromAscii('VELO'),
-        veloCollateralAsset.address,
-        'vUSD',
-        1000000,
-        heart.address
-      );
 
       await mocks.heart.givenMethodReturnBool(
         heart.contract.methods.isTrustedPartner(accounts[0]).encodeABI(),
@@ -466,7 +512,27 @@ contract("DigitalReserveSystem test", async accounts => {
 
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii('stableCreditId')).encodeABI(),
-        stableCredit.address
+        stableCreditVUSD.address
+      );
+
+      await mocks.stableCreditVUSD.givenMethodReturnAddress(
+        stableCreditVUSD.contract.methods.creditOwner().encodeABI(),
+        accounts[0]
+      );
+
+      await mocks.stableCreditVUSD.givenMethodReturn(
+        stableCreditVUSD.contract.methods.collateralAssetCode().encodeABI(),
+        '0x' + abi.rawEncode(['bytes32'], ['VELO']).toString("hex")
+      );
+
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("VELO")).encodeABI(),
+        veloCollateralAsset.address
+      );
+
+      await mocks.stableCreditVUSD.givenMethodReturnAddress(
+        stableCreditVUSD.contract.methods.collateral().encodeABI(),
+        veloCollateralAsset.address
       );
 
       await mocks.heart.givenMethodReturnAddress(
@@ -489,20 +555,19 @@ contract("DigitalReserveSystem test", async accounts => {
         10000000
       );
 
-      await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii('VELO')).encodeABI(),
-        veloCollateralAsset.address
+      await mocks.stableCreditVUSD.givenMethodReturnUint(
+        stableCreditVUSD.contract.methods.peggedValue().encodeABI(),
+        10000000
       );
+
       await mocks.veloCollateralAsset.givenMethodReturnBool(
         veloCollateralAsset.contract.methods.transferFrom(accounts[0], heart.address, 1).encodeABI(),
         true
       );
-
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getDrsAddress().encodeABI(),
         drs.address
       );
-
       await mocks.veloCollateralAsset.givenMethodReturnBool(
         veloCollateralAsset.contract.methods.approve(accounts[0], 10).encodeABI(),
         true
@@ -527,7 +592,7 @@ contract("DigitalReserveSystem test", async accounts => {
           && web3.utils.isAddress(event.assetAddress) === true
           && web3.utils.hexToUtf8(event.assetCode) === 'vUSD'
           && web3.utils.hexToUtf8(event.collateralAssetCode) === 'VELO'
-          && eventCollateralAmount === 10101010
+          && eventCollateralAmount === 101010101
       }, 'contract should emit the event correctly');
     });
 
@@ -809,7 +874,7 @@ contract("DigitalReserveSystem test", async accounts => {
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
         stableCreditVUSD.address
       );
-      await mocks.stableCreditvUSD.givenMethodReturnAddress(
+      await mocks.stableCreditVUSD.givenMethodReturnAddress(
         stableCreditVUSD.contract.methods.collateral().encodeABI(),
         veloCollateralAsset.address
       );
@@ -880,7 +945,7 @@ contract("DigitalReserveSystem test", async accounts => {
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
         stableCreditVUSD.address
       );
-      await mocks.stableCreditvUSD.givenMethodReturnAddress(
+      await mocks.stableCreditVUSD.givenMethodReturnAddress(
         stableCreditVUSD.contract.methods.collateral().encodeABI(),
         veloCollateralAsset.address
       );
@@ -911,19 +976,19 @@ contract("DigitalReserveSystem test", async accounts => {
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
         stableCreditVUSD.address
       );
-      await mocks.stableCreditvUSD.givenMethodReturn(
+      await mocks.stableCreditVUSD.givenMethodReturn(
         stableCreditVUSD.contract.methods.collateralAssetCode().encodeABI(),
         '0x' + abi.rawEncode(['bytes32'], ['VELO']).toString("hex")
       );
-      await mocks.stableCreditvUSD.givenMethodReturnAddress(
+      await mocks.stableCreditVUSD.givenMethodReturnAddress(
         stableCreditVUSD.contract.methods.collateral().encodeABI(),
         veloCollateralAsset.address
       );
-      await mocks.stableCreditvUSD.givenMethodReturnUint(
+      await mocks.stableCreditVUSD.givenMethodReturnUint(
         stableCreditVUSD.contract.methods.totalSupply().encodeABI(),
         100000000
       );
-      await mocks.stableCreditvUSD.givenMethodReturnUint(
+      await mocks.stableCreditVUSD.givenMethodReturnUint(
         stableCreditVUSD.contract.methods.peggedValue().encodeABI(),
         15000000
       );
@@ -1012,19 +1077,19 @@ contract("DigitalReserveSystem test", async accounts => {
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
         stableCreditVUSD.address
       );
-      await mocks.stableCreditvUSD.givenMethodReturn(
+      await mocks.stableCreditVUSD.givenMethodReturn(
         stableCreditVUSD.contract.methods.collateralAssetCode().encodeABI(),
         '0x' + abi.rawEncode(['bytes32'], ['VELO']).toString("hex")
       );
-      await mocks.stableCreditvUSD.givenMethodReturnAddress(
+      await mocks.stableCreditVUSD.givenMethodReturnAddress(
         stableCreditVUSD.contract.methods.collateral().encodeABI(),
         veloCollateralAsset.address
       );
-      await mocks.stableCreditvUSD.givenMethodReturnUint(
+      await mocks.stableCreditVUSD.givenMethodReturnUint(
         stableCreditVUSD.contract.methods.totalSupply().encodeABI(),
         100000000
       );
-      await mocks.stableCreditvUSD.givenMethodReturnUint(
+      await mocks.stableCreditVUSD.givenMethodReturnUint(
         stableCreditVUSD.contract.methods.peggedValue().encodeABI(),
         15000000
       );
@@ -1118,19 +1183,19 @@ contract("DigitalReserveSystem test", async accounts => {
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
         stableCreditVUSD.address
       );
-      await mocks.stableCreditvUSD.givenMethodReturn(
+      await mocks.stableCreditVUSD.givenMethodReturn(
         stableCreditVUSD.contract.methods.collateralAssetCode().encodeABI(),
         '0x' + abi.rawEncode(['bytes32'], ['VELO']).toString("hex")
       );
-      await mocks.stableCreditvUSD.givenMethodReturnAddress(
+      await mocks.stableCreditVUSD.givenMethodReturnAddress(
         stableCreditVUSD.contract.methods.collateral().encodeABI(),
         veloCollateralAsset.address
       );
-      await mocks.stableCreditvUSD.givenMethodReturnUint(
+      await mocks.stableCreditVUSD.givenMethodReturnUint(
         stableCreditVUSD.contract.methods.totalSupply().encodeABI(),
         100000000
       );
-      await mocks.stableCreditvUSD.givenMethodReturnUint(
+      await mocks.stableCreditVUSD.givenMethodReturnUint(
         stableCreditVUSD.contract.methods.peggedValue().encodeABI(),
         15000000
       );

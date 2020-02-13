@@ -37,6 +37,7 @@ func (accountCommand *CommandHandler) Command() *cobra.Command {
 
 	command.AddCommand(
 		accountCommand.GetCreateCommand(),
+		accountCommand.GetImportCommand(),
 	)
 	return command
 }
@@ -46,6 +47,17 @@ func (accountCommand *CommandHandler) GetCreateCommand() *cobra.Command {
 		Use:   constants.CmdAccountCreate,
 		Short: "Create an account and store on your disk",
 		Run:   accountCommand.Create,
+	}
+
+	command.Flags().BoolP(constants.FlagDefault, "d", false, "set as default account")
+	return command
+}
+
+func (accountCommand *CommandHandler) GetImportCommand() *cobra.Command {
+	command := &cobra.Command{
+		Use:   constants.CmdAccountImport,
+		Short: "Import your account",
+		Run:   accountCommand.Import,
 	}
 
 	command.Flags().BoolP(constants.FlagDefault, "d", false, "set as default account")

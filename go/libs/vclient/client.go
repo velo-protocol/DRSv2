@@ -14,6 +14,7 @@ import (
 type Client struct {
 	rpcUrl     string
 	privateKey ecdsa.PrivateKey
+	publicKey  common.Address
 	conn       Connection
 	contract   *Contract
 	txHelper   TxHelper
@@ -41,6 +42,11 @@ func NewClient(rpcUrl string, privateKey string, contractAddress ContractAddress
 		return nil, errors.Wrap(err, "invalid private key format")
 	}
 
+	pubKeyECDSA, ok := privKey.Public().(*ecdsa.PublicKey)
+	if !ok {
+		return nil, errors.New("error casting public key to ECDSA")
+	}
+
 	err = validateContractAddress(contractAddress)
 	if err != nil {
 		return nil, err
@@ -59,6 +65,7 @@ func NewClient(rpcUrl string, privateKey string, contractAddress ContractAddress
 	return &Client{
 		rpcUrl:     rpcUrl,
 		privateKey: *privKey,
+		publicKey:  crypto.PubkeyToAddress(*pubKeyECDSA),
 		conn:       conn,
 		contract:   NewContract(drsContract, heartContract),
 		txHelper:   NewTxHelper(conn),

@@ -1,9 +1,9 @@
-package initialize_test
+package environment_test
 
 import (
 	"github.com/golang/mock/gomock"
 	"github.com/sirupsen/logrus/hooks/test"
-	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/commands/initialize"
+	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/commands/environment"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/mocks"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/mocks"
@@ -11,7 +11,7 @@ import (
 )
 
 type helper struct {
-	commandHandler *initialize.CommandHandler
+	commandHandler *environment.CommandHandler
 	loggerHook     *test.Hook
 	mockLogic      *mocks.MockLogic
 	mockPrompt     *mockutils.MockPrompt
@@ -33,7 +33,7 @@ func initTest(t *testing.T) *helper {
 	console.DefaultLoadWriter = console.Logger.Out
 
 	return &helper{
-		commandHandler: initialize.NewCommandHandler(mockLogic, mockPrompt, mockConfig),
+		commandHandler: environment.NewCommandHandler(mockLogic, mockPrompt, mockConfig),
 		mockLogic:      mockLogic,
 		mockPrompt:     mockPrompt,
 		mockConfig:     mockConfig,

@@ -47,6 +47,14 @@ func (c *Client) WhitelistGovernor(ctx context.Context, input *WhitelistGovernor
 		return nil, err
 	}
 
+	senderIsGovernor, err := c.contract.heart.IsGovernor(nil, c.publicKey)
+	if err != nil {
+		return nil, err
+	}
+	if !senderIsGovernor {
+		return nil, errors.New("the message sender is not found or does not have sufficient permission to perform whitelist user")
+	}
+
 	isGovernor, err := c.contract.heart.IsGovernor(nil, input.ToAbiInput().Address)
 	if err != nil {
 		return nil, err

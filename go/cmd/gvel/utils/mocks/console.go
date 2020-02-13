@@ -74,3 +74,31 @@ func (mr *MockPromptMockRecorder) RequestHiddenString(label, validate interface{
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RequestHiddenString", reflect.TypeOf((*MockPrompt)(nil).RequestHiddenString), label, validate)
 }
+
+// RequestConfirmation mocks base method
+func (m *MockPrompt) RequestConfirmation(label string) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RequestConfirmation", label)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// RequestConfirmation indicates an expected call of RequestConfirmation
+func (mr *MockPromptMockRecorder) RequestConfirmation(label interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RequestConfirmation", reflect.TypeOf((*MockPrompt)(nil).RequestConfirmation), label)
+}
+
+// RequestChoice mocks base method
+func (m *MockPrompt) RequestChoice(label string, choices []string, currentChoice string) int {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RequestChoice", label, choices, currentChoice)
+	ret0, _ := ret[0].(int)
+	return ret0
+}
+
+// RequestChoice indicates an expected call of RequestChoice
+func (mr *MockPromptMockRecorder) RequestChoice(label, choices, currentChoice interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RequestChoice", reflect.TypeOf((*MockPrompt)(nil).RequestChoice), label, choices, currentChoice)
+}

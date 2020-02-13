@@ -43,6 +43,14 @@ func (c *Client) WhitelistTrustedPartner(ctx context.Context, input *WhitelistTr
 		return nil, err
 	}
 
+	senderIsGovernor, err := c.contract.heart.IsGovernor(nil, c.publicKey)
+	if err != nil {
+		return nil, err
+	}
+	if !senderIsGovernor {
+		return nil, errors.New("the message sender is not found or does not have sufficient permission to perform whitelist user")
+	}
+
 	isTrustedPartner, err := c.contract.heart.IsTrustedPartner(nil, input.ToAbiInput().Address)
 	if err != nil {
 		return nil, err
