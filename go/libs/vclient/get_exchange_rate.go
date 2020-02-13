@@ -50,10 +50,15 @@ func (c *Client) GetExchangeRate(input *GetExchangeRateInput) (*GetExchangeRateO
 		input.AssetCode,
 	)
 	if err != nil {
-		if strings.Contains(err.Error(), "stableCredit not exist") {
+		msg := err.Error()
+		switch {
+		case strings.Contains(msg, "stableCredit not exist"):
 			return nil, errors.Errorf("the stable credit %s does not exist", input.AssetCode)
+		case strings.Contains(msg, "valid price not found"):
+			return nil, errors.New("valid price not found")
+		default:
+			return nil, err
 		}
-		return nil, err
 	}
 
 	return &GetExchangeRateOutput{

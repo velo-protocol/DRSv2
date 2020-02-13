@@ -231,6 +231,26 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		assert.Contains(t, err.Error(), "the stable credit vUSD does not belong to you")
 	})
 
+	t.Run("error, drs.MintFromCollateralAmount returns an error valid price not found", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &MintFromCollateralAmountInput{
+			AssetCode:        "vUSD",
+			CollateralAmount: "100",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
+			Return(nil, errors.New("DigitalReserveSystem._validateAssetCode: valid price not found"))
+
+		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Contains(t, err.Error(), "valid price not found")
+	})
+
 	t.Run("error, drs.MintFromCollateralAmount returns an error", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()

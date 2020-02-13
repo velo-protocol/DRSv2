@@ -105,6 +105,8 @@ func (c *Client) MintFromStableCreditAmount(ctx context.Context, input *MintFrom
 			return nil, errors.New("the collateral in your address is insufficient")
 		case strings.Contains(msg, "the stable credit does not belong to you"):
 			return nil, errors.Errorf("the stable credit %s does not belong to you", input.AssetCode)
+		case strings.Contains(msg, "valid price not found"):
+			return nil, errors.New("valid price not found")
 		default:
 			return nil, err
 		}
