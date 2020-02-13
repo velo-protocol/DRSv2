@@ -88,6 +88,26 @@ func TestGetExchangeRate(t *testing.T) {
 		assert.Equal(t, "the stable credit vUSD does not exist", err.Error())
 	})
 
+	t.Run("fail, should throw error valid price not found", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &GetExchangeRateInput{
+			AssetCode: "vUSD",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			GetExchange(gomock.AssignableToTypeOf(&bind.CallOpts{}), abiInput.AssetCode).
+			Return("", utils.StringToByte32(""), nil, errors.New("DigitalReserveSystem._validateAssetCode: valid price not found"))
+
+		result, err := testHelper.Client.GetExchangeRate(input)
+
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Equal(t, "valid price not found", err.Error())
+	})
+
 	t.Run("fail, should throw error assetCode must not be blank", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
