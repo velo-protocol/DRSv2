@@ -3,6 +3,7 @@ package vclient
 import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/golang/mock/gomock"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"testing"
@@ -65,6 +66,26 @@ func TestGetExchangeRate(t *testing.T) {
 		assert.Equal(t, "vUSD", result.AssetCode)
 		assert.Equal(t, "VELO", result.CollateralAssetCode)
 		assert.Equal(t, "1.0000000", result.PriceInCollateralPerAssetUnit)
+	})
+
+	t.Run("fail, should throw error stableCredit not exist", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &GetExchangeRateInput{
+			AssetCode: "vUSD",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			GetExchange(gomock.AssignableToTypeOf(&bind.CallOpts{}), abiInput.AssetCode).
+			Return("", utils.StringToByte32(""), nil, errors.New("DigitalReserveSystem._validateAssetCode: stableCredit not exist"))
+
+		result, err := testHelper.Client.GetExchangeRate(input)
+
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Equal(t, "the stable credit vUSD does not exist", err.Error())
 	})
 
 	t.Run("fail, should throw error assetCode must not be blank", func(t *testing.T) {
