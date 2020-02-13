@@ -1,6 +1,6 @@
 abigen/install:
-	go get github.com/ethereum/go-ethereum
-	cd $(GOPATH)/src/github.com/ethereum/go-ethereum
+	go get github.com/Evrynetlabs/evrynet-node
+	cd $(GOPATH)/src/github.com/Evrynetlabs/evrynet-node
 	godep go install ./cmd/abigen
 
 abigen/gen/all:
@@ -14,7 +14,6 @@ format:
 
 ci_test:
 	go test --tags="unit" ./... -v -coverprofile .coverage.txt
-
 
 mockgen/all:
 	mockgen \

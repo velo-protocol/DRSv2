@@ -2,10 +2,10 @@ package vclient
 
 import (
 	"crypto/ecdsa"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/Evrynetlabs/evrynet-node/accounts/abi"
+	"github.com/Evrynetlabs/evrynet-node/common"
+	"github.com/Evrynetlabs/evrynet-node/crypto"
+	"github.com/Evrynetlabs/evrynet-node/evrclient"
 	"github.com/pkg/errors"
 	"github.com/velo-protocol/DRSv2/go/abi"
 )
@@ -32,7 +32,7 @@ type ContractAddress struct {
 }
 
 func NewClient(rpcUrl string, privateKey string, contractAddress ContractAddress) (*Client, error) {
-	conn, err := ethclient.Dial(rpcUrl)
+	conn, err := evrclient.Dial(rpcUrl)
 	if err != nil {
 		return nil, errors.Wrap(err, "fail to initialize eth client")
 	}

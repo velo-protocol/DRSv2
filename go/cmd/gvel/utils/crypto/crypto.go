@@ -8,8 +8,8 @@ import (
 	"crypto/sha256"
 	"github.com/pkg/errors"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/Evrynetlabs/evrynet-node/common/hexutil"
+	"github.com/Evrynetlabs/evrynet-node/crypto"
 	"io"
 )
 

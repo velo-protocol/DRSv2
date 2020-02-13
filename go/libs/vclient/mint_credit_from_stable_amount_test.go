@@ -3,10 +3,10 @@ package vclient
 import (
 	"context"
 	"fmt"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/Evrynetlabs/evrynet-node/accounts/abi/bind"
+	"github.com/Evrynetlabs/evrynet-node/common"
+	"github.com/Evrynetlabs/evrynet-node/core/types"
+	"github.com/Evrynetlabs/evrynet-node/crypto"
 	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
@@ -109,7 +109,7 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 			MintFromStableCreditAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.MintAmount, abiInput.AssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{
@@ -264,7 +264,7 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 			MintFromStableCreditAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.MintAmount, abiInput.AssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(nil, errors.New(expectedMsg))
 
 		result, err := testHelper.Client.MintFromStableCreditAmount(context.Background(), input)
@@ -289,7 +289,7 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 			MintFromStableCreditAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.MintAmount, abiInput.AssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{
@@ -325,7 +325,7 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 			MintFromStableCreditAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.MintAmount, abiInput.AssetCode).
 			Return(tx, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(tx)).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{},

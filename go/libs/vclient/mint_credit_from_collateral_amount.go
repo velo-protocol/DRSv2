@@ -2,8 +2,9 @@ package vclient
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/Evrynetlabs/evrynet-node/accounts/abi/bind"
+	"github.com/Evrynetlabs/evrynet-node/common"
+	"github.com/Evrynetlabs/evrynet-node/core/types"
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
 	"github.com/velo-protocol/DRSv2/go/abi"
@@ -108,7 +109,7 @@ func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintFromCo
 		}
 	}
 
-	receipt, err := c.txHelper.ConfirmTx(ctx, tx)
+	receipt, err := c.txHelper.ConfirmTx(ctx, tx, common.Address{})
 	if err != nil {
 		return nil, err
 	}

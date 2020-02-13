@@ -6,12 +6,12 @@ package mocks
 
 import (
 	context "context"
-	go_ethereum "github.com/ethereum/go-ethereum"
-	bind "github.com/ethereum/go-ethereum/accounts/abi/bind"
-	common "github.com/ethereum/go-ethereum/common"
-	types "github.com/ethereum/go-ethereum/core/types"
+	evrynet "github.com/Evrynetlabs/evrynet-node"
+	bind "github.com/Evrynetlabs/evrynet-node/accounts/abi/bind"
+	common "github.com/Evrynetlabs/evrynet-node/common"
+	types "github.com/Evrynetlabs/evrynet-node/core/types"
 	gomock "github.com/golang/mock/gomock"
-	abi "github.com/velo-protocol/DRSv2/go/abi"
+	vabi "github.com/velo-protocol/DRSv2/go/abi"
 	big "math/big"
 	reflect "reflect"
 )
@@ -55,7 +55,7 @@ func (mr *MockConnectionMockRecorder) CodeAt(ctx, contract, blockNumber interfac
 }
 
 // CallContract mocks base method
-func (m *MockConnection) CallContract(ctx context.Context, call go_ethereum.CallMsg, blockNumber *big.Int) ([]byte, error) {
+func (m *MockConnection) CallContract(ctx context.Context, call evrynet.CallMsg, blockNumber *big.Int) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CallContract", ctx, call, blockNumber)
 	ret0, _ := ret[0].([]byte)
@@ -115,7 +115,7 @@ func (mr *MockConnectionMockRecorder) SuggestGasPrice(ctx interface{}) *gomock.C
 }
 
 // EstimateGas mocks base method
-func (m *MockConnection) EstimateGas(ctx context.Context, call go_ethereum.CallMsg) (uint64, error) {
+func (m *MockConnection) EstimateGas(ctx context.Context, call evrynet.CallMsg) (uint64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "EstimateGas", ctx, call)
 	ret0, _ := ret[0].(uint64)
@@ -144,7 +144,7 @@ func (mr *MockConnectionMockRecorder) SendTransaction(ctx, tx interface{}) *gomo
 }
 
 // FilterLogs mocks base method
-func (m *MockConnection) FilterLogs(ctx context.Context, query go_ethereum.FilterQuery) ([]types.Log, error) {
+func (m *MockConnection) FilterLogs(ctx context.Context, query evrynet.FilterQuery) ([]types.Log, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FilterLogs", ctx, query)
 	ret0, _ := ret[0].([]types.Log)
@@ -159,10 +159,10 @@ func (mr *MockConnectionMockRecorder) FilterLogs(ctx, query interface{}) *gomock
 }
 
 // SubscribeFilterLogs mocks base method
-func (m *MockConnection) SubscribeFilterLogs(ctx context.Context, query go_ethereum.FilterQuery, ch chan<- types.Log) (go_ethereum.Subscription, error) {
+func (m *MockConnection) SubscribeFilterLogs(ctx context.Context, query evrynet.FilterQuery, ch chan<- types.Log) (evrynet.Subscription, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SubscribeFilterLogs", ctx, query, ch)
-	ret0, _ := ret[0].(go_ethereum.Subscription)
+	ret0, _ := ret[0].(evrynet.Subscription)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -495,25 +495,25 @@ func (m *MockTxHelper) EXPECT() *MockTxHelperMockRecorder {
 }
 
 // ConfirmTx mocks base method
-func (m *MockTxHelper) ConfirmTx(ctx context.Context, tx *types.Transaction) (*types.Receipt, error) {
+func (m *MockTxHelper) ConfirmTx(ctx context.Context, tx *types.Transaction, from common.Address) (*types.Receipt, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ConfirmTx", ctx, tx)
+	ret := m.ctrl.Call(m, "ConfirmTx", ctx, tx, from)
 	ret0, _ := ret[0].(*types.Receipt)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ConfirmTx indicates an expected call of ConfirmTx
-func (mr *MockTxHelperMockRecorder) ConfirmTx(ctx, tx interface{}) *gomock.Call {
+func (mr *MockTxHelperMockRecorder) ConfirmTx(ctx, tx, from interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmTx", reflect.TypeOf((*MockTxHelper)(nil).ConfirmTx), ctx, tx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmTx", reflect.TypeOf((*MockTxHelper)(nil).ConfirmTx), ctx, tx, from)
 }
 
 // ExtractSetupEvent mocks base method
-func (m *MockTxHelper) ExtractSetupEvent(eventName string, log *types.Log) (*abi.DigitalReserveSystemSetup, error) {
+func (m *MockTxHelper) ExtractSetupEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemSetup, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExtractSetupEvent", eventName, log)
-	ret0, _ := ret[0].(*abi.DigitalReserveSystemSetup)
+	ret0, _ := ret[0].(*vabi.DigitalReserveSystemSetup)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -525,10 +525,10 @@ func (mr *MockTxHelperMockRecorder) ExtractSetupEvent(eventName, log interface{}
 }
 
 // ExtractMintEvent mocks base method
-func (m *MockTxHelper) ExtractMintEvent(eventName string, log *types.Log) (*abi.DigitalReserveSystemMint, error) {
+func (m *MockTxHelper) ExtractMintEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemMint, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExtractMintEvent", eventName, log)
-	ret0, _ := ret[0].(*abi.DigitalReserveSystemMint)
+	ret0, _ := ret[0].(*vabi.DigitalReserveSystemMint)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

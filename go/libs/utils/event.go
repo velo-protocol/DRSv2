@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/Evrynetlabs/evrynet-node/core/types"
+	"github.com/Evrynetlabs/evrynet-node/crypto"
 )
 
 func FindLogEvent(logs []*types.Log, event string) *types.Log {

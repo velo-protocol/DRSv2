@@ -2,11 +2,11 @@ package vclient
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/Evrynetlabs/evrynet-node/accounts/abi/bind"
+	"github.com/Evrynetlabs/evrynet-node/core/types"
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
-	vabi "github.com/velo-protocol/DRSv2/go/abi"
+	"github.com/velo-protocol/DRSv2/go/abi"
 	"github.com/velo-protocol/DRSv2/go/constants"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"math/big"
@@ -123,7 +123,7 @@ func (c *Client) SetupCredit(ctx context.Context, input *SetupCreditInput) (*Set
 		return nil, err
 	}
 
-	receipt, err := c.txHelper.ConfirmTx(ctx, tx)
+	receipt, err := c.txHelper.ConfirmTx(ctx, tx, opt.From)
 	if err != nil {
 		return nil, err
 	}

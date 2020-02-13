@@ -2,9 +2,9 @@ package vclient
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/Evrynetlabs/evrynet-node/accounts/abi/bind"
+	"github.com/Evrynetlabs/evrynet-node/common"
+	"github.com/Evrynetlabs/evrynet-node/core/types"
 	"github.com/velo-protocol/DRSv2/go/abi"
 	"math/big"
 )
@@ -40,7 +40,7 @@ type StableCreditContract interface {
 }
 
 type TxHelper interface {
-	ConfirmTx(ctx context.Context, tx *types.Transaction) (*types.Receipt, error)
+	ConfirmTx(ctx context.Context, tx *types.Transaction, from common.Address) (*types.Receipt, error)
 	ExtractSetupEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemSetup, error)
 	ExtractMintEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemMint, error)
 	StableCreditAssetCode(addr common.Address) (*string, *[32]byte, error)

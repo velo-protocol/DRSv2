@@ -2,9 +2,9 @@ package vclient
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/Evrynetlabs/evrynet-node/accounts/abi/bind"
+	"github.com/Evrynetlabs/evrynet-node/common"
+	"github.com/Evrynetlabs/evrynet-node/core/types"
 	"github.com/pkg/errors"
 	"github.com/velo-protocol/DRSv2/go/constants"
 )
@@ -73,7 +73,7 @@ func (c *Client) Rebalance(ctx context.Context, input *RebalanceInput) (*Rebalan
 			return nil, err
 		}
 
-		receipt, err := c.txHelper.ConfirmTx(ctx, tx)
+		receipt, err := c.txHelper.ConfirmTx(ctx, tx, opt.From)
 		if err != nil {
 			return nil, err
 		}

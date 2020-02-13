@@ -1,7 +1,7 @@
 package validation
 
 import (
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/Evrynetlabs/evrynet-node/crypto"
 	"github.com/pkg/errors"
 )
 

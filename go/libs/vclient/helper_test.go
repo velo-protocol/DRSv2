@@ -1,9 +1,13 @@
 package vclient
 
 import (
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/Evrynetlabs/evrynet-node/common"
+	"github.com/Evrynetlabs/evrynet-node/core/types"
+	"github.com/Evrynetlabs/evrynet-node/crypto"
 	"github.com/golang/mock/gomock"
+	"github.com/velo-protocol/DRSv2/go/constants"
 	"github.com/velo-protocol/DRSv2/go/libs/vclient/mocks"
+	"math/big"
 	"testing"
 )
 
@@ -28,6 +32,7 @@ type TestHelper struct {
 	MockDRSContract   *mocks.MockDRSContract
 	MockHeartContract *mocks.MockHeartContract
 	MockTxHelper      *mocks.MockTxHelper
+	Done              func()
 }
 
 func testHelperWithMock(t *testing.T) *TestHelper {
@@ -55,5 +60,19 @@ func testHelperWithMock(t *testing.T) *TestHelper {
 		MockHeartContract: mockHeartContract,
 		MockDRSContract:   mockDrsContract,
 		MockTxHelper:      mockTxHelper,
+		Done: func() {
+			mockCtrl.Finish()
+		},
 	}
+}
+
+func NewMockedTx() *types.Transaction {
+	return types.NewTransaction(
+		99,
+		common.Address{},
+		big.NewInt(888),
+		constants.GasLimit,
+		big.NewInt(1),
+		[]byte{},
+	)
 }

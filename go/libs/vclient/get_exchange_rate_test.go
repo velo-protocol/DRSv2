@@ -1,7 +1,7 @@
 package vclient
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/Evrynetlabs/evrynet-node/accounts/abi/bind"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"

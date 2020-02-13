@@ -1,7 +1,7 @@
 package vclient
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/Evrynetlabs/evrynet-node/accounts/abi"
 	"github.com/velo-protocol/DRSv2/go/abi"
 	"strings"
 )
