@@ -26,7 +26,7 @@ type helper struct {
 	listCmd    *cobra.Command
 	defaultCmd *cobra.Command
 	importCmd  *cobra.Command
-	//exportCmd  *cobra.Command
+	exportCmd  *cobra.Command
 }
 
 func initTest(t *testing.T) *helper {
@@ -66,7 +66,8 @@ func initTest(t *testing.T) *helper {
 		// must be order by alphabet
 		createCmd:  cmd.Commands()[0],
 		defaultCmd: cmd.Commands()[1],
-		importCmd:  cmd.Commands()[2],
-		listCmd:    cmd.Commands()[3],
+		exportCmd:  cmd.Commands()[2],
+		importCmd:  cmd.Commands()[3],
+		listCmd:    cmd.Commands()[4],
 	}
 }

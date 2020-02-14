@@ -23,11 +23,12 @@ func TestGvelHandler_Init(t *testing.T) {
 	assert.Contains(t, gvelHandler.CreditCommand.Use, constants.CmdCredit)
 	assert.Equal(t, constants.CmdInit, gvelHandler.InitCommand.Use)
 
-	assert.Len(t, gvelHandler.AccountCommand.Commands(), 4)
+	assert.Len(t, gvelHandler.AccountCommand.Commands(), 5)
 	assert.Equal(t, constants.CmdAccountCreate, gvelHandler.AccountCommand.Commands()[0].Use)
 	assert.Equal(t, constants.CmdAccountDefault, gvelHandler.AccountCommand.Commands()[1].Use)
-	assert.Equal(t, constants.CmdAccountImport, gvelHandler.AccountCommand.Commands()[2].Use)
-	assert.Equal(t, constants.CmdAccountList, gvelHandler.AccountCommand.Commands()[3].Use)
+	assert.Equal(t, constants.CmdAccountExport, gvelHandler.AccountCommand.Commands()[2].Use)
+	assert.Equal(t, constants.CmdAccountImport, gvelHandler.AccountCommand.Commands()[3].Use)
+	assert.Equal(t, constants.CmdAccountList, gvelHandler.AccountCommand.Commands()[4].Use)
 
 	assert.Len(t, gvelHandler.CreditCommand.Commands(), 0)
 

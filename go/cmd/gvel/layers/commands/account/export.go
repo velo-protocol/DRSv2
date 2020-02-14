@@ -1,13 +1,13 @@
 package account
 
 import (
-	"errors"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
 
-func (accountCommand *CommandHandler) Default(_ *cobra.Command, _ []string) {
+func (accountCommand *CommandHandler) Export(_ *cobra.Command, _ []string) {
 	accounts, err := accountCommand.Logic.ListAccount()
 	if err != nil {
 		console.ExitWithError(console.ExitError, err)
@@ -23,18 +23,22 @@ func (accountCommand *CommandHandler) Default(_ *cobra.Command, _ []string) {
 	}
 
 	choiceIndex := accountCommand.Prompt.RequestChoice(
-		"Please select the account you want to make default",
+		"Please select the account you want to export",
 		accountList,
 		accountCommand.AppConfig.GetDefaultAccount(),
 	)
-	selectedAccountDefault := accountList[choiceIndex]
+	selectedAccountExport := accountList[choiceIndex]
 
-	output, err := accountCommand.Logic.SetDefaultAccount(&entity.SetDefaultAccountInput{
-		Account: selectedAccountDefault,
+	passphrase := accountCommand.Prompt.RequestHiddenString("🔑 Please input the passphrase of the account", nil)
+
+	output, err := accountCommand.Logic.ExportAccount(&entity.ExportAccountInput{
+		PublicAddress: selectedAccountExport,
+		Passphrase:    passphrase,
 	})
 	if err != nil {
 		console.ExitWithError(console.ExitError, err)
 	}
 
-	console.Logger.Infof("%s is now set as the default account for signing transaction.", output.Account)
+	console.Logger.Printf("Your public key is: %s", output.PublicAddress)
+	console.Logger.Printf("Your private key is: %s", output.PrivateKey)
 }
