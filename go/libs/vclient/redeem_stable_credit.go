@@ -106,7 +106,7 @@ func (c *Client) RedeemStableCredit(ctx context.Context, input *RedeemStableCred
 		StableCreditAmount:utils.AmountToString(event.StableCreditAmount),
 		CollateralAssetAddress:event.CollateralAssetAddress.String(),
 		CollateralAssetCode:utils.Byte32ToString(event.CollateralAssetCode),
-		CollateralAmount:event.CollateralAmount.String(),
+		CollateralAmount:utils.AmountToString(event.CollateralAmount),
 		Raw:event.Raw,
 	}
 	return &RedeemStableCreditOutput{
