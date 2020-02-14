@@ -19,7 +19,7 @@ type DRSContract interface {
 	MintFromCollateralAmount(opts *bind.TransactOpts, netCollateralAmount *big.Int, assetCode string) (*types.Transaction, error)
 	MintFromStableCreditAmount(opts *bind.TransactOpts, mintAmount *big.Int, assetCode string) (*types.Transaction, error)
 	GetExchange(opts *bind.CallOpts, assetCode string) (string, [32]byte, *big.Int, error)
-
+	Redeem(opts *bind.TransactOpts, stableCreditAmount *big.Int, assetCode string) (*types.Transaction, error)
 	CollateralHealthCheck(opts *bind.CallOpts, assetCode string) ([32]byte, *big.Int, *big.Int, error)
 	Rebalance(opts *bind.TransactOpts, assetCode string) (*types.Transaction, error)
 }
@@ -43,5 +43,6 @@ type TxHelper interface {
 	ConfirmTx(ctx context.Context, tx *types.Transaction) (*types.Receipt, error)
 	ExtractSetupEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemSetup, error)
 	ExtractMintEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemMint, error)
+	ExtractRedeemEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemRedeem, error)
 	StableCreditAssetCode(addr common.Address) (*string, *[32]byte, error)
 }
