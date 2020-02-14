@@ -87,17 +87,18 @@ func (cfg *configuration) InitEnvBasedConfig(baseDir string, envName string) err
 		return errors.Wrap(err, "failed to create a db folder")
 	}
 
+	configKeys, ok := constants.DefaultConfigMap[envName]
+	if !ok {
+		return errors.New("default env base config not found")
+	}
+
 	// Set default config
 	v := viper.New()
 	v.SetConfigType("json")
 	v.SetDefault(constants.CfgKeyAccountDbPath, path.Join(baseDir, envName, "/db/account"))
-	v.SetDefault(constants.CfgKeyRpcUrl, constants.TestNetRpcUrl)
-	v.SetDefault(constants.CfgKeyDrsAddress, constants.TestNetDrsAddress)
-	v.SetDefault(constants.CfgKeyHeartAddress, constants.TestNetHeartAddress)
-
-	v.SetDefault(constants.CfgKeyRpcUrl, constants.MainNetRpcUrl)
-	v.SetDefault(constants.CfgKeyDrsAddress, constants.MainNetDrsAddress)
-	v.SetDefault(constants.CfgKeyHeartAddress, constants.MainNetHeartAddress)
+	for key, value := range configKeys {
+		v.SetDefault(key, value)
+	}
 
 	err = v.WriteConfigAs(fmt.Sprintf(constants.FsConfigFileNameFormat, envName))
 	if err != nil {
