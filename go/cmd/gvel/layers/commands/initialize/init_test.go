@@ -27,6 +27,7 @@ func TestCommandHandler_Init(t *testing.T) {
 		logEntries := helper.loggerHook.AllEntries()
 		assert.Equal(t, "gvel has been initialized\n", logEntries[0].Message)
 		assert.Equal(t, fmt.Sprintf("using config file at: %s\n", constants.FsBaseDir), logEntries[1].Message)
+		assert.Equal(t, fmt.Sprintf("gvel is currently connected to TESTNET. Please use `gvel env set` to change the env.\n"), logEntries[2].Message)
 	})
 
 	t.Run("fail, config already exist", func(t *testing.T) {

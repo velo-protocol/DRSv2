@@ -19,4 +19,5 @@ func (initCommand *CommandHandler) Init(_ *cobra.Command, _ []string) {
 
 	console.Logger.Printf("gvel has been initialized\n")
 	console.Logger.Printf("using config file at: %s\n", constants.FsBaseDir)
+	console.Logger.Printf("gvel is currently connected to TESTNET. Please use `gvel env set` to change the env.\n")
 }
