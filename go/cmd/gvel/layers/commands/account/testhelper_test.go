@@ -21,11 +21,11 @@ type helper struct {
 	tableLogHook   *test.Hook
 	done           func()
 
-	cmd       *cobra.Command
-	createCmd *cobra.Command
-	listCmd   *cobra.Command
-	//defaultCmd *cobra.Command
-	importCmd *cobra.Command
+	cmd        *cobra.Command
+	createCmd  *cobra.Command
+	listCmd    *cobra.Command
+	defaultCmd *cobra.Command
+	importCmd  *cobra.Command
 	//exportCmd  *cobra.Command
 }
 
@@ -62,9 +62,11 @@ func initTest(t *testing.T) *helper {
 			hook.Reset()
 		},
 
-		cmd:       cmd,
-		createCmd: cmd.Commands()[0],
-		importCmd: cmd.Commands()[1],
-		listCmd:   cmd.Commands()[2],
+		cmd: cmd,
+		// must be order by alphabet
+		createCmd:  cmd.Commands()[0],
+		defaultCmd: cmd.Commands()[1],
+		importCmd:  cmd.Commands()[2],
+		listCmd:    cmd.Commands()[3],
 	}
 }
