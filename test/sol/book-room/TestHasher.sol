@@ -4,7 +4,6 @@ import "../../../contracts/modules/book-room/Hasher.sol";
 import "truffle/Assert.sol";
 
 contract TestHasher {
-//    Hasher public hasher;
 
     constructor() public {
     }
