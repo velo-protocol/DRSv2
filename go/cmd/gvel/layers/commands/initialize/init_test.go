@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/constants"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
+	"strings"
 	"testing"
 )
 
@@ -27,6 +28,7 @@ func TestCommandHandler_Init(t *testing.T) {
 		logEntries := helper.loggerHook.AllEntries()
 		assert.Equal(t, "gvel has been initialized\n", logEntries[0].Message)
 		assert.Equal(t, fmt.Sprintf("using config file at: %s\n", constants.FsBaseDir), logEntries[1].Message)
+		assert.Equal(t, fmt.Sprintf("gvel is currently connected to %s. Please use `gvel env set` to change the env.\n", strings.ToUpper(constants.EnvTestNet)), logEntries[2].Message)
 	})
 
 	t.Run("fail, config already exist", func(t *testing.T) {
