@@ -24,4 +24,17 @@ var (
 		strings.ToUpper(EnvTestNet),
 		strings.ToUpper(EnvMainNet),
 	}
+
+	DefaultConfigMap = map[string]map[string]string{
+		EnvMainNet: {
+			CfgKeyRpcUrl:       MainNetRpcUrl,
+			CfgKeyDrsAddress:   MainNetDrsAddress,
+			CfgKeyHeartAddress: MainNetHeartAddress,
+		},
+		EnvTestNet: {
+			CfgKeyRpcUrl:       TestNetRpcUrl,
+			CfgKeyDrsAddress:   TestNetDrsAddress,
+			CfgKeyHeartAddress: TestNetHeartAddress,
+		},
+	}
 )
