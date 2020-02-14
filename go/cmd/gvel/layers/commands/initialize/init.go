@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/constants"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
+	"strings"
 )
 
 func (initCommand *CommandHandler) Init(_ *cobra.Command, _ []string) {
@@ -19,5 +20,5 @@ func (initCommand *CommandHandler) Init(_ *cobra.Command, _ []string) {
 
 	console.Logger.Printf("gvel has been initialized\n")
 	console.Logger.Printf("using config file at: %s\n", constants.FsBaseDir)
-	console.Logger.Printf("gvel is currently connected to TESTNET. Please use `gvel env set` to change the env.\n")
+	console.Logger.Printf("gvel is currently connected to %s. Please use `gvel env set` to change the env.\n", strings.ToUpper(constants.EnvTestNet))
 }
