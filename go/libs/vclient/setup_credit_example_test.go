@@ -8,18 +8,18 @@ import (
 )
 
 func ExampleClient_SetupCredit() {
-	client, err := NewClient("http://52.220.128.212:22001", "3dd34af7357715c3e550153b0a88824b2c42e00bf745355cec395d40b24d2091", ContractAddress{
-		DrsAddress:   "0x658280e4FD6454f63f0D6056735f8c6c2C62278c",
-		HeartAddress: "0x414f380DfC7efD76eD757a901A0530aa6895d62d",
+	client, err := NewClient(smartContractUrl, privateKey, ContractAddress{
+		DrsAddress:   "<DRS_CONTRACT_ADDRESS>",   // 0xBdA518a6245480652d1A217192EBB299C94F623f
+		HeartAddress: "<HEART_CONTRACT_ADDRESS>", // 0x1623C9c8600319E7CfAff0Ca1c4a05e1a61D954D
 	})
 	if err != nil {
 		panic(err)
 	}
 
 	output, err := client.SetupCredit(context.Background(), &SetupCreditInput{
-		CollateralAssetCode: "VELOe",
+		CollateralAssetCode: "VELO",
 		PeggedCurrency:      "USD",
-		AssetCode:           "vUSD4",
+		AssetCode:           "vUSD",
 		PeggedValue:         "1.0",
 	})
 	if err != nil {
