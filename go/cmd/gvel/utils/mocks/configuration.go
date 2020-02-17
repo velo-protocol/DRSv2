@@ -157,3 +157,45 @@ func (mr *MockConfigurationMockRecorder) GetEnvList() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEnvList", reflect.TypeOf((*MockConfiguration)(nil).GetEnvList))
 }
+
+// GetRpcUrl mocks base method
+func (m *MockConfiguration) GetRpcUrl() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRpcUrl")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetRpcUrl indicates an expected call of GetRpcUrl
+func (mr *MockConfigurationMockRecorder) GetRpcUrl() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRpcUrl", reflect.TypeOf((*MockConfiguration)(nil).GetRpcUrl))
+}
+
+// GetDrsAddress mocks base method
+func (m *MockConfiguration) GetDrsAddress() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDrsAddress")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetDrsAddress indicates an expected call of GetDrsAddress
+func (mr *MockConfigurationMockRecorder) GetDrsAddress() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDrsAddress", reflect.TypeOf((*MockConfiguration)(nil).GetDrsAddress))
+}
+
+// GetHeartAddress mocks base method
+func (m *MockConfiguration) GetHeartAddress() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetHeartAddress")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetHeartAddress indicates an expected call of GetHeartAddress
+func (mr *MockConfigurationMockRecorder) GetHeartAddress() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHeartAddress", reflect.TypeOf((*MockConfiguration)(nil).GetHeartAddress))
+}

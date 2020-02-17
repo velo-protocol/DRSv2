@@ -158,3 +158,24 @@ func (cfg *configuration) GetEnvList() []string {
 	}
 	return cfg.sharedConfig.GetStringSlice(constants.CfgKeyEnvList)
 }
+
+func (cfg *configuration) GetRpcUrl() string {
+	if cfg.envBasedConfig == nil {
+		return ""
+	}
+	return cfg.envBasedConfig.GetString(constants.CfgKeyRpcUrl)
+}
+
+func (cfg *configuration) GetDrsAddress() string {
+	if cfg.envBasedConfig == nil {
+		return ""
+	}
+	return cfg.envBasedConfig.GetString(constants.CfgKeyDrsAddress)
+}
+
+func (cfg *configuration) GetHeartAddress() string {
+	if cfg.envBasedConfig == nil {
+		return ""
+	}
+	return cfg.envBasedConfig.GetString(constants.CfgKeyHeartAddress)
+}

@@ -10,4 +10,7 @@ type Configuration interface {
 	GetCurrentEnv() string
 	SetCurrentEnv(account string) error
 	GetEnvList() []string
+	GetRpcUrl() string
+	GetDrsAddress() string
+	GetHeartAddress() string
 }

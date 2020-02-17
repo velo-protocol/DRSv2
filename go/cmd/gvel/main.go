@@ -4,6 +4,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/commands"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/logic"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/repositories/database"
+	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/repositories/vfactory"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/config"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
@@ -28,9 +29,9 @@ func main() {
 			}
 
 			// logic
-			logicInstance = logic.NewLogic(accountDbRepository, appConfig)
+			logicInstance = logic.NewLogic(accountDbRepository, appConfig, vfactory.NewVeloFactory())
 		} else {
-			logicInstance = logic.NewLogic(nil, appConfig)
+			logicInstance = logic.NewLogic(nil, appConfig, nil)
 		}
 	}
 
