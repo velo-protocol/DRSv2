@@ -132,13 +132,15 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
     // 6. Test drs.collateralHealthCheck
     let healthCheckResult = await drs.collateralHealthCheck("vUSD");
     healthCheckResult = {
-      collateralAssetCode: healthCheckResult['0'],
-      requiredAmount: healthCheckResult['1'],
-      presentAmount: healthCheckResult['2']
+      collateralAssetAddress: healthCheckResult['0'],
+      collateralAssetCode: healthCheckResult['1'],
+      requiredAmount: healthCheckResult['2'],
+      presentAmount: healthCheckResult['3']
     };
     h.assert.equalByteString(healthCheckResult.collateralAssetCode, velo);
     h.assert.equalNumber(healthCheckResult.requiredAmount.toString(), 160769230 * 1 / 10); // vUSD balance * peggedValue / price
     h.assert.equalNumber(healthCheckResult.presentAmount.toString(), 16076923 + 16076922 - 20899999 + 1);
+    assert.equal(veloCollateralAsset.address, healthCheckResult.collateralAssetAddress);
 
     // 7. Test drs.rebalance
     const rebalanceResult = await drs.rebalance("vUSD");

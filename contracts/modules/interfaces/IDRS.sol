@@ -33,5 +33,5 @@ interface IDRS {
 
     function collateralHealthCheck(
         string calldata assetCode
-    ) external view returns (bytes32, uint256, uint256, address);
+    ) external view returns (address, bytes32, uint256, uint256);
 }
