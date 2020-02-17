@@ -12,6 +12,9 @@ type Logic interface {
 	ListAccount() ([]*entity.Account, error)
 	SetDefaultAccount(input *entity.SetDefaultAccountInput) (*entity.SetDefaultAccountOutput, error)
 
+	// Credit module
+	SetupCredit(input *entity.SetupCreditInput) (*entity.SetupCreditOutput, error)
+
 	// Environment module
 	SetEnv(input *entity.SetEnvInput) error
 }

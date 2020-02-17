@@ -35,7 +35,7 @@ func initTest(t *testing.T) helper {
 	console.DefaultLoadWriter = console.Logger.Out
 
 	return helper{
-		logic:             logic.NewLogic(mockDB, mockConfiguration),
+		logic:             logic.NewLogic(mockDB, mockConfiguration, nil),
 		mockDbRepo:        mockDB,
 		mockConfiguration: mockConfiguration,
 		mockController:    mockCtrl,

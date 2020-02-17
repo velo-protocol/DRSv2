@@ -22,6 +22,13 @@ mockgen/db:
 		-mock_names Repository=MockDbRepo \
 		-package mocks
 
+mockgen/vfactory:
+	mockgen \
+		-source=./layers/repositories/vfactory/interface.go \
+		-destination=./layers/mocks/vfactory.go \
+		-mock_names Repository=MockVFactoryRepo \
+		-package mocks
+
 mockgen/console:
 	mockgen \
 		-source=./utils/console/interface.go \
@@ -38,6 +45,7 @@ mockgen/config:
 
 mockgen/all:
 	make mockgen/db
+	make mockgen/vfactory
 	make mockgen/logic
 	make mockgen/console
 	make mockgen/config
