@@ -1013,9 +1013,11 @@ contract("DigitalReserveSystem test", async accounts => {
       const BN = web3.utils.BN;
       const requiredAmount = new BN(result[1]).toNumber();
       const presentAmount = new BN(result[2]).toNumber();
+      const collateralAddress = result[3];
       assert.equal(web3.utils.hexToUtf8(result[0]), "VELO");
       assert.equal(150000000, requiredAmount); //100000000 * 15000000 / 10000000
       assert.equal(100000000, presentAmount);
+      assert.equal(veloCollateralAsset.address, collateralAddress);
     });
 
     it("should fail, invalid assetCode format", async () => {
