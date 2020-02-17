@@ -67,7 +67,7 @@ func TestCommandHandler_Export(t *testing.T) {
 		assert.Equal(t, "Your private key is: SBR25NMQRKQ4RLGNV5XB3MMQB4ADVYSMPGVBODQVJE7KPTDR6KGK3XMX", logEntries[1].Message)
 	})
 
-	t.Run("fail, get account list", func(t *testing.T) {
+	t.Run("fail, account list is no once account", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
 
@@ -84,7 +84,7 @@ func TestCommandHandler_Export(t *testing.T) {
 		assert.Equal(t, "account not found in config file, please run gvel account create or gvel account import", logEntries[0].Message)
 	})
 
-	t.Run("fail, account list is no once account", func(t *testing.T) {
+	t.Run("fail, get account list return error", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
 
