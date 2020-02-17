@@ -13,7 +13,7 @@ mockgen/logic:
 		-source=./layers/logic/interface.go \
 		-destination=./layers/mocks/logic.go \
 		-mock_names Logic=MockLogic \
-		-package mocks	
+		-package mocks
 
 mockgen/db:
 	mockgen \

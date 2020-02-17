@@ -40,7 +40,6 @@ func (accountCommand *CommandHandler) Command() *cobra.Command {
 		accountCommand.GetImportCommand(),
 		accountCommand.GetListCommand(),
 		accountCommand.GetDefaultCommand(),
-		accountCommand.GetExportCommand(),
 	)
 	return command
 }
@@ -81,19 +80,4 @@ func (accountCommand *CommandHandler) GetDefaultCommand() *cobra.Command {
 		Short: "Set default account to be used as signer",
 		Run:   accountCommand.Default,
 	}
-}
-
-func (accountCommand *CommandHandler) GetExportCommand() *cobra.Command {
-	command := &cobra.Command{
-		Use:   constants.CmdAccountExport,
-		Short: "Export your account",
-		Run:   accountCommand.Export,
-		PersistentPreRun: func(_ *cobra.Command, _ []string) {
-			if accountCommand.AppConfig.GetDefaultAccount() == "" {
-				console.ExitWithError(console.ExitError, errors.New("default account not found in config file, please run `gvel account create` or `gvel account import`"))
-			}
-		},
-	}
-
-	return command
 }
