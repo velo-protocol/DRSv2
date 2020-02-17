@@ -10,6 +10,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/crypto"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/mocks"
+	vclientmocks "github.com/velo-protocol/DRSv2/go/libs/vclient/mocks"
 	"testing"
 )
 
@@ -17,6 +18,8 @@ type helper struct {
 	logic             logic.Logic
 	mockDbRepo        *mocks.MockDbRepo
 	mockConfiguration *mockutils.MockConfiguration
+	mockVFactory      *mocks.MockVFactoryRepo
+	mockVClient       *vclientmocks.MockVClient
 	mockController    *gomock.Controller
 	logHook           *test.Hook
 	done              func()
@@ -26,6 +29,8 @@ func initTest(t *testing.T) helper {
 	mockCtrl := gomock.NewController(t)
 
 	mockDB := mocks.NewMockDbRepo(mockCtrl)
+	mockVFactory := mocks.NewMockVFactoryRepo(mockCtrl)
+	mockVClient := vclientmocks.NewMockVClient(mockCtrl)
 	mockConfiguration := mockutils.NewMockConfiguration(mockCtrl)
 
 	logger, hook := test.NewNullLogger()
@@ -35,9 +40,11 @@ func initTest(t *testing.T) helper {
 	console.DefaultLoadWriter = console.Logger.Out
 
 	return helper{
-		logic:             logic.NewLogic(mockDB, mockConfiguration, nil),
+		logic:             logic.NewLogic(mockDB, mockConfiguration, mockVFactory),
 		mockDbRepo:        mockDB,
+		mockVFactory:      mockVFactory,
 		mockConfiguration: mockConfiguration,
+		mockVClient:       mockVClient,
 		mockController:    mockCtrl,
 		logHook:           hook,
 		done: func() {

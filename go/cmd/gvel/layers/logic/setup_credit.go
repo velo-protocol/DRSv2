@@ -28,7 +28,7 @@ func (lo *logic) SetupCredit(input *entity.SetupCreditInput) (*entity.SetupCredi
 
 	privateKeyBytes, err := crypto.Decrypt(account.EncryptedPrivateKey, input.Passphrase)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to decrypt the seed of %s with given passphrase", defaultAccount)
+		return nil, errors.Wrapf(err, "failed to decrypt the private key of %s with given passphrase", defaultAccount)
 	}
 
 	// 3. Init Velo client
@@ -41,7 +41,7 @@ func (lo *logic) SetupCredit(input *entity.SetupCreditInput) (*entity.SetupCredi
 		},
 	})
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "fail to initiate velo client")
 	}
 
 	// 4. Setup credit
