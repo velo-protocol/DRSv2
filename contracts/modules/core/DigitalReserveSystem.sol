@@ -237,7 +237,7 @@ contract DigitalReserveSystem is IDRS {
 
     function collateralHealthCheck(
         string calldata assetCode
-    ) external view returns (bytes32, uint256, uint256) {
+    ) external view returns (address, bytes32, uint256, uint256) {
         require(bytes(assetCode).length > 0 && bytes(assetCode).length <= 12, "DigitalReserveSystem.collateralHealthCheck: invalid assetCode format");
 
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
@@ -246,7 +246,7 @@ contract DigitalReserveSystem is IDRS {
         uint256 requiredAmount = _calCollateral(stableCredit, linkId, stableCredit.totalSupply());
         uint256 presentAmount = stableCredit.collateral().balanceOf(address(stableCredit));
 
-        return (collateralAssetCode, requiredAmount, presentAmount);
+        return (address(collateralAsset), collateralAssetCode, requiredAmount, presentAmount);
     }
 
     function _rebalance(
