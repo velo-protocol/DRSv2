@@ -77,6 +77,21 @@ func (mr *MockLogicMockRecorder) ImportAccount(input interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ImportAccount", reflect.TypeOf((*MockLogic)(nil).ImportAccount), input)
 }
 
+// ExportAccount mocks base method
+func (m *MockLogic) ExportAccount(input *entity.ExportAccountInput) (*entity.ExportAccountOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExportAccount", input)
+	ret0, _ := ret[0].(*entity.ExportAccountOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExportAccount indicates an expected call of ExportAccount
+func (mr *MockLogicMockRecorder) ExportAccount(input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExportAccount", reflect.TypeOf((*MockLogic)(nil).ExportAccount), input)
+}
+
 // ListAccount mocks base method
 func (m *MockLogic) ListAccount() ([]*entity.Account, error) {
 	m.ctrl.T.Helper()

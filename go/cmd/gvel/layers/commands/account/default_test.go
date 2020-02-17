@@ -119,7 +119,7 @@ func TestCommandHandler_Default(t *testing.T) {
 
 		logEntries := h.logHook.AllEntries()
 
-		assert.Equal(t, "no account exists on gvel database", logEntries[0].Message)
+		assert.Equal(t, "account not found in config file, please run gvel account create or gvel account import", logEntries[0].Message)
 	})
 
 	t.Run("fail, account list is no once account", func(t *testing.T) {
