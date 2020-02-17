@@ -20,7 +20,7 @@ type DRSContract interface {
 	MintFromStableCreditAmount(opts *bind.TransactOpts, mintAmount *big.Int, assetCode string) (*types.Transaction, error)
 	GetExchange(opts *bind.CallOpts, assetCode string) (string, [32]byte, *big.Int, error)
 	Redeem(opts *bind.TransactOpts, stableCreditAmount *big.Int, assetCode string) (*types.Transaction, error)
-	CollateralHealthCheck(opts *bind.CallOpts, assetCode string) ([32]byte, *big.Int, *big.Int, error)
+	CollateralHealthCheck(opts *bind.CallOpts, assetCode string) (common.Address, [32]byte, *big.Int, *big.Int, error)
 	Rebalance(opts *bind.TransactOpts, assetCode string) (*types.Transaction, error)
 }
 

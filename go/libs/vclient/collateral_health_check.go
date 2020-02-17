@@ -16,16 +16,18 @@ type CollateralHealthCheckAbiInput struct {
 }
 
 type CollateralHealthCheckAbiOutput struct {
-	CollateralAssetCode [32]byte
-	RequiredAmount      *big.Int
-	PresentAmount       *big.Int
-	IndexKey            int
+	CollateralAssetAddress common.Address
+	CollateralAssetCode    [32]byte
+	RequiredAmount         *big.Int
+	PresentAmount          *big.Int
+	IndexKey               int
 }
 
 type CollateralHealthCheckOutput struct {
-	CollateralAssetCode string
-	RequiredAmount      string
-	PresentAmount       string
+	CollateralAssetAddress string
+	CollateralAssetCode    string
+	RequiredAmount         string
+	PresentAmount          string
 }
 
 func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]CollateralHealthCheckOutput, error) {
@@ -44,7 +46,7 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 	var curStableCreditAddress common.Address
 	var curAssetCode *string
 	var curStableCreditId *[32]byte
-	var prevStableCreditId *[32]byte
+	var prevStableCreditId [32]byte
 	// 2. loop StableCredit from stableCreditSize
 	for i := 0; i < int(stableCreditSize); i++ {
 		if i == 0 {
@@ -55,7 +57,7 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 			}
 		} else {
 			// 2.2 get next StableCredit for each stableCreditId
-			curStableCreditAddress, err = c.contract.heart.GetNextStableCredit(nil, *prevStableCreditId)
+			curStableCreditAddress, err = c.contract.heart.GetNextStableCredit(nil, prevStableCreditId)
 			if err != nil {
 				return nil, err
 			}
@@ -71,7 +73,7 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 		toAbiInput := &CollateralHealthCheckAbiInput{
 			AssetCode: *curAssetCode,
 		}
-		collateralAssetCode, requiredAmount, presentAmount, err := c.contract.drs.CollateralHealthCheck(
+		collateralAddress, collateralAssetCode, requiredAmount, presentAmount, err := c.contract.drs.CollateralHealthCheck(
 			nil,
 			toAbiInput.AssetCode,
 		)
@@ -81,18 +83,20 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 
 		// Append to collateralOutput
 		collateralOutputs = append(collateralOutputs, CollateralHealthCheckAbiOutput{
-			CollateralAssetCode: collateralAssetCode,
-			RequiredAmount:      requiredAmount,
-			PresentAmount:       presentAmount,
+			CollateralAssetAddress: collateralAddress,
+			CollateralAssetCode:    collateralAssetCode,
+			RequiredAmount:         requiredAmount,
+			PresentAmount:          presentAmount,
 		})
 
 		// keep the recent of prevStableCreditAddress from loop
-		prevStableCreditId = curStableCreditId
+		prevStableCreditId = *curStableCreditId
 	}
 
 	var collateralHealthCheckOutput []CollateralHealthCheckOutput
 	outputMap := map[[32]byte]CollateralHealthCheckAbiOutput{}
 	for index, collateralOutput := range collateralOutputs {
+		collateralAssetAddress := collateralOutput.CollateralAssetAddress
 		collateralAssetCode := collateralOutput.CollateralAssetCode
 		requiredAmount := collateralOutput.RequiredAmount
 		presentAmount := collateralOutput.PresentAmount
@@ -107,11 +111,15 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 			presentAmount = new(big.Int).Add(outputMap[output.CollateralAssetCode].PresentAmount, presentAmount)
 
 			// put back to repeat of collateralHealthCheckOutput record after calculate requiredAmount and presentAmount
+			if len(collateralHealthCheckOutput) == 0 {
+				return nil, errors.New("internal error")
+			}
 			collateralHealthCheckOutput[outputMap[output.CollateralAssetCode].IndexKey].RequiredAmount = utils.AmountToString(requiredAmount)
 			collateralHealthCheckOutput[outputMap[output.CollateralAssetCode].IndexKey].PresentAmount = utils.AmountToString(presentAmount)
 		} else {
 			// init, add to map
 			// information from each loop of new CollateralAssetCode
+			output.CollateralAssetAddress = collateralAssetAddress
 			output.CollateralAssetCode = collateralAssetCode
 			output.RequiredAmount = requiredAmount
 			output.PresentAmount = presentAmount
@@ -122,9 +130,10 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 
 			// put new record of CollateralHealthCheckOutput
 			collateralHealthCheckOutput = append(collateralHealthCheckOutput, CollateralHealthCheckOutput{
-				CollateralAssetCode: utils.Byte32ToString(output.CollateralAssetCode),
-				RequiredAmount:      utils.AmountToString(output.RequiredAmount),
-				PresentAmount:       utils.AmountToString(output.PresentAmount),
+				CollateralAssetAddress: output.CollateralAssetAddress.String(),
+				CollateralAssetCode:    utils.Byte32ToString(output.CollateralAssetCode),
+				RequiredAmount:         utils.AmountToString(output.RequiredAmount),
+				PresentAmount:          utils.AmountToString(output.PresentAmount),
 			})
 		}
 	}

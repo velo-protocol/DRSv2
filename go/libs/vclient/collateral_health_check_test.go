@@ -18,6 +18,7 @@ func TestCollateralHealthCheck(t *testing.T) {
 		requiredAmount, _ := utils.StringToAmount("100")
 		presentAmount, _ := utils.StringToAmount("200")
 		collateralAssetCode := utils.StringToByte32("VELO")
+		collateralAssetAddress := common.HexToAddress("0x2Fb9287ba799297EB918aD607B5F8D3108a026f1")
 
 		stableCreditSize := uint8(1)
 		stableCreditAddress := common.HexToAddress("0x2Fb9287ba799297EB918aD607B5F8D3108a026f0")
@@ -43,7 +44,7 @@ func TestCollateralHealthCheck(t *testing.T) {
 
 		testHelper.MockDRSContract.EXPECT().
 			CollateralHealthCheck(gomock.AssignableToTypeOf(&bind.CallOpts{}), toAbiInput.AssetCode).
-			Return(collateralAssetCode, requiredAmount, presentAmount, nil)
+			Return(collateralAssetAddress, collateralAssetCode, requiredAmount, presentAmount, nil)
 
 		result, err := testHelper.Client.CollateralHealthCheck(input)
 		requiredAmountVELO := result[0].RequiredAmount
@@ -52,6 +53,7 @@ func TestCollateralHealthCheck(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Equal(t, "VELO", result[0].CollateralAssetCode)
+		assert.Equal(t, collateralAssetAddress.String(), result[0].CollateralAssetAddress)
 		assert.Equal(t, "100.0000000", requiredAmountVELO)
 		assert.Equal(t, "200.0000000", presentAmountVELO)
 	})
@@ -62,8 +64,10 @@ func TestCollateralHealthCheck(t *testing.T) {
 
 		requiredAmount, _ := utils.StringToAmount("100")
 		presentAmount, _ := utils.StringToAmount("200")
-		collateralAssetCode := utils.StringToByte32("VELO")
+		collateralAssetCodeVELO := utils.StringToByte32("VELO")
+		collateralAssetAddressVELO := common.HexToAddress("0x2Fb9287ba799297EB918aD607B5F8D3108a026f1")
 		collateralAssetCodeETH := utils.StringToByte32("ETH")
+		collateralAssetAddressETH := common.HexToAddress("0x2Fb9287ba799297EB918aD607B5F8D3108a026f2")
 
 		stableCreditSize := uint8(2)
 		stableCreditAddress := common.HexToAddress("0x2Fb9287ba799297EB918aD607B5F8D3108a026f0")
@@ -97,10 +101,10 @@ func TestCollateralHealthCheck(t *testing.T) {
 
 		testHelper.MockDRSContract.EXPECT().
 			CollateralHealthCheck(gomock.AssignableToTypeOf(&bind.CallOpts{}), toAbiInput.AssetCode).
-			Return(collateralAssetCode, requiredAmount, presentAmount, nil)
+			Return(collateralAssetAddressVELO, collateralAssetCodeVELO, requiredAmount, presentAmount, nil)
 		testHelper.MockDRSContract.EXPECT().
 			CollateralHealthCheck(gomock.AssignableToTypeOf(&bind.CallOpts{}), toAbiInput.AssetCode).
-			Return(collateralAssetCodeETH, requiredAmount, presentAmount, nil)
+			Return(collateralAssetAddressETH, collateralAssetCodeETH, requiredAmount, presentAmount, nil)
 
 		result, err := testHelper.Client.CollateralHealthCheck(input)
 		requiredAmountVELO := result[0].RequiredAmount
@@ -111,9 +115,11 @@ func TestCollateralHealthCheck(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Equal(t, "VELO", result[0].CollateralAssetCode)
+		assert.Equal(t, collateralAssetAddressVELO.String(), result[0].CollateralAssetAddress)
 		assert.Equal(t, "100.0000000", requiredAmountVELO)
 		assert.Equal(t, "200.0000000", presentAmountVELO)
 		assert.Equal(t, "ETH", result[1].CollateralAssetCode)
+		assert.Equal(t, collateralAssetAddressETH.String(), result[1].CollateralAssetAddress)
 		assert.Equal(t, "100.0000000", requiredAmountETH)
 		assert.Equal(t, "200.0000000", presentAmountETH)
 	})
@@ -125,8 +131,10 @@ func TestCollateralHealthCheck(t *testing.T) {
 		requiredAmount, _ := utils.StringToAmount("100")
 		presentAmount, _ := utils.StringToAmount("200")
 		presentAmountETH, _ := utils.StringToAmount("300")
-		collateralAssetCode := utils.StringToByte32("VELO")
+		collateralAssetCodeVELO := utils.StringToByte32("VELO")
+		collateralAssetAddressVELO := common.HexToAddress("0x2Fb9287ba799297EB918aD607B5F8D3108a026f1")
 		collateralAssetCodeETH := utils.StringToByte32("ETH")
+		collateralAssetAddressETH := common.HexToAddress("0x2Fb9287ba799297EB918aD607B5F8D3108a026f2")
 
 		stableCreditSize := uint8(3)
 		stableCreditAddress := common.HexToAddress("0x2Fb9287ba799297EB918aD607B5F8D3108a026f0")
@@ -166,13 +174,13 @@ func TestCollateralHealthCheck(t *testing.T) {
 
 		testHelper.MockDRSContract.EXPECT().
 			CollateralHealthCheck(gomock.AssignableToTypeOf(&bind.CallOpts{}), toAbiInput.AssetCode).
-			Return(collateralAssetCode, requiredAmount, presentAmount, nil)
+			Return(collateralAssetAddressVELO, collateralAssetCodeVELO, requiredAmount, presentAmount, nil)
 		testHelper.MockDRSContract.EXPECT().
 			CollateralHealthCheck(gomock.AssignableToTypeOf(&bind.CallOpts{}), toAbiInput.AssetCode).
-			Return(collateralAssetCode, requiredAmount, presentAmount, nil)
+			Return(collateralAssetAddressVELO, collateralAssetCodeVELO, requiredAmount, presentAmount, nil)
 		testHelper.MockDRSContract.EXPECT().
 			CollateralHealthCheck(gomock.AssignableToTypeOf(&bind.CallOpts{}), toAbiInput.AssetCode).
-			Return(collateralAssetCodeETH, requiredAmount, presentAmountETH, nil)
+			Return(collateralAssetAddressETH, collateralAssetCodeETH, requiredAmount, presentAmountETH, nil)
 
 		result, err := testHelper.Client.CollateralHealthCheck(input)
 		requiredAmountVELO := result[0].RequiredAmount
@@ -183,9 +191,11 @@ func TestCollateralHealthCheck(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Equal(t, "VELO", result[0].CollateralAssetCode)
+		assert.Equal(t, collateralAssetAddressVELO.String(), result[0].CollateralAssetAddress)
 		assert.Equal(t, "200.0000000", requiredAmountVELO)
 		assert.Equal(t, "400.0000000", presentAmountVELO)
 		assert.Equal(t, "ETH", result[1].CollateralAssetCode)
+		assert.Equal(t, collateralAssetAddressETH.String(), result[1].CollateralAssetAddress)
 		assert.Equal(t, "100.0000000", requiredAmountETH)
 		assert.Equal(t, "300.0000000", expectedPresentAmountETH)
 	})
@@ -286,7 +296,7 @@ func TestCollateralHealthCheck(t *testing.T) {
 
 		testHelper.MockDRSContract.EXPECT().
 			CollateralHealthCheck(gomock.AssignableToTypeOf(&bind.CallOpts{}), toAbiInput.AssetCode).
-			Return(collateralAssetCode, requiredAmount, presentAmount, errors.New("error here"))
+			Return(common.Address{}, collateralAssetCode, requiredAmount, presentAmount, errors.New("error here"))
 
 		result, err := testHelper.Client.CollateralHealthCheck(&CollateralHealthCheckInput{})
 
@@ -328,10 +338,10 @@ func TestCollateralHealthCheck(t *testing.T) {
 
 		testHelper.MockDRSContract.EXPECT().
 			CollateralHealthCheck(gomock.AssignableToTypeOf(&bind.CallOpts{}), toAbiInput.AssetCode).
-			Return(collateralAssetCode, requiredAmount, presentAmount, nil)
+			Return(common.Address{}, collateralAssetCode, requiredAmount, presentAmount, nil)
 		testHelper.MockDRSContract.EXPECT().
 			CollateralHealthCheck(gomock.AssignableToTypeOf(&bind.CallOpts{}), toAbiInput.AssetCode).
-			Return(collateralAssetCode, requiredAmount, presentAmount, errors.New("error here"))
+			Return(common.Address{}, collateralAssetCode, requiredAmount, presentAmount, errors.New("error here"))
 
 		result, err := testHelper.Client.CollateralHealthCheck(&CollateralHealthCheckInput{})
 
@@ -373,7 +383,7 @@ func TestCollateralHealthCheck(t *testing.T) {
 
 		testHelper.MockDRSContract.EXPECT().
 			CollateralHealthCheck(gomock.AssignableToTypeOf(&bind.CallOpts{}), toAbiInput.AssetCode).
-			Return(collateralAssetCode, requiredAmount, presentAmount, nil)
+			Return(common.Address{}, collateralAssetCode, requiredAmount, presentAmount, nil)
 
 		result, err := testHelper.Client.CollateralHealthCheck(&CollateralHealthCheckInput{})
 
@@ -412,7 +422,7 @@ func TestCollateralHealthCheck(t *testing.T) {
 
 		testHelper.MockDRSContract.EXPECT().
 			CollateralHealthCheck(gomock.AssignableToTypeOf(&bind.CallOpts{}), toAbiInput.AssetCode).
-			Return(collateralAssetCode, requiredAmount, presentAmount, nil)
+			Return(common.Address{}, collateralAssetCode, requiredAmount, presentAmount, nil)
 
 		result, err := testHelper.Client.CollateralHealthCheck(&CollateralHealthCheckInput{})
 
