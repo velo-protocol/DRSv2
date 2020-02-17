@@ -46,7 +46,7 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 	var curStableCreditAddress common.Address
 	var curAssetCode *string
 	var curStableCreditId *[32]byte
-	var prevStableCreditId *[32]byte
+	var prevStableCreditId [32]byte
 	// 2. loop StableCredit from stableCreditSize
 	for i := 0; i < int(stableCreditSize); i++ {
 		if i == 0 {
@@ -57,7 +57,7 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 			}
 		} else {
 			// 2.2 get next StableCredit for each stableCreditId
-			curStableCreditAddress, err = c.contract.heart.GetNextStableCredit(nil, *prevStableCreditId)
+			curStableCreditAddress, err = c.contract.heart.GetNextStableCredit(nil, prevStableCreditId)
 			if err != nil {
 				return nil, err
 			}
@@ -90,7 +90,7 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 		})
 
 		// keep the recent of prevStableCreditAddress from loop
-		prevStableCreditId = curStableCreditId
+		prevStableCreditId = *curStableCreditId
 	}
 
 	var collateralHealthCheckOutput []CollateralHealthCheckOutput
