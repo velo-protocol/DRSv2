@@ -30,7 +30,7 @@ func TestLogic_ExportAccount(t *testing.T) {
 		assert.Equal(t, "SBR25NMQRKQ4RLGNV5XB3MMQB4ADVYSMPGVBODQVJE7KPTDR6KGK3XMX", output.PrivateKey)
 	})
 
-	t.Run("fail, database returns error", func(t *testing.T) {
+	t.Run("fail, unmarshal account error", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
 
@@ -50,7 +50,7 @@ func TestLogic_ExportAccount(t *testing.T) {
 		assert.Equal(t, "failed to unmarshal account: json: cannot unmarshal string into Go value of type entity.Account", err.Error())
 	})
 
-	t.Run("fail, unmarshal account", func(t *testing.T) {
+	t.Run("fail, failed to get the account from DB", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
 
@@ -83,6 +83,6 @@ func TestLogic_ExportAccount(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, output)
-		assert.Contains(t, err.Error(), fmt.Sprintf("failed to decrypt the seed of %s with given passphrase", "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4"))
+		assert.Equal(t, fmt.Sprintf("failed to decrypt the seed of %s with given passphrase: failed to decipher and authenticate: cipher: message authentication failed", "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4"), err.Error())
 	})
 }

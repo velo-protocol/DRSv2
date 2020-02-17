@@ -22,7 +22,7 @@ func (lo *logic) ExportAccount(input *entity.ExportAccountInput) (*entity.Export
 
 	privKeyBytes, err := crypto.Decrypt(account.EncryptedPrivateKey, input.Passphrase)
 	if err != nil {
-		return nil, errors.Errorf("failed to decrypt the seed of %s with given passphrase: failed to decipher and authenticate: cipher: message authentication failed", input.PublicAddress)
+		return nil, errors.Wrapf(err, "failed to decrypt the seed of %s with given passphrase", input.PublicAddress)
 	}
 
 	return &entity.ExportAccountOutput{
