@@ -15,19 +15,19 @@ func TestLogic_ExportAccount(t *testing.T) {
 		defer h.done()
 
 		h.mockDbRepo.EXPECT().
-			Get([]byte("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4")).
+			Get([]byte("0xf41E18a9573832265F74a671d3E275ec76790b5C")).
 			Return(accountsBytes(), nil)
 
 		output, err := h.logic.ExportAccount(&entity.ExportAccountInput{
-			PublicAddress: "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+			PublicAddress: "0xf41E18a9573832265F74a671d3E275ec76790b5C",
 			Passphrase:    "password",
 		})
 
 		assert.NoError(t, err)
 		assert.NotNil(t, output)
 		assert.NotEmpty(t, output.PrivateKey)
-		assert.Equal(t, "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4", output.PublicAddress)
-		assert.Equal(t, "SBR25NMQRKQ4RLGNV5XB3MMQB4ADVYSMPGVBODQVJE7KPTDR6KGK3XMX", output.PrivateKey)
+		assert.Equal(t, "0xf41E18a9573832265F74a671d3E275ec76790b5C", output.PublicAddress)
+		assert.Equal(t, "6d71af6c908ff8b618825926f1004431915faf9b66238c30af9f86438d2bcd89", output.PrivateKey)
 	})
 
 	t.Run("fail, unmarshal account error", func(t *testing.T) {
@@ -37,11 +37,11 @@ func TestLogic_ExportAccount(t *testing.T) {
 		badAccountByte, _ := json.Marshal("")
 
 		h.mockDbRepo.EXPECT().
-			Get([]byte("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4")).
+			Get([]byte("0xf41E18a9573832265F74a671d3E275ec76790b5C")).
 			Return(badAccountByte, nil)
 
 		output, err := h.logic.ExportAccount(&entity.ExportAccountInput{
-			PublicAddress: "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+			PublicAddress: "0xf41E18a9573832265F74a671d3E275ec76790b5C",
 			Passphrase:    "password",
 		})
 
@@ -55,11 +55,11 @@ func TestLogic_ExportAccount(t *testing.T) {
 		defer h.done()
 
 		h.mockDbRepo.EXPECT().
-			Get([]byte("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4")).
+			Get([]byte("0xf41E18a9573832265F74a671d3E275ec76790b5C")).
 			Return(nil, errors.New("failed to get account from db"))
 
 		output, err := h.logic.ExportAccount(&entity.ExportAccountInput{
-			PublicAddress: "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+			PublicAddress: "0xf41E18a9573832265F74a671d3E275ec76790b5C",
 			Passphrase:    "password",
 		})
 
@@ -73,11 +73,11 @@ func TestLogic_ExportAccount(t *testing.T) {
 		defer h.done()
 
 		h.mockDbRepo.EXPECT().
-			Get([]byte("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4")).
+			Get([]byte("0xf41E18a9573832265F74a671d3E275ec76790b5C")).
 			Return(accountsBytes(), nil)
 
 		output, err := h.logic.ExportAccount(&entity.ExportAccountInput{
-			PublicAddress: "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+			PublicAddress: "0xf41E18a9573832265F74a671d3E275ec76790b5C",
 			Passphrase:    "bad password",
 		})
 

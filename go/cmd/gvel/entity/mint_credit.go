@@ -9,4 +9,5 @@ type MintCreditFromCollateralInput struct {
 type MintCreditFromCollateralOutput struct {
 	AssetCode  string
 	MintAmount string
+	TxHash     string
 }

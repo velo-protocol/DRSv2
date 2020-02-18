@@ -1,10 +1,13 @@
 package logic
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/pkg/errors"
+	"github.com/velo-protocol/DRSv2/go/cmd/gvel/constants"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/crypto"
+	"github.com/velo-protocol/DRSv2/go/libs/vclient"
 )
 
 func (lo *logic) MintCreditFromCollateral(input *entity.MintCreditFromCollateralInput) (*entity.MintCreditFromCollateralOutput, error) {
@@ -20,13 +23,37 @@ func (lo *logic) MintCreditFromCollateral(input *entity.MintCreditFromCollateral
 		return nil, errors.Wrap(err, "failed to unmarshal account")
 	}
 
-	privKeyBytes, err := crypto.Decrypt(account.EncryptedPrivateKey, input.Passphrase)
+	privateKeyBytes, err := crypto.Decrypt(account.EncryptedPrivateKey, input.Passphrase)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to decrypt the seed of %s with given passphrase", account.PublicAddress)
 	}
 
+	veloClient, err := lo.VFactory.NewClient(&entity.NewClientInput{
+		RpcUrl:     lo.AppConfig.GetRpcUrl(),
+		PrivateKey: string(privateKeyBytes),
+		ContractAddress: &vclient.ContractAddress{
+			DrsAddress:   lo.AppConfig.GetDrsAddress(),
+			HeartAddress: lo.AppConfig.GetHeartAddress(),
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), constants.Timeout)
+	defer cancel()
+
+	output, err := veloClient.MintFromCollateralAmount(ctx, &vclient.MintFromCollateralAmountInput{
+		AssetCode:        input.AssetCode,
+		CollateralAmount: input.CollateralAmount,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return &entity.MintCreditFromCollateralOutput{
-		AssetCode:  "",
-		MintAmount: "",
+		AssetCode:  output.Event.AssetCode,
+		MintAmount: output.Event.MintAmount,
+		TxHash:     output.Tx.Hash().String(),
 	}, nil
 }

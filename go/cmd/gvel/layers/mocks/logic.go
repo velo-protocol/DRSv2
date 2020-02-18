@@ -137,6 +137,21 @@ func (mr *MockLogicMockRecorder) SetupCredit(input interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetupCredit", reflect.TypeOf((*MockLogic)(nil).SetupCredit), input)
 }
 
+// MintCreditFromCollateral mocks base method
+func (m *MockLogic) MintCreditFromCollateral(input *entity.MintCreditFromCollateralInput) (*entity.MintCreditFromCollateralOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MintCreditFromCollateral", input)
+	ret0, _ := ret[0].(*entity.MintCreditFromCollateralOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// MintCreditFromCollateral indicates an expected call of MintCreditFromCollateral
+func (mr *MockLogicMockRecorder) MintCreditFromCollateral(input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintCreditFromCollateral", reflect.TypeOf((*MockLogic)(nil).MintCreditFromCollateral), input)
+}
+
 // SetEnv mocks base method
 func (m *MockLogic) SetEnv(input *entity.SetEnvInput) error {
 	m.ctrl.T.Helper()

@@ -9,6 +9,11 @@ import (
 	"math/big"
 )
 
+type VClient interface {
+	SetupCredit(ctx context.Context, input *SetupCreditInput) (*SetupCreditOutput, error)
+	MintFromCollateralAmount(ctx context.Context, input *MintFromCollateralAmountInput) (*MintFromCollateralAmountCreditOutput, error)
+}
+
 type Connection interface {
 	bind.ContractBackend
 	TransactionReceipt(ctx context.Context, txHash common.Hash) (*types.Receipt, error)
