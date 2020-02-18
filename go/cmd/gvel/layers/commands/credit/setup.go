@@ -9,7 +9,7 @@ import (
 func (creditCommand *CommandHandler) Setup(_ *cobra.Command, _ []string) {
 	setupCreditInput := &entity.SetupCreditInput{
 		AssetCode:           creditCommand.Prompt.RequestString("Please input asset code", nil),
-		CollateralAssetCode: creditCommand.Prompt.RequestString("Please input collateral asset", nil),
+		CollateralAssetCode: creditCommand.Prompt.RequestString("Please input collateral asset code", nil),
 		PeggedValue:         creditCommand.Prompt.RequestString("Please input pegged value", nil),
 		PeggedCurrency:      creditCommand.Prompt.RequestString("Please input pegged currency", nil),
 		Passphrase:          creditCommand.Prompt.RequestHiddenString("🔑 Please input passphrase", nil),
@@ -24,5 +24,5 @@ func (creditCommand *CommandHandler) Setup(_ *cobra.Command, _ []string) {
 	}
 
 	console.Logger.Infof("Stable credit %s (%s) set up for account %s successfully.", output.AssetCode, output.AssetAddress, output.CreditOwnerAddress)
-	console.Logger.Infof("🔗 Stellar Transaction Hash: %s", output.Tx.Hash().String())
+	console.Logger.Infof("🔗 Stellar Transaction Hash: %s", output.TxHash)
 }

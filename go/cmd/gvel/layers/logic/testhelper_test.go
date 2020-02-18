@@ -2,6 +2,8 @@ package logic_test
 
 import (
 	"encoding/json"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/golang/mock/gomock"
 	"github.com/sirupsen/logrus/hooks/test"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
@@ -11,6 +13,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/crypto"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/mocks"
 	vclientmocks "github.com/velo-protocol/DRSv2/go/libs/vclient/ivclient/mocks"
+	"math/big"
 	"testing"
 )
 
@@ -20,6 +23,7 @@ type helper struct {
 	mockConfiguration *mockutils.MockConfiguration
 	mockVFactory      *mocks.MockVFactoryRepo
 	mockVClient       *vclientmocks.MockVClient
+	mockTx            *types.Transaction
 	mockController    *gomock.Controller
 	logHook           *test.Hook
 	done              func()
@@ -45,6 +49,7 @@ func initTest(t *testing.T) helper {
 		mockVFactory:      mockVFactory,
 		mockConfiguration: mockConfiguration,
 		mockVClient:       mockVClient,
+		mockTx:            types.NewTransaction(1, common.Address{}, big.NewInt(1), 1, big.NewInt(1), []byte{}),
 		mockController:    mockCtrl,
 		logHook:           hook,
 		done: func() {

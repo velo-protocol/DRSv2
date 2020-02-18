@@ -38,7 +38,7 @@ func TestCommandHandler_Setup(t *testing.T) {
 				CollateralAssetCode: "VELO",
 			}).
 			Return(&entity.SetupCreditOutput{
-				Tx:                  h.mockTx,
+				TxHash:              h.mockTx.Hash().String(),
 				CreditOwnerAddress:  "0x1",
 				AssetCode:           "vUSD",
 				AssetAddress:        "0x2",

@@ -43,6 +43,7 @@ func TestLogic_SetupCredit(t *testing.T) {
 		h.mockVClient.EXPECT().
 			SetupCredit(gomock.Any(), gomock.AssignableToTypeOf(&vclient.SetupCreditInput{})).
 			Return(&vclient.SetupCreditOutput{
+				Tx:    h.mockTx,
 				Event: &vclient.SetupCreditEvent{},
 			}, nil)
 
@@ -111,7 +112,7 @@ func TestLogic_SetupCredit(t *testing.T) {
 		assert.Contains(t, err.Error(), "fail to initiate velo client")
 	})
 
-	t.Run("fail, VFactory.NewClient returns error", func(t *testing.T) {
+	t.Run("fail, vclient.SetupCredit returns error", func(t *testing.T) {
 		acc := accountEntity()
 		h := initTest(t)
 		defer h.done()
