@@ -4,9 +4,10 @@ import (
 	"github.com/pkg/errors"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
 	"github.com/velo-protocol/DRSv2/go/libs/vclient"
+	"github.com/velo-protocol/DRSv2/go/libs/vclient/ivclient"
 )
 
-func (v *veloFactory) NewClient(input *entity.NewClientInput) (vclient.VClient, error) {
+func (v *veloFactory) NewClient(input *entity.NewClientInput) (ivclient.VClient, error) {
 	if len(input.RpcUrl) < 1 {
 		return nil, errors.New("rpcUrl must not be empty")
 	}
@@ -22,5 +23,5 @@ func (v *veloFactory) NewClient(input *entity.NewClientInput) (vclient.VClient, 
 		return nil, err
 	}
 
-	return vclient.VClient(client), nil
+	return ivclient.VClient(client), nil
 }

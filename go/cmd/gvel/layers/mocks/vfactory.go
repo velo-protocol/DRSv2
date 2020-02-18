@@ -7,7 +7,7 @@ package mocks
 import (
 	gomock "github.com/golang/mock/gomock"
 	entity "github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
-	vclient "github.com/velo-protocol/DRSv2/go/libs/vclient"
+	ivclient "github.com/velo-protocol/DRSv2/go/libs/vclient/ivclient"
 	reflect "reflect"
 )
 
@@ -35,10 +35,10 @@ func (m *MockVFactoryRepo) EXPECT() *MockVFactoryRepoMockRecorder {
 }
 
 // NewClient mocks base method
-func (m *MockVFactoryRepo) NewClient(input *entity.NewClientInput) (vclient.VClient, error) {
+func (m *MockVFactoryRepo) NewClient(input *entity.NewClientInput) (ivclient.VClient, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "NewClient", input)
-	ret0, _ := ret[0].(vclient.VClient)
+	ret0, _ := ret[0].(ivclient.VClient)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

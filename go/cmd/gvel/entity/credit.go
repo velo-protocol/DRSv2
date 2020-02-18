@@ -1,5 +1,7 @@
 package entity
 
+import "github.com/ethereum/go-ethereum/core/types"
+
 type SetupCreditInput struct {
 	Passphrase          string
 	AssetCode           string
@@ -9,6 +11,9 @@ type SetupCreditInput struct {
 }
 
 type SetupCreditOutput struct {
+	Tx                  *types.Transaction
+	Receipt             *types.Receipt
+	CreditOwnerAddress  string
 	AssetCode           string
 	AssetAddress        string
 	PeggedValue         string

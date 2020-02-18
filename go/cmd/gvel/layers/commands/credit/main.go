@@ -33,13 +33,25 @@ func (creditCommand *CommandHandler) Command() *cobra.Command {
 				console.ExitWithError(console.ExitError, errors.New("config file not found, please run `gvel init`"))
 			}
 
-			//if creditCommand.AppConfig.GetDefaultAccount() == "" {
-			//	console.ExitWithError(console.ExitError, errors.New("default account not found in config file, please run `gvel account create` or `gvel account import`"))
-			//}
+			if creditCommand.AppConfig.GetDefaultAccount() == "" {
+				console.ExitWithError(console.ExitError, errors.New("default account not found in config file, please run `gvel account create` or `gvel account import`"))
+			}
 		},
 	}
 
-	command.AddCommand()
+	command.AddCommand(
+		creditCommand.GetSetupCommand(),
+	)
+
+	return command
+}
+
+func (creditCommand *CommandHandler) GetSetupCommand() *cobra.Command {
+	command := &cobra.Command{
+		Use:   constants.CmdCreditSetup,
+		Short: "Setup a stable credit on Velo",
+		Run:   creditCommand.Setup,
+	}
 
 	return command
 }

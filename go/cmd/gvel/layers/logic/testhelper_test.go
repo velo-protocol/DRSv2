@@ -10,6 +10,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/crypto"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/mocks"
+	vclientmocks "github.com/velo-protocol/DRSv2/go/libs/vclient/ivclient/mocks"
 	"testing"
 )
 
@@ -17,6 +18,8 @@ type helper struct {
 	logic             logic.Logic
 	mockDbRepo        *mocks.MockDbRepo
 	mockConfiguration *mockutils.MockConfiguration
+	mockVFactory      *mocks.MockVFactoryRepo
+	mockVClient       *vclientmocks.MockVClient
 	mockController    *gomock.Controller
 	logHook           *test.Hook
 	done              func()
@@ -26,6 +29,8 @@ func initTest(t *testing.T) helper {
 	mockCtrl := gomock.NewController(t)
 
 	mockDB := mocks.NewMockDbRepo(mockCtrl)
+	mockVFactory := mocks.NewMockVFactoryRepo(mockCtrl)
+	mockVClient := vclientmocks.NewMockVClient(mockCtrl)
 	mockConfiguration := mockutils.NewMockConfiguration(mockCtrl)
 
 	logger, hook := test.NewNullLogger()
@@ -35,9 +40,11 @@ func initTest(t *testing.T) helper {
 	console.DefaultLoadWriter = console.Logger.Out
 
 	return helper{
-		logic:             logic.NewLogic(mockDB, mockConfiguration, nil),
+		logic:             logic.NewLogic(mockDB, mockConfiguration, mockVFactory),
 		mockDbRepo:        mockDB,
+		mockVFactory:      mockVFactory,
 		mockConfiguration: mockConfiguration,
+		mockVClient:       mockVClient,
 		mockController:    mockCtrl,
 		logHook:           hook,
 		done: func() {
@@ -45,6 +52,11 @@ func initTest(t *testing.T) helper {
 		},
 	}
 }
+
+var (
+	pub  = "0xf41E18a9573832265F74a671d3E275ec76790b5C"
+	priv = "6d71af6c908ff8b618825926f1004431915faf9b66238c30af9f86438d2bcd89"
+)
 
 func arrayOfAccountsBytes() [][]byte {
 	return [][]byte{
@@ -58,10 +70,10 @@ func accountsBytes() []byte {
 }
 
 func accountEntity() entity.Account {
-	encryptedPrivateKey, nonce, _ := crypto.Encrypt([]byte("SBR25NMQRKQ4RLGNV5XB3MMQB4ADVYSMPGVBODQVJE7KPTDR6KGK3XMX"), "password")
+	encryptedPrivateKey, nonce, _ := crypto.Encrypt([]byte("6d71af6c908ff8b618825926f1004431915faf9b66238c30af9f86438d2bcd89"), "password")
 
 	return entity.Account{
-		PublicAddress:       "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+		PublicAddress:       "0xf41E18a9573832265F74a671d3E275ec76790b5C",
 		EncryptedPrivateKey: encryptedPrivateKey,
 		Nonce:               nonce,
 		IsDefault:           true,
