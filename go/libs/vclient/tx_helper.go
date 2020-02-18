@@ -105,3 +105,18 @@ func (h *txHelper) ExtractRedeemEvent(eventName string, log *types.Log) (*vabi.D
 	event.CollateralAssetCode = utils.BytesToBytes32(log.Topics[2].Bytes())
 	return event, nil
 }
+
+func (h *txHelper) ExtractRebalanceEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemRebalance, error) {
+	event := new(vabi.DigitalReserveSystemRebalance)
+	err := h.drsAbi.Unpack(event, eventName, log.Data)
+	if err != nil {
+		return nil, errors.Wrap(err, "fail to read event log")
+	}
+
+	// extract indexed field
+	if len(log.Topics) <= 1 {
+		return nil, errors.New("fail to parse indexed param of an event")
+	}
+	event.CollateralAssetCode = utils.BytesToBytes32(log.Topics[1].Bytes())
+	return event, nil
+}

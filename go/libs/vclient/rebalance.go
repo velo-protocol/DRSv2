@@ -6,7 +6,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
+	"github.com/velo-protocol/DRSv2/go/abi"
 	"github.com/velo-protocol/DRSv2/go/constants"
+	"github.com/velo-protocol/DRSv2/go/libs/utils"
 )
 
 type RebalanceInput struct {
@@ -17,6 +19,23 @@ type RebalanceOutput struct {
 	Message  string
 	Txs      []*types.Transaction
 	Receipts []*types.Receipt
+	Events   []RebalanceEvent
+}
+
+type RebalanceEvent struct {
+	AssetCode           string
+	CollateralAssetCode string
+	RequiredAmount      string
+	PresentAmount       string
+	Raw                 *types.Log
+}
+
+func (i *RebalanceEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemRebalance) {
+	i.AssetCode = eventAbi.AssetCode
+	i.CollateralAssetCode = utils.Byte32ToString(eventAbi.CollateralAssetCode)
+	i.RequiredAmount = utils.AmountToString(eventAbi.RequiredAmount)
+	i.PresentAmount = utils.AmountToString(eventAbi.PresentAmount)
+	i.Raw = &eventAbi.Raw
 }
 
 func (c *Client) Rebalance(ctx context.Context, input *RebalanceInput) (*RebalanceOutput, error) {
@@ -78,9 +97,22 @@ func (c *Client) Rebalance(ctx context.Context, input *RebalanceInput) (*Rebalan
 			return nil, err
 		}
 
-		// Append to rebalanceOutput Tx, Receipt
+		eventLog := utils.FindLogEvent(receipt.Logs, "Rebalance(string,bytes32,uint256,uint256)")
+		if eventLog == nil {
+			return nil, errors.Errorf("cannot find rebalance event from transaction receipt %s", tx.Hash().String())
+		}
+
+		eventAbi, err := c.txHelper.ExtractRebalanceEvent("Rebalance", eventLog)
+		if err != nil {
+			return nil, err
+		}
+		event := new(RebalanceEvent)
+		event.ToEventOutput(eventAbi)
+
+		// Append to rebalanceOutput Txs, Receipts, and Events
 		rebalanceOutput.Txs = append(rebalanceOutput.Txs, tx)
 		rebalanceOutput.Receipts = append(rebalanceOutput.Receipts, receipt)
+		rebalanceOutput.Events = append(rebalanceOutput.Events, *event)
 
 		// keep the recent of prevStableCreditAddress from loop
 		prevStableCreditId = curStableCreditId

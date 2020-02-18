@@ -570,6 +570,21 @@ func (mr *MockTxHelperMockRecorder) ExtractRedeemEvent(eventName, log interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractRedeemEvent", reflect.TypeOf((*MockTxHelper)(nil).ExtractRedeemEvent), eventName, log)
 }
 
+// ExtractRebalanceEvent mocks base method
+func (m *MockTxHelper) ExtractRebalanceEvent(eventName string, log *types.Log) (*abi.DigitalReserveSystemRebalance, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExtractRebalanceEvent", eventName, log)
+	ret0, _ := ret[0].(*abi.DigitalReserveSystemRebalance)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExtractRebalanceEvent indicates an expected call of ExtractRebalanceEvent
+func (mr *MockTxHelperMockRecorder) ExtractRebalanceEvent(eventName, log interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractRebalanceEvent", reflect.TypeOf((*MockTxHelper)(nil).ExtractRebalanceEvent), eventName, log)
+}
+
 // StableCreditAssetCode mocks base method
 func (m *MockTxHelper) StableCreditAssetCode(addr common.Address) (*string, *[32]byte, error) {
 	m.ctrl.T.Helper()

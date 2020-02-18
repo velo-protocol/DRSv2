@@ -44,5 +44,6 @@ type TxHelper interface {
 	ExtractSetupEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemSetup, error)
 	ExtractMintEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemMint, error)
 	ExtractRedeemEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemRedeem, error)
+	ExtractRebalanceEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemRebalance, error)
 	StableCreditAssetCode(addr common.Address) (*string, *[32]byte, error)
 }
