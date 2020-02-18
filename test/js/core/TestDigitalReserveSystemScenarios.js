@@ -82,8 +82,7 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
     h.assert.equalNumber(await vUSDStableCredit.balanceOf(bob), 160769230); // Bob's vUSD balance
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(bob), 10000000000000 - 22000000); // Bob's VELO balance
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(heart.address), 1100000); // fee
-    h.assert.equalNumber(await veloCollateralAsset.balanceOf(vUSDStableCredit.address), 16076923); // actualCollateralAmount
-    h.assert.equalNumber(await veloCollateralAsset.balanceOf(reserveManager.address), 4823077); // reserveCollateralAmount
+    h.assert.equalNumber(await veloCollateralAsset.balanceOf(vUSDStableCredit.address), 16076923 + 4823077); // actualCollateralAmount + reserveCollateralAmount
 
     // 3. Test drs.mintFromStableCreditAmount
     const mintSResult = await drs.mintFromStableCreditAmount(160769230, "vUSD", {from: bob});
@@ -99,8 +98,7 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
     h.assert.equalNumber(await vUSDStableCredit.balanceOf(bob), 160769230 + 160769230); // Bob's vUSD balance
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(bob), 10000000000000 - 22000000 - 21999998); // Bob's VELO balance
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(heart.address), 1100000 + 1099999); // fee
-    h.assert.equalNumber(await veloCollateralAsset.balanceOf(vUSDStableCredit.address), 16076923 + 16076922); // actualCollateralAmount
-    h.assert.equalNumber(await veloCollateralAsset.balanceOf(reserveManager.address), 4823077 + 4823077); // reserveCollateralAmount
+    h.assert.equalNumber(await veloCollateralAsset.balanceOf(vUSDStableCredit.address), 16076923 + 16076922 + 4823077 + 4823077); // actualCollateralAmount + reserveCollateralAmount
 
     // 4. Test drs.getExchange
     let getExchangeResult = await drs.getExchange("vUSD");
