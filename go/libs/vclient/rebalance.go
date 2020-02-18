@@ -108,11 +108,11 @@ func (c *Client) Rebalance(ctx context.Context, input *RebalanceInput) (*Rebalan
 		}
 		event := new(RebalanceEvent)
 		event.ToEventOutput(eventAbi)
-		rebalanceOutput.Events = append(rebalanceOutput.Events, *event)
 
-		// Append to rebalanceOutput Tx, Receipt
+		// Append to rebalanceOutput Txs, Receipts, and Events
 		rebalanceOutput.Txs = append(rebalanceOutput.Txs, tx)
 		rebalanceOutput.Receipts = append(rebalanceOutput.Receipts, receipt)
+		rebalanceOutput.Events = append(rebalanceOutput.Events, *event)
 
 		// keep the recent of prevStableCreditAddress from loop
 		prevStableCreditId = curStableCreditId
