@@ -17,3 +17,13 @@ type SetupCreditOutput struct {
 	PeggedCurrency      string
 	CollateralAssetCode string
 }
+
+type MintByCreditInput struct {
+	Passphrase   string
+	AssetCode    string
+	CreditAmount string
+}
+
+type MintByCreditOutput struct {
+	TxHash string
+}

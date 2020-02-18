@@ -15,6 +15,7 @@ type Logic interface {
 
 	// Credit module
 	SetupCredit(input *entity.SetupCreditInput) (*entity.SetupCreditOutput, error)
+	MintByCredit(input *entity.MintByCreditInput) (*entity.MintByCreditOutput, error)
 
 	// Environment module
 	SetEnv(input *entity.SetEnvInput) error

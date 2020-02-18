@@ -29,7 +29,7 @@ func main() {
 			}
 
 			// logic
-			logicInstance = logic.NewLogic(accountDbRepository, appConfig, vfactory.NewVeloFactory())
+			logicInstance = logic.NewLogic(accountDbRepository, appConfig, vfactory.NewVeloFactory(appConfig))
 		} else {
 			logicInstance = logic.NewLogic(nil, appConfig, nil)
 		}
