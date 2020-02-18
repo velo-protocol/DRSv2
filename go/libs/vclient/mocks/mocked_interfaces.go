@@ -6,12 +6,12 @@ package mocks
 
 import (
 	context "context"
-	go_ethereum "github.com/ethereum/go-ethereum"
+	ethereum "github.com/ethereum/go-ethereum"
 	bind "github.com/ethereum/go-ethereum/accounts/abi/bind"
 	common "github.com/ethereum/go-ethereum/common"
 	types "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
-	abi "github.com/velo-protocol/DRSv2/go/abi"
+	vabi "github.com/velo-protocol/DRSv2/go/abi"
 	big "math/big"
 	reflect "reflect"
 )
@@ -55,7 +55,7 @@ func (mr *MockConnectionMockRecorder) CodeAt(ctx, contract, blockNumber interfac
 }
 
 // CallContract mocks base method
-func (m *MockConnection) CallContract(ctx context.Context, call go_ethereum.CallMsg, blockNumber *big.Int) ([]byte, error) {
+func (m *MockConnection) CallContract(ctx context.Context, call ethereum.CallMsg, blockNumber *big.Int) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CallContract", ctx, call, blockNumber)
 	ret0, _ := ret[0].([]byte)
@@ -115,7 +115,7 @@ func (mr *MockConnectionMockRecorder) SuggestGasPrice(ctx interface{}) *gomock.C
 }
 
 // EstimateGas mocks base method
-func (m *MockConnection) EstimateGas(ctx context.Context, call go_ethereum.CallMsg) (uint64, error) {
+func (m *MockConnection) EstimateGas(ctx context.Context, call ethereum.CallMsg) (uint64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "EstimateGas", ctx, call)
 	ret0, _ := ret[0].(uint64)
@@ -144,7 +144,7 @@ func (mr *MockConnectionMockRecorder) SendTransaction(ctx, tx interface{}) *gomo
 }
 
 // FilterLogs mocks base method
-func (m *MockConnection) FilterLogs(ctx context.Context, query go_ethereum.FilterQuery) ([]types.Log, error) {
+func (m *MockConnection) FilterLogs(ctx context.Context, query ethereum.FilterQuery) ([]types.Log, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FilterLogs", ctx, query)
 	ret0, _ := ret[0].([]types.Log)
@@ -159,10 +159,10 @@ func (mr *MockConnectionMockRecorder) FilterLogs(ctx, query interface{}) *gomock
 }
 
 // SubscribeFilterLogs mocks base method
-func (m *MockConnection) SubscribeFilterLogs(ctx context.Context, query go_ethereum.FilterQuery, ch chan<- types.Log) (go_ethereum.Subscription, error) {
+func (m *MockConnection) SubscribeFilterLogs(ctx context.Context, query ethereum.FilterQuery, ch chan<- types.Log) (ethereum.Subscription, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SubscribeFilterLogs", ctx, query, ch)
-	ret0, _ := ret[0].(go_ethereum.Subscription)
+	ret0, _ := ret[0].(ethereum.Subscription)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -226,19 +226,19 @@ func (mr *MockDRSContractMockRecorder) Setup(opts, collateralAssetCode, peggedCu
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Setup", reflect.TypeOf((*MockDRSContract)(nil).Setup), opts, collateralAssetCode, peggedCurrency, assetCode, peggedValue)
 }
 
-// MintFromCollateralAmount mocks base method
+// MintByCollateralAmount mocks base method
 func (m *MockDRSContract) MintFromCollateralAmount(opts *bind.TransactOpts, netCollateralAmount *big.Int, assetCode string) (*types.Transaction, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MintFromCollateralAmount", opts, netCollateralAmount, assetCode)
+	ret := m.ctrl.Call(m, "MintByCollateralAmount", opts, netCollateralAmount, assetCode)
 	ret0, _ := ret[0].(*types.Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// MintFromCollateralAmount indicates an expected call of MintFromCollateralAmount
+// MintByCollateralAmount indicates an expected call of MintByCollateralAmount
 func (mr *MockDRSContractMockRecorder) MintFromCollateralAmount(opts, netCollateralAmount, assetCode interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintFromCollateralAmount", reflect.TypeOf((*MockDRSContract)(nil).MintFromCollateralAmount), opts, netCollateralAmount, assetCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintByCollateralAmount", reflect.TypeOf((*MockDRSContract)(nil).MintFromCollateralAmount), opts, netCollateralAmount, assetCode)
 }
 
 // MintFromStableCreditAmount mocks base method
@@ -526,10 +526,10 @@ func (mr *MockTxHelperMockRecorder) ConfirmTx(ctx, tx interface{}) *gomock.Call 
 }
 
 // ExtractSetupEvent mocks base method
-func (m *MockTxHelper) ExtractSetupEvent(eventName string, log *types.Log) (*abi.DigitalReserveSystemSetup, error) {
+func (m *MockTxHelper) ExtractSetupEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemSetup, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExtractSetupEvent", eventName, log)
-	ret0, _ := ret[0].(*abi.DigitalReserveSystemSetup)
+	ret0, _ := ret[0].(*vabi.DigitalReserveSystemSetup)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -541,10 +541,10 @@ func (mr *MockTxHelperMockRecorder) ExtractSetupEvent(eventName, log interface{}
 }
 
 // ExtractMintEvent mocks base method
-func (m *MockTxHelper) ExtractMintEvent(eventName string, log *types.Log) (*abi.DigitalReserveSystemMint, error) {
+func (m *MockTxHelper) ExtractMintEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemMint, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExtractMintEvent", eventName, log)
-	ret0, _ := ret[0].(*abi.DigitalReserveSystemMint)
+	ret0, _ := ret[0].(*vabi.DigitalReserveSystemMint)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -556,10 +556,10 @@ func (mr *MockTxHelperMockRecorder) ExtractMintEvent(eventName, log interface{})
 }
 
 // ExtractRedeemEvent mocks base method
-func (m *MockTxHelper) ExtractRedeemEvent(eventName string, log *types.Log) (*abi.DigitalReserveSystemRedeem, error) {
+func (m *MockTxHelper) ExtractRedeemEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemRedeem, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExtractRedeemEvent", eventName, log)
-	ret0, _ := ret[0].(*abi.DigitalReserveSystemRedeem)
+	ret0, _ := ret[0].(*vabi.DigitalReserveSystemRedeem)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -571,10 +571,10 @@ func (mr *MockTxHelperMockRecorder) ExtractRedeemEvent(eventName, log interface{
 }
 
 // ExtractRebalanceEvent mocks base method
-func (m *MockTxHelper) ExtractRebalanceEvent(eventName string, log *types.Log) (*abi.DigitalReserveSystemRebalance, error) {
+func (m *MockTxHelper) ExtractRebalanceEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemRebalance, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExtractRebalanceEvent", eventName, log)
-	ret0, _ := ret[0].(*abi.DigitalReserveSystemRebalance)
+	ret0, _ := ret[0].(*vabi.DigitalReserveSystemRebalance)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

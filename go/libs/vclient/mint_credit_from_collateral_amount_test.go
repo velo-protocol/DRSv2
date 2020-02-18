@@ -18,7 +18,7 @@ import (
 func TestMintFromCollateralAmountInput_Validate(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
+		err := (&MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "100",
 		}).Validate()
@@ -27,7 +27,7 @@ func TestMintFromCollateralAmountInput_Validate(t *testing.T) {
 	})
 
 	t.Run("error, validation fail assetCode must not be blank", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
+		err := (&MintByCollateralAmountInput{
 			CollateralAmount: "100",
 		}).Validate()
 
@@ -36,7 +36,7 @@ func TestMintFromCollateralAmountInput_Validate(t *testing.T) {
 	})
 
 	t.Run("error, validation fail invalid assetCode format", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
+		err := (&MintByCollateralAmountInput{
 			AssetCode:        "AssetCodee!@",
 			CollateralAmount: "100",
 		}).Validate()
@@ -46,7 +46,7 @@ func TestMintFromCollateralAmountInput_Validate(t *testing.T) {
 	})
 
 	t.Run("error, validation fail collateralAmount must not be blank", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
+		err := (&MintByCollateralAmountInput{
 			AssetCode: "vUSD",
 		}).Validate()
 
@@ -55,7 +55,7 @@ func TestMintFromCollateralAmountInput_Validate(t *testing.T) {
 	})
 
 	t.Run("error, validation fail invalid collateralAmount format", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
+		err := (&MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "amount",
 		}).Validate()
@@ -65,7 +65,7 @@ func TestMintFromCollateralAmountInput_Validate(t *testing.T) {
 	})
 
 	t.Run("error, validation fail collateralAmount must be greater than 0", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
+		err := (&MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "0",
 		}).Validate()
@@ -75,7 +75,7 @@ func TestMintFromCollateralAmountInput_Validate(t *testing.T) {
 	})
 
 	t.Run("error, validation fail invalid collateralAmount is a number with greater than 7 decimal places", func(t *testing.T) {
-		err := (&MintFromCollateralAmountInput{
+		err := (&MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "10.12345678",
 		}).Validate()
@@ -88,7 +88,7 @@ func TestMintFromCollateralAmountInput_Validate(t *testing.T) {
 func TestMintFromCollateralAmountInput_ToAbiInput(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
-		abiInput := (&MintFromCollateralAmountInput{
+		abiInput := (&MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "100",
 		}).ToAbiInput()
@@ -104,7 +104,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &MintFromCollateralAmountInput{
+		input := &MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "100",
 		}
@@ -146,16 +146,16 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), &MintFromCollateralAmountInput{})
+		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), &MintByCollateralAmountInput{})
 		assert.Error(t, err)
 		assert.Nil(t, result)
 	})
 
-	t.Run("error, drs.MintFromCollateralAmount returns an error caller must be a trusted partner", func(t *testing.T) {
+	t.Run("error, drs.MintByCollateralAmount returns an error caller must be a trusted partner", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &MintFromCollateralAmountInput{
+		input := &MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "100",
 		}
@@ -171,11 +171,11 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		assert.Contains(t, err.Error(), "the message sender is not found or does not have sufficient permission to perform mint stable credit")
 	})
 
-	t.Run("error, drs.MintFromCollateralAmount returns an error stableCredit not exist", func(t *testing.T) {
+	t.Run("error, drs.MintByCollateralAmount returns an error stableCredit not exist", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &MintFromCollateralAmountInput{
+		input := &MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "100",
 		}
@@ -191,11 +191,11 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		assert.Contains(t, err.Error(), "the stable credit vUSD is not found")
 	})
 
-	t.Run("error, drs.MintFromCollateralAmount returns an error transfer amount exceeds balance", func(t *testing.T) {
+	t.Run("error, drs.MintByCollateralAmount returns an error transfer amount exceeds balance", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &MintFromCollateralAmountInput{
+		input := &MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "100",
 		}
@@ -211,11 +211,11 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		assert.Contains(t, err.Error(), "the collateral in your address is insufficient")
 	})
 
-	t.Run("error, drs.MintFromCollateralAmount returns an error stable credit does not belong to you", func(t *testing.T) {
+	t.Run("error, drs.MintByCollateralAmount returns an error stable credit does not belong to you", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &MintFromCollateralAmountInput{
+		input := &MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "100",
 		}
@@ -231,11 +231,11 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		assert.Contains(t, err.Error(), "the stable credit vUSD does not belong to you")
 	})
 
-	t.Run("error, drs.MintFromCollateralAmount returns an error valid price not found", func(t *testing.T) {
+	t.Run("error, drs.MintByCollateralAmount returns an error valid price not found", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &MintFromCollateralAmountInput{
+		input := &MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "100",
 		}
@@ -251,13 +251,13 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		assert.Contains(t, err.Error(), "valid price not found")
 	})
 
-	t.Run("error, drs.MintFromCollateralAmount returns an error", func(t *testing.T) {
+	t.Run("error, drs.MintByCollateralAmount returns an error", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
 		expectedMsg := "some error has occurred"
 
-		input := &MintFromCollateralAmountInput{
+		input := &MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "100",
 		}
@@ -279,7 +279,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 
 		expectedMsg := "some error has occurred"
 
-		input := &MintFromCollateralAmountInput{
+		input := &MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "100",
 		}
@@ -304,7 +304,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 
 		expectedMsg := "some error has occurred"
 
-		input := &MintFromCollateralAmountInput{
+		input := &MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "100",
 		}
@@ -338,7 +338,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &MintFromCollateralAmountInput{
+		input := &MintByCollateralAmountInput{
 			AssetCode:        "vUSD",
 			CollateralAmount: "100",
 		}

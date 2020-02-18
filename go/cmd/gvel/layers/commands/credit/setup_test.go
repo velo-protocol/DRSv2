@@ -17,7 +17,7 @@ func TestCommandHandler_Setup(t *testing.T) {
 			RequestString("Please input asset code", nil).
 			Return("vUSD")
 		h.mockPrompt.EXPECT().
-			RequestString("Please input collateral asset", nil).
+			RequestString("Please input collateral asset code", nil).
 			Return("VELO")
 		h.mockPrompt.EXPECT().
 			RequestString("Please input pegged value", nil).
@@ -52,7 +52,7 @@ func TestCommandHandler_Setup(t *testing.T) {
 		logs := h.loggerHook.AllEntries()
 		assert.Len(t, logs, 2)
 		assert.Equal(t, "Stable credit vUSD (0x2) set up for account 0x1 successfully.", logs[0].Message)
-		assert.Equal(t, "🔗 Stellar Transaction Hash: "+h.mockTx.Hash().String(), logs[1].Message)
+		assert.Equal(t, "🔗 Transaction Hash: "+h.mockTx.Hash().String(), logs[1].Message)
 	})
 
 	t.Run("fail, logic.SetupCredit returns error", func(t *testing.T) {
@@ -63,7 +63,7 @@ func TestCommandHandler_Setup(t *testing.T) {
 			RequestString("Please input asset code", nil).
 			Return("vUSD")
 		h.mockPrompt.EXPECT().
-			RequestString("Please input collateral asset", nil).
+			RequestString("Please input collateral asset code", nil).
 			Return("VELO")
 		h.mockPrompt.EXPECT().
 			RequestString("Please input pegged value", nil).

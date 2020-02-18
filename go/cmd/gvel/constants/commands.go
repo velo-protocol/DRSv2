@@ -15,11 +15,11 @@ const (
 	CmdAccountImport  = "import"
 	CmdAccountExport  = "export"
 
-	CmdCredit            = "credit"
-	CmdCreditSetup       = "setup"
-	CmdCreditMint        = "mint"
-	CmdCreditGetExchange = "get-exchange"
-	CmdCreditRedeem      = "redeem"
+	CmdCredit                 = "credit"
+	CmdCreditSetup            = "setup"
+	CmdCreditMintByCollateral = "mint-by-collateral"
+	CmdCreditGetExchange      = "get-exchange"
+	CmdCreditRedeem           = "redeem"
 
 	CmdCollateral            = "collateral"
 	CmdCollateralHealthCheck = "health-check"
