@@ -43,13 +43,7 @@ func TestLogic_SetupCredit(t *testing.T) {
 		h.mockVClient.EXPECT().
 			SetupCredit(gomock.Any(), gomock.AssignableToTypeOf(&vclient.SetupCreditInput{})).
 			Return(&vclient.SetupCreditOutput{
-				Event: &vclient.SetupCreditEvent{
-					AssetCode:           "",
-					PeggedCurrency:      "",
-					PeggedValue:         "",
-					CollateralAssetCode: "",
-					AssetAddress:        "",
-				},
+				Event: &vclient.SetupCreditEvent{},
 			}, nil)
 
 		output, err := h.logic.SetupCredit(&entity.SetupCreditInput{
