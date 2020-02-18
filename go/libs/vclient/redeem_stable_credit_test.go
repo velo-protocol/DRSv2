@@ -96,11 +96,11 @@ func TestClient_RedeemStableCredit(t *testing.T) {
 		testHelper.MockTxHelper.EXPECT().
 			ExtractRedeemEvent("Redeem", gomock.AssignableToTypeOf(&types.Log{})).
 			Return(&vabi.DigitalReserveSystemRedeem{
-				AssetCode:           "vUSD",
-				StableCreditAmount:  big.NewInt(1040000000),
-				CollateralAssetAddress:        common.Address{},
-				CollateralAssetCode: [32]byte{},
-				CollateralAmount:    big.NewInt(1040000000),
+				AssetCode:              "vUSD",
+				StableCreditAmount:     big.NewInt(1040000000),
+				CollateralAssetAddress: common.Address{},
+				CollateralAssetCode:    [32]byte{},
+				CollateralAmount:       big.NewInt(1040000000),
 			}, nil)
 
 		result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
