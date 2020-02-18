@@ -2,12 +2,16 @@ package vclient
 
 import (
 	"context"
+	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	vabi "github.com/velo-protocol/DRSv2/go/abi"
+	"math/big"
 	"testing"
 )
 
@@ -82,12 +86,22 @@ func TestClient_RedeemStableCredit(t *testing.T) {
 			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
-					{},
+					{
+						Topics: []common.Hash{
+							crypto.Keccak256Hash([]byte("Redeem(string,uint256,address,bytes32,uint256)")),
+						},
+					},
 				},
 			}, nil)
 		testHelper.MockTxHelper.EXPECT().
 			ExtractRedeemEvent("Redeem", gomock.AssignableToTypeOf(&types.Log{})).
-			Return(&vabi.DigitalReserveSystemRedeem{}, nil)
+			Return(&vabi.DigitalReserveSystemRedeem{
+				AssetCode:           "vUSD",
+				StableCreditAmount:  big.NewInt(1040000000),
+				CollateralAssetAddress:        common.Address{},
+				CollateralAssetCode: [32]byte{},
+				CollateralAmount:    big.NewInt(1040000000),
+			}, nil)
 
 		result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
 		assert.NoError(t, err)
@@ -149,7 +163,11 @@ func TestClient_RedeemStableCredit(t *testing.T) {
 			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
-					{},
+					{
+						Topics: []common.Hash{
+							crypto.Keccak256Hash([]byte("Redeem(string,uint256,address,bytes32,uint256)")),
+						},
+					},
 				},
 			}, nil)
 		testHelper.MockTxHelper.EXPECT().
@@ -160,5 +178,34 @@ func TestClient_RedeemStableCredit(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Contains(t, err.Error(), expectedMsg)
+	})
+
+	t.Run("error, no redeem log emitting", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &RedeemStableCreditInput{
+			RedeemAmount: "104",
+			AssetCode:    "vUSD",
+		}
+		abiInput := input.ToAbiInput()
+
+		tx := new(types.Transaction)
+
+		testHelper.MockDRSContract.EXPECT().
+			Redeem(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.RedeemAmount, abiInput.AssetCode).
+			Return(tx, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(tx)).
+			Return(&types.Receipt{
+				Logs: []*types.Log{
+					{},
+				},
+			}, nil)
+
+		result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.Equal(t, fmt.Sprintf("cannot find redeem event from transaction receipt %s", tx.Hash().String()), err.Error())
 	})
 }
