@@ -12,48 +12,9 @@ import (
 	types "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
 	vabi "github.com/velo-protocol/DRSv2/go/abi"
-	vclient "github.com/velo-protocol/DRSv2/go/libs/vclient"
 	big "math/big"
 	reflect "reflect"
 )
-
-// MockVClient is a mock of VClient interface
-type MockVClient struct {
-	ctrl     *gomock.Controller
-	recorder *MockVClientMockRecorder
-}
-
-// MockVClientMockRecorder is the mock recorder for MockVClient
-type MockVClientMockRecorder struct {
-	mock *MockVClient
-}
-
-// NewMockVClient creates a new mock instance
-func NewMockVClient(ctrl *gomock.Controller) *MockVClient {
-	mock := &MockVClient{ctrl: ctrl}
-	mock.recorder = &MockVClientMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use
-func (m *MockVClient) EXPECT() *MockVClientMockRecorder {
-	return m.recorder
-}
-
-// SetupCredit mocks base method
-func (m *MockVClient) SetupCredit(ctx context.Context, input *vclient.SetupCreditInput) (*vclient.SetupCreditOutput, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SetupCredit", ctx, input)
-	ret0, _ := ret[0].(*vclient.SetupCreditOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// SetupCredit indicates an expected call of SetupCredit
-func (mr *MockVClientMockRecorder) SetupCredit(ctx, input interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetupCredit", reflect.TypeOf((*MockVClient)(nil).SetupCredit), ctx, input)
-}
 
 // MockConnection is a mock of Connection interface
 type MockConnection struct {

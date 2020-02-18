@@ -10,7 +10,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/crypto"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/mocks"
-	vclientmocks "github.com/velo-protocol/DRSv2/go/libs/vclient/mocks"
+	vclientmocks "github.com/velo-protocol/DRSv2/go/libs/vclient/ivclient/mocks"
 	"testing"
 )
 
@@ -53,6 +53,11 @@ func initTest(t *testing.T) helper {
 	}
 }
 
+var (
+	pub  = "0xf41E18a9573832265F74a671d3E275ec76790b5C"
+	priv = "6d71af6c908ff8b618825926f1004431915faf9b66238c30af9f86438d2bcd89"
+)
+
 func arrayOfAccountsBytes() [][]byte {
 	return [][]byte{
 		accountsBytes(),
@@ -65,10 +70,10 @@ func accountsBytes() []byte {
 }
 
 func accountEntity() entity.Account {
-	encryptedPrivateKey, nonce, _ := crypto.Encrypt([]byte("SBR25NMQRKQ4RLGNV5XB3MMQB4ADVYSMPGVBODQVJE7KPTDR6KGK3XMX"), "password")
+	encryptedPrivateKey, nonce, _ := crypto.Encrypt([]byte("6d71af6c908ff8b618825926f1004431915faf9b66238c30af9f86438d2bcd89"), "password")
 
 	return entity.Account{
-		PublicAddress:       "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+		PublicAddress:       "0xf41E18a9573832265F74a671d3E275ec76790b5C",
 		EncryptedPrivateKey: encryptedPrivateKey,
 		Nonce:               nonce,
 		IsDefault:           true,

@@ -31,7 +31,14 @@ func TestLogic_SetupCredit(t *testing.T) {
 			GetHeartAddress().
 			Return("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4")
 		h.mockVFactory.EXPECT().
-			NewClient(gomock.AssignableToTypeOf(&entity.NewClientInput{})).
+			NewClient(&entity.NewClientInput{
+				RpcUrl:     "http://0.0.0.0:7475",
+				PrivateKey: priv,
+				ContractAddress: &vclient.ContractAddress{
+					DrsAddress:   "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+					HeartAddress: "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+				},
+			}).
 			Return(h.mockVClient, nil)
 		h.mockVClient.EXPECT().
 			SetupCredit(gomock.Any(), gomock.AssignableToTypeOf(&vclient.SetupCreditInput{})).
@@ -92,7 +99,14 @@ func TestLogic_SetupCredit(t *testing.T) {
 			GetHeartAddress().
 			Return("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4")
 		h.mockVFactory.EXPECT().
-			NewClient(gomock.AssignableToTypeOf(&entity.NewClientInput{})).
+			NewClient(&entity.NewClientInput{
+				RpcUrl:     "http://0.0.0.0:7475",
+				PrivateKey: priv,
+				ContractAddress: &vclient.ContractAddress{
+					DrsAddress:   "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+					HeartAddress: "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+				},
+			}).
 			Return(nil, errors.New("some error has occurred"))
 
 		_, err := h.logic.SetupCredit(&entity.SetupCreditInput{
@@ -124,7 +138,14 @@ func TestLogic_SetupCredit(t *testing.T) {
 			GetHeartAddress().
 			Return("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4")
 		h.mockVFactory.EXPECT().
-			NewClient(gomock.AssignableToTypeOf(&entity.NewClientInput{})).
+			NewClient(&entity.NewClientInput{
+				RpcUrl:     "http://0.0.0.0:7475",
+				PrivateKey: priv,
+				ContractAddress: &vclient.ContractAddress{
+					DrsAddress:   "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+					HeartAddress: "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+				},
+			}).
 			Return(h.mockVClient, nil)
 		h.mockVClient.EXPECT().
 			SetupCredit(gomock.Any(), gomock.AssignableToTypeOf(&vclient.SetupCreditInput{})).

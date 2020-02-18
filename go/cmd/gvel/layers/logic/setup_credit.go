@@ -59,6 +59,9 @@ func (lo *logic) SetupCredit(input *entity.SetupCreditInput) (*entity.SetupCredi
 	}
 
 	return &entity.SetupCreditOutput{
+		Tx:                  output.Tx,
+		Receipt:             output.Receipt,
+		CreditOwnerAddress:  defaultAccount,
 		AssetCode:           output.Event.AssetCode,
 		AssetAddress:        output.Event.AssetAddress,
 		PeggedValue:         output.Event.PeggedValue,
