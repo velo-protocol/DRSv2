@@ -96,7 +96,12 @@ func (c *Client) RedeemStableCredit(ctx context.Context, input *RedeemStableCred
 		return nil, err
 	}
 
-	event, err := c.txHelper.ExtractRedeemEvent("Redeem", receipt.Logs[0])
+	eventLog := utils.FindLogEvent(receipt.Logs, "Redeem(string,uint256,address,bytes32,uint256)")
+	if eventLog == nil {
+		return nil, errors.Errorf("cannot find redeem event from transaction receipt %s", tx.Hash().String())
+	}
+
+	event, err := c.txHelper.ExtractRedeemEvent("Redeem", eventLog)
 	if err != nil {
 		return nil, err
 	}
