@@ -1236,6 +1236,7 @@ contract("DigitalReserveSystem test", async accounts => {
       );
 
       const result = await drs.rebalance("vUSD");
+      // this implies that rebalance returns false (no event emitted)
       assert.equal(result.logs.length, 0);
 
     });
