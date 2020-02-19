@@ -90,7 +90,9 @@ func (c *Client) RedeemStableCredit(ctx context.Context, input *RedeemStableCred
 		abiInput.RedeemAmount,
 		abiInput.AssetCode,
 	)
-
+	if err != nil {
+		return nil, err
+	}
 	receipt, err := c.txHelper.ConfirmTx(ctx, tx)
 	if err != nil {
 		return nil, err
