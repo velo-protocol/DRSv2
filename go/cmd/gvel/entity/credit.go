@@ -17,3 +17,14 @@ type SetupCreditOutput struct {
 	PeggedCurrency      string
 	CollateralAssetCode string
 }
+
+type GetCreditExchangeInput struct {
+	AssetCode  string
+	Passphrase string
+}
+
+type GetCreditExchangeOutput struct {
+	AssetCode                     string
+	CollateralAssetCode           string
+	PriceInCollateralPerAssetUnit string
+}
