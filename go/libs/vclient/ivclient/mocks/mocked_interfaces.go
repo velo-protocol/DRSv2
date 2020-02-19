@@ -49,17 +49,32 @@ func (mr *MockVClientMockRecorder) SetupCredit(ctx, input interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetupCredit", reflect.TypeOf((*MockVClient)(nil).SetupCredit), ctx, input)
 }
 
-// MintByCollateralAmount mocks base method
+// MintFromCollateralAmount mocks base method
 func (m *MockVClient) MintFromCollateralAmount(ctx context.Context, input *vclient.MintByCollateralAmountInput) (*vclient.MintByCollateralAmountCreditOutput, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MintByCollateralAmount", ctx, input)
+	ret := m.ctrl.Call(m, "MintFromCollateralAmount", ctx, input)
 	ret0, _ := ret[0].(*vclient.MintByCollateralAmountCreditOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// MintByCollateralAmount indicates an expected call of MintByCollateralAmount
-func (mr *MockVClientMockRecorder) MintByCollateralAmount(ctx, input interface{}) *gomock.Call {
+// MintFromCollateralAmount indicates an expected call of MintFromCollateralAmount
+func (mr *MockVClientMockRecorder) MintFromCollateralAmount(ctx, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintByCollateralAmount", reflect.TypeOf((*MockVClient)(nil).MintFromCollateralAmount), ctx, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintFromCollateralAmount", reflect.TypeOf((*MockVClient)(nil).MintFromCollateralAmount), ctx, input)
+}
+
+// GetExchangeRate mocks base method
+func (m *MockVClient) GetExchangeRate(input *vclient.GetExchangeRateInput) (*vclient.GetExchangeRateOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetExchangeRate", input)
+	ret0, _ := ret[0].(*vclient.GetExchangeRateOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetExchangeRate indicates an expected call of GetExchangeRate
+func (mr *MockVClientMockRecorder) GetExchangeRate(input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExchangeRate", reflect.TypeOf((*MockVClient)(nil).GetExchangeRate), input)
 }

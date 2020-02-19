@@ -3,7 +3,6 @@ package logic_test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
@@ -12,20 +11,18 @@ import (
 	"testing"
 )
 
-func TestLogic_MintCreditByCollateral(t *testing.T) {
+func TestLogic_GetExchange(t *testing.T) {
 	var (
-		rpcURL              = "http://0.0.0.0:7575"
-		assetCode           = "vUSD"
-		collateralAssetCode = "VELO"
-		collateralAmount    = "100.0000000"
-		mintAmount          = "100.0000000"
+		rpcURL                        = "http://0.0.0.0:7575"
+		assetCode                     = "vUSD"
+		collateralAssetCode           = "VELO"
+		priceInCollateralPerAssetUnit = "1.0000000"
 	)
 
-	mockedMintCreditByCollateralInput := func() *entity.MintCreditByCollateralInput {
-		return &entity.MintCreditByCollateralInput{
-			AssetCode:        assetCode,
-			CollateralAmount: collateralAmount,
-			Passphrase:       "password",
+	mockedGetExchangeInput := func() *entity.GetCreditExchangeInput {
+		return &entity.GetCreditExchangeInput{
+			AssetCode:  assetCode,
+			Passphrase: "password",
 		}
 	}
 
@@ -61,32 +58,23 @@ func TestLogic_MintCreditByCollateral(t *testing.T) {
 			}).Return(h.mockVClient, nil)
 
 		h.mockVClient.EXPECT().
-			MintFromCollateralAmount(gomock.Any(), &vclient.MintByCollateralAmountInput{
-				AssetCode:        assetCode,
-				CollateralAmount: collateralAmount,
-			}).Return(&vclient.MintByCollateralAmountCreditOutput{
-			Tx:      &types.Transaction{},
-			Receipt: &types.Receipt{},
-			Event: &vclient.MintByCollateralAmountEvent{
-				AssetCode:           "vUSD",
-				MintAmount:          mintAmount,
-				AssetAddress:        "0x03",
-				CollateralAssetCode: collateralAssetCode,
-				CollateralAmount:    collateralAmount,
-				Raw:                 nil,
-			},
+			GetExchangeRate(&vclient.GetExchangeRateInput{
+				AssetCode: assetCode,
+			}).Return(&vclient.GetExchangeRateOutput{
+			AssetCode:                     assetCode,
+			CollateralAssetCode:           collateralAssetCode,
+			PriceInCollateralPerAssetUnit: priceInCollateralPerAssetUnit,
 		}, nil)
 
-		output, err := h.logic.MintCreditByCollateral(mockedMintCreditByCollateralInput())
+		output, err := h.logic.GetCreditExchange(mockedGetExchangeInput())
 
 		assert.NoError(t, err)
 		assert.NotEmpty(t, output)
 		assert.Equal(t, assetCode, output.AssetCode)
-		assert.Equal(t, "0xc5b2c658f5fa236c598a6e7fbf7f21413dc42e2a41dd982eb772b30707cba2eb", output.TxHash)
-		assert.Equal(t, mintAmount, output.MintAmount)
+		assert.Equal(t, priceInCollateralPerAssetUnit, output.PriceInCollateralPerAssetUnit)
 	})
 
-	t.Run("fail, failed to load accounts from db", func(t *testing.T) {
+	t.Run("fail, default account is not found", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
 
@@ -98,7 +86,7 @@ func TestLogic_MintCreditByCollateral(t *testing.T) {
 			Get([]byte(accountEntity().PublicAddress)).
 			Return(nil, errors.New("error here"))
 
-		output, err := h.logic.MintCreditByCollateral(mockedMintCreditByCollateralInput())
+		output, err := h.logic.GetCreditExchange(mockedGetExchangeInput())
 
 		assert.Nil(t, output)
 		assert.Error(t, err)
@@ -118,13 +106,13 @@ func TestLogic_MintCreditByCollateral(t *testing.T) {
 			Get([]byte(accountEntity().PublicAddress)).
 			Return(badAccountByte, nil)
 
-		output, err := h.logic.MintCreditByCollateral(mockedMintCreditByCollateralInput())
+		output, err := h.logic.GetCreditExchange(mockedGetExchangeInput())
 
 		assert.Error(t, err)
 		assert.Nil(t, output)
 	})
 
-	t.Run("fail, to decrypt the seed of passphrase", func(t *testing.T) {
+	t.Run("fail, to decrypt the private of passphrase", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
 
@@ -136,9 +124,9 @@ func TestLogic_MintCreditByCollateral(t *testing.T) {
 			Get([]byte(accountEntity().PublicAddress)).
 			Return(accountsBytes(), nil)
 
-		mockedBadPassphrase := mockedMintCreditByCollateralInput()
+		mockedBadPassphrase := mockedGetExchangeInput()
 		mockedBadPassphrase.Passphrase = "bad passphrase"
-		output, err := h.logic.MintCreditByCollateral(mockedBadPassphrase)
+		output, err := h.logic.GetCreditExchange(mockedBadPassphrase)
 
 		assert.Error(t, err)
 		assert.Nil(t, output)
@@ -180,13 +168,13 @@ func TestLogic_MintCreditByCollateral(t *testing.T) {
 			}).
 			Return(nil, errors.New("error here"))
 
-		output, err := h.logic.MintCreditByCollateral(mockedMintCreditByCollateralInput())
+		output, err := h.logic.GetCreditExchange(mockedGetExchangeInput())
 
 		assert.Error(t, err)
 		assert.Nil(t, output)
 	})
 
-	t.Run("fail, connect to veloClient.MintFromCollateralAmount", func(t *testing.T) {
+	t.Run("fail, connect to veloClient.GetExchangeRate", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
 
@@ -218,10 +206,10 @@ func TestLogic_MintCreditByCollateral(t *testing.T) {
 			}).Return(h.mockVClient, nil)
 
 		h.mockVClient.EXPECT().
-			MintFromCollateralAmount(gomock.Any(), gomock.AssignableToTypeOf(&vclient.MintByCollateralAmountInput{AssetCode: assetCode, CollateralAmount: collateralAmount})).
+			GetExchangeRate(gomock.AssignableToTypeOf(&vclient.GetExchangeRateInput{AssetCode: assetCode})).
 			Return(nil, errors.New("error here"))
 
-		output, err := h.logic.MintCreditByCollateral(mockedMintCreditByCollateralInput())
+		output, err := h.logic.GetCreditExchange(mockedGetExchangeInput())
 
 		assert.Error(t, err)
 		assert.Nil(t, output)
