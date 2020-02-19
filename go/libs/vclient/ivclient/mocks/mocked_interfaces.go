@@ -78,3 +78,18 @@ func (mr *MockVClientMockRecorder) GetExchangeRate(input interface{}) *gomock.Ca
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExchangeRate", reflect.TypeOf((*MockVClient)(nil).GetExchangeRate), input)
 }
+
+// CollateralHealthCheck mocks base method
+func (m *MockVClient) CollateralHealthCheck(input *vclient.CollateralHealthCheckInput) ([]vclient.CollateralHealthCheckOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CollateralHealthCheck", input)
+	ret0, _ := ret[0].([]vclient.CollateralHealthCheckOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CollateralHealthCheck indicates an expected call of CollateralHealthCheck
+func (mr *MockVClientMockRecorder) CollateralHealthCheck(input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CollateralHealthCheck", reflect.TypeOf((*MockVClient)(nil).CollateralHealthCheck), input)
+}

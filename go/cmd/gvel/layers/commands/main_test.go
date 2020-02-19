@@ -12,11 +12,12 @@ func TestGvelHandler_Init(t *testing.T) {
 
 	assert.Equal(t, constants.CmdRootGvel, gvelHandler.RootCommand.Use)
 
-	assert.Len(t, gvelHandler.RootCommand.Commands(), 4)
+	assert.Len(t, gvelHandler.RootCommand.Commands(), 5)
 	assert.True(t, gvelHandler.AccountCommand == gvelHandler.RootCommand.Commands()[0])
-	assert.True(t, gvelHandler.CreditCommand == gvelHandler.RootCommand.Commands()[1])
-	assert.True(t, gvelHandler.EnvCommand == gvelHandler.RootCommand.Commands()[2])
-	assert.True(t, gvelHandler.InitCommand == gvelHandler.RootCommand.Commands()[3])
+	assert.True(t, gvelHandler.CollateralCommand == gvelHandler.RootCommand.Commands()[1])
+	assert.True(t, gvelHandler.CreditCommand == gvelHandler.RootCommand.Commands()[2])
+	assert.True(t, gvelHandler.EnvCommand == gvelHandler.RootCommand.Commands()[3])
+	assert.True(t, gvelHandler.InitCommand == gvelHandler.RootCommand.Commands()[4])
 
 	assert.Contains(t, gvelHandler.AccountCommand.Use, constants.CmdAccount)
 	assert.Contains(t, gvelHandler.EnvCommand.Use, constants.CmdEnv)
@@ -34,6 +35,9 @@ func TestGvelHandler_Init(t *testing.T) {
 	assert.Equal(t, constants.CmdCreditGetExchange, gvelHandler.CreditCommand.Commands()[0].Use)
 	assert.Equal(t, constants.CmdCreditMintByCollateral, gvelHandler.CreditCommand.Commands()[1].Use)
 	assert.Equal(t, constants.CmdCreditSetup, gvelHandler.CreditCommand.Commands()[2].Use)
+
+	assert.Len(t, gvelHandler.CollateralCommand.Commands(), 1)
+	assert.Equal(t, constants.CmdCollateralHealthCheck, gvelHandler.CollateralCommand.Commands()[0].Use)
 
 	assert.Len(t, gvelHandler.EnvCommand.Commands(), 1)
 	assert.Equal(t, constants.CmdEnvSet, gvelHandler.EnvCommand.Commands()[0].Use)

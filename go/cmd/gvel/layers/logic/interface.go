@@ -18,6 +18,9 @@ type Logic interface {
 	MintCreditByCollateral(input *entity.MintCreditByCollateralInput) (*entity.MintCreditByCollateralOutput, error)
 	GetCreditExchange(input *entity.GetCreditExchangeInput) (*entity.GetCreditExchangeOutput, error)
 
+	// Collateral
+	CollateralHealthCheck(input *entity.CollateralHealthCheckInput) ([]entity.CollateralHealthCheckOutput, error)
+
 	// Environment module
 	SetEnv(input *entity.SetEnvInput) error
 }

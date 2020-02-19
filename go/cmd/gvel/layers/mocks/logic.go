@@ -167,6 +167,21 @@ func (mr *MockLogicMockRecorder) GetCreditExchange(input interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCreditExchange", reflect.TypeOf((*MockLogic)(nil).GetCreditExchange), input)
 }
 
+// CollateralHealthCheck mocks base method
+func (m *MockLogic) CollateralHealthCheck(input *entity.CollateralHealthCheckInput) ([]entity.CollateralHealthCheckOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CollateralHealthCheck", input)
+	ret0, _ := ret[0].([]entity.CollateralHealthCheckOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CollateralHealthCheck indicates an expected call of CollateralHealthCheck
+func (mr *MockLogicMockRecorder) CollateralHealthCheck(input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CollateralHealthCheck", reflect.TypeOf((*MockLogic)(nil).CollateralHealthCheck), input)
+}
+
 // SetEnv mocks base method
 func (m *MockLogic) SetEnv(input *entity.SetEnvInput) error {
 	m.ctrl.T.Helper()
