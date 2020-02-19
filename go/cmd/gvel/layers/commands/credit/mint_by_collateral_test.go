@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestCommandHandler_MintCreditByCollateral(t *testing.T) {
+func TestCommandHandler_MintByCollateral(t *testing.T) {
 
 	var (
 		assetCode        = "vUSD"
@@ -42,7 +42,7 @@ func TestCommandHandler_MintCreditByCollateral(t *testing.T) {
 				TxHash:     h.mockTx.Hash().String(),
 			}, nil)
 
-		h.commandHandler.MintCreditByCollateral(nil, nil)
+		h.commandHandler.MintByCollateral(nil, nil)
 
 		logs := h.loggerHook.AllEntries()
 		assert.Len(t, logs, 2)
@@ -50,7 +50,7 @@ func TestCommandHandler_MintCreditByCollateral(t *testing.T) {
 		assert.Equal(t, "🔗 Transaction Hash: "+h.mockTx.Hash().String(), logs[1].Message)
 	})
 
-	t.Run("fail, logic.MintCreditByCollateral returns error", func(t *testing.T) {
+	t.Run("fail, logic.MintByCollateral returns error", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
 
@@ -73,7 +73,7 @@ func TestCommandHandler_MintCreditByCollateral(t *testing.T) {
 			Return(nil, errors.New("error here"))
 
 		assert.PanicsWithValue(t, console.ExitError, func() {
-			h.commandHandler.MintCreditByCollateral(nil, nil)
+			h.commandHandler.MintByCollateral(nil, nil)
 		})
 	})
 }

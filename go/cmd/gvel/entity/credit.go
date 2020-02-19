@@ -1,5 +1,6 @@
 package entity
 
+// SetupCredit
 type SetupCreditInput struct {
 	Passphrase          string
 	AssetCode           string
@@ -18,11 +19,38 @@ type SetupCreditOutput struct {
 	CollateralAssetCode string
 }
 
+// MintCreditByCollateral
+type MintCreditByCollateralInput struct {
+	AssetCode        string
+	CollateralAmount string
+	Passphrase       string
+}
+type MintCreditByCollateralOutput struct {
+	AssetCode  string
+	MintAmount string
+	TxHash     string
+}
+
+// MintCreditByCredit
+type MintCreditByCreditInput struct {
+	Passphrase   string
+	AssetCode    string
+	CreditAmount string
+}
+type MintCreditByCreditOutput struct {
+	TxHash              string
+	AssetCode           string
+	MintAmount          string
+	AssetAddress        string
+	CollateralAssetCode string
+	CollateralAmount    string
+}
+
+// GetCreditExchange
 type GetCreditExchangeInput struct {
 	AssetCode  string
 	Passphrase string
 }
-
 type GetCreditExchangeOutput struct {
 	AssetCode                     string
 	CollateralAssetCode           string

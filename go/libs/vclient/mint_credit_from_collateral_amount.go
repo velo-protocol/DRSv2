@@ -14,12 +14,12 @@ import (
 	"strings"
 )
 
-type MintByCollateralAmountInput struct {
+type MintFromCollateralAmountInput struct {
 	AssetCode        string
 	CollateralAmount string
 }
 
-func (i *MintByCollateralAmountInput) Validate() error {
+func (i *MintFromCollateralAmountInput) Validate() error {
 	if i.AssetCode == "" {
 		return errors.New("assetCode must not be blank")
 	}
@@ -50,7 +50,7 @@ type MintFromCollateralAmountAbiInput struct {
 	AssetCode           string
 }
 
-func (i *MintByCollateralAmountInput) ToAbiInput() *MintFromCollateralAmountAbiInput {
+func (i *MintFromCollateralAmountInput) ToAbiInput() *MintFromCollateralAmountAbiInput {
 	netAmount, _ := utils.StringToAmount(i.CollateralAmount)
 	return &MintFromCollateralAmountAbiInput{
 		NetCollateralAmount: netAmount,
@@ -58,7 +58,7 @@ func (i *MintByCollateralAmountInput) ToAbiInput() *MintFromCollateralAmountAbiI
 	}
 }
 
-type MintByCollateralAmountEvent struct {
+type MintFromCollateralAmountEvent struct {
 	AssetCode           string
 	MintAmount          string
 	AssetAddress        string
@@ -67,7 +67,7 @@ type MintByCollateralAmountEvent struct {
 	Raw                 *types.Log
 }
 
-func (i *MintByCollateralAmountEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemMint) {
+func (i *MintFromCollateralAmountEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemMint) {
 	i.AssetCode = eventAbi.AssetCode
 	i.MintAmount = utils.AmountToString(eventAbi.MintAmount)
 	i.AssetAddress = eventAbi.AssetAddress.String()
@@ -76,13 +76,13 @@ func (i *MintByCollateralAmountEvent) ToEventOutput(eventAbi *vabi.DigitalReserv
 	i.Raw = &eventAbi.Raw
 }
 
-type MintByCollateralAmountCreditOutput struct {
+type MintFromCollateralAmountCreditOutput struct {
 	Tx      *types.Transaction
 	Receipt *types.Receipt
-	Event   *MintByCollateralAmountEvent
+	Event   *MintFromCollateralAmountEvent
 }
 
-func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintByCollateralAmountInput) (*MintByCollateralAmountCreditOutput, error) {
+func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintFromCollateralAmountInput) (*MintFromCollateralAmountCreditOutput, error) {
 	err := input.Validate()
 	if err != nil {
 		return nil, err
@@ -125,11 +125,11 @@ func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintByColl
 		return nil, err
 	}
 
-	event := new(MintByCollateralAmountEvent)
+	event := new(MintFromCollateralAmountEvent)
 
 	event.ToEventOutput(eventAbi)
 
-	return &MintByCollateralAmountCreditOutput{
+	return &MintFromCollateralAmountCreditOutput{
 		Tx:      tx,
 		Receipt: receipt,
 		Event:   event,

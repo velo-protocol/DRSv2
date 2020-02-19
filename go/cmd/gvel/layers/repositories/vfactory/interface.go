@@ -7,4 +7,5 @@ import (
 
 type Repository interface {
 	NewClient(input *entity.NewClientInput) (ivclient.VClient, error)
+	NewClientFromConfig(privateKey string) (ivclient.VClient, error)
 }
