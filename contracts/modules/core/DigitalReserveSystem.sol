@@ -238,7 +238,7 @@ contract DigitalReserveSystem is IDRS {
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
         require(address(collateralAsset) != address(0), "DigitalReserveSystem.collateralHealthCheck: collateralAssetCode does not exist");
 
-        uint256 requiredAmount = _calCollateral(stableCredit, linkId, stableCredit.totalSupply());
+        uint256 requiredAmount = _calCollateral(stableCredit, linkId, stableCredit.totalSupply(), heart.getCollateralRatio(collateralAssetCode)).div(10000000);
         uint256 presentAmount = stableCredit.collateral().balanceOf(address(stableCredit));
 
         return (address(collateralAsset), collateralAssetCode, requiredAmount, presentAmount);
@@ -252,10 +252,10 @@ contract DigitalReserveSystem is IDRS {
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
         require(address(collateralAsset) != address(0), "DigitalReserveSystem.rebalance: collateralAssetCode does not exist");
 
-        uint256 requiredAmount = _calCollateral(stableCredit, linkId, stableCredit.totalSupply());
+        uint256 requiredAmount = _calCollateral(stableCredit, linkId, stableCredit.totalSupply(), heart.getCollateralRatio(collateralAssetCode)).div(10000000);
         uint256 presentAmount = stableCredit.collateral().balanceOf(address(stableCredit));
 
-        require(requiredAmount != presentAmount, "DigitalReserveSystem.rebalance: rebalance is not required");
+        if (requiredAmount == presentAmount) {return false;}
 
         IRM reserveManager = heart.getReserveManager();
 
@@ -330,8 +330,9 @@ contract DigitalReserveSystem is IDRS {
         return (netCollateralAmount, actualCollateralAmount, reserveCollateralAmount, fee);
     }
 
-    function _calCollateral(IStableCredit credit, bytes32 linkId, uint256 creditAmount) private view returns (uint256) {
-        return creditAmount.mul(credit.peggedValue()).div(heart.getPriceFeeders().getMedianPrice(linkId));
+    function _calCollateral(IStableCredit credit, bytes32 linkId, uint256 creditAmount, uint256 collateralRatio) private view returns (uint256) {
+        // collateral = (creditAmount * peggedValue * collateralRatio) / priceInCurrencyPerAssetUnit
+        return creditAmount.mul(credit.peggedValue().mul(collateralRatio)).div(heart.getPriceFeeders().getMedianPrice(linkId));
     }
 
     function _calExchangeRate(IStableCredit credit, bytes32 linkId) private view returns (uint256) {

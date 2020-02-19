@@ -113,7 +113,7 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
 
     // 5. Test drs.redeem
     const redeemResult = await drs.redeem(160769230, "vUSD", {from: bob});
-    const redeemEvent = redeemResult.logs[1].args;
+    const redeemEvent = redeemResult.logs[0].args;
     assert.equal(redeemEvent.assetCode, "vUSD");
     h.assert.equalNumber(redeemEvent.stableCreditAmount, 160769230);
     assert.equal(redeemEvent.collateralAsset, veloCollateralAsset.assetAddress);
@@ -124,8 +124,8 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
     // Noted that there is little calculation error
     h.assert.equalNumber(await vUSDStableCredit.balanceOf(bob), 160769230 + 160769230 - 160769230); // Bob's vUSD balance
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(bob), 10000000000000 - 22000000 - 21999998 + 20899999); // Bob's VELO balance
-    h.assert.equalNumber(await veloCollateralAsset.balanceOf(vUSDStableCredit.address), 16076923 + 16076922 - 20899999 + 1); // actualCollateralAmount '1' from rebalance error
-    h.assert.equalNumber(await veloCollateralAsset.balanceOf(reserveManager.address), 4823077 + 4823077 - 1); // reserveCollateralAmount '1' from rebalance error
+    h.assert.equalNumber(await veloCollateralAsset.balanceOf(vUSDStableCredit.address), 20899999 + 1); // actualCollateralAmount '1' from rebalance error
+    h.assert.equalNumber(await veloCollateralAsset.balanceOf(reserveManager.address), 0); // reserveCollateralAmount
 
     // 6. Test drs.collateralHealthCheck
     let healthCheckResult = await drs.collateralHealthCheck("vUSD");
@@ -136,17 +136,26 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
       presentAmount: healthCheckResult['3']
     };
     h.assert.equalByteString(healthCheckResult.collateralAssetCode, velo);
-    h.assert.equalNumber(healthCheckResult.requiredAmount.toString(), 160769230 * 1 / 10); // vUSD balance * peggedValue / price
-    h.assert.equalNumber(healthCheckResult.presentAmount.toString(), 16076923 + 16076922 - 20899999 + 1);
+    h.assert.equalNumber(healthCheckResult.requiredAmount.toString(), 20899999); // vUSD balance * peggedValue * collateralRatio / price: 160769230 * 1 * 1.3 / 10
+    h.assert.equalNumber(healthCheckResult.presentAmount.toString(), 20900000);
     assert.equal(veloCollateralAsset.address, healthCheckResult.collateralAssetAddress);
 
     // 7. Test drs.rebalance
+
+    // feed new price
+    const newPrice = h.decimal7(15.0);
+    await priceFeeder.setPrice(veloBytes32, usdBytes32, newPrice, {from: pf});
+
+    // change collateral ratio
+    const newRatio = h.decimal7(1.2);
+    await heart.setCollateralRatio(veloBytes32, newRatio);
+
     const rebalanceResult = await drs.rebalance("vUSD");
     const rebalanceEvent = rebalanceResult.logs[0].args;
     h.assert.equalString(rebalanceEvent.assetCode, "vUSD");
     h.assert.equalByteString(rebalanceEvent.collateralAssetCode, velo);
-    h.assert.equalNumber(rebalanceEvent.requiredAmount.toString(), 160769230 * 1 / 10); // vUSD balance * peggedValue / price
-    h.assert.equalNumber(rebalanceEvent.presentAmount.toString(), 16076923 + 16076922 - 20899999 + 1);
+    h.assert.equalNumber(rebalanceEvent.requiredAmount.toString(), 12861538); // vUSD balance * peggedValue * collateralRatio / price: 160769230 * 1 * 1.2 / 15
+    h.assert.equalNumber(rebalanceEvent.presentAmount.toString(), 20900000);
 
   });
 });
