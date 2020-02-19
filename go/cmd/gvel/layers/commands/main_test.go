@@ -34,6 +34,10 @@ func TestGvelHandler_Init(t *testing.T) {
 	assert.Equal(t, constants.CmdCreditMintByCollateral, gvelHandler.CreditCommand.Commands()[0].Use)
 	assert.Equal(t, constants.CmdCreditMintByCredit, gvelHandler.CreditCommand.Commands()[1].Use)
 	assert.Equal(t, constants.CmdCreditSetup, gvelHandler.CreditCommand.Commands()[2].Use)
+	assert.Len(t, gvelHandler.CreditCommand.Commands(), 3)
+	assert.Equal(t, constants.CmdCreditGetExchange, gvelHandler.CreditCommand.Commands()[0].Use)
+	assert.Equal(t, constants.CmdCreditMintByCollateral, gvelHandler.CreditCommand.Commands()[1].Use)
+	assert.Equal(t, constants.CmdCreditSetup, gvelHandler.CreditCommand.Commands()[2].Use)
 
 	assert.Len(t, gvelHandler.EnvCommand.Commands(), 1)
 	assert.Equal(t, constants.CmdEnvSet, gvelHandler.EnvCommand.Commands()[0].Use)

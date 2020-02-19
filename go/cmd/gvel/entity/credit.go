@@ -8,6 +8,7 @@ type SetupCreditInput struct {
 	PeggedCurrency      string
 	CollateralAssetCode string
 }
+
 type SetupCreditOutput struct {
 	TxHash              string
 	CreditOwnerAddress  string

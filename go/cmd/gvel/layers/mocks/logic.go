@@ -167,6 +167,21 @@ func (mr *MockLogicMockRecorder) MintCreditByCredit(input interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintCreditByCredit", reflect.TypeOf((*MockLogic)(nil).MintCreditByCredit), input)
 }
 
+// GetCreditExchange mocks base method
+func (m *MockLogic) GetCreditExchange(input *entity.GetCreditExchangeInput) (*entity.GetCreditExchangeOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCreditExchange", input)
+	ret0, _ := ret[0].(*entity.GetCreditExchangeOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCreditExchange indicates an expected call of GetCreditExchange
+func (mr *MockLogicMockRecorder) GetCreditExchange(input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCreditExchange", reflect.TypeOf((*MockLogic)(nil).GetCreditExchange), input)
+}
+
 // SetEnv mocks base method
 func (m *MockLogic) SetEnv(input *entity.SetEnvInput) error {
 	m.ctrl.T.Helper()
