@@ -24,5 +24,5 @@ func (creditCommand *CommandHandler) Setup(_ *cobra.Command, _ []string) {
 	}
 
 	console.Logger.Infof("Stable credit %s (%s) set up for account %s successfully.", output.AssetCode, output.AssetAddress, output.CreditOwnerAddress)
-	console.Logger.Infof("🔗 Stellar Transaction Hash: %s", output.TxHash)
+	console.Logger.Infof("🔗 Transaction Hash: %s", output.TxHash)
 }

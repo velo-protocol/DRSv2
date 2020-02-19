@@ -17,7 +17,7 @@ func ExampleClient_MintFromCollateralAmount() {
 		panic(err)
 	}
 
-	result, err := client.MintFromCollateralAmount(context.Background(), &MintFromCollateralAmountInput{
+	result, err := client.MintFromCollateralAmount(context.Background(), &MintByCollateralAmountInput{
 		AssetCode:        "vUSD",
 		CollateralAmount: "2",
 	})
