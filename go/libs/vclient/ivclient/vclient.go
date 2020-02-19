@@ -7,6 +7,6 @@ import (
 
 type VClient interface {
 	SetupCredit(ctx context.Context, input *vclient.SetupCreditInput) (*vclient.SetupCreditOutput, error)
-	MintFromCollateralAmount(ctx context.Context, input *vclient.MintByCollateralAmountInput) (*vclient.MintByCollateralAmountCreditOutput, error)
+	MintFromCollateralAmount(ctx context.Context, input *vclient.MintFromCollateralAmountInput) (*vclient.MintFromCollateralAmountCreditOutput, error)
 	MintFromStableCreditAmount(ctx context.Context, input *vclient.MintFromStableCreditAmountInput) (*vclient.MintFromStableCreditAmountCreditOutput, error)
 }

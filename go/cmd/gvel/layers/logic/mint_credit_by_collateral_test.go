@@ -61,13 +61,13 @@ func TestLogic_MintCreditByCollateral(t *testing.T) {
 			}).Return(h.mockVClient, nil)
 
 		h.mockVClient.EXPECT().
-			MintByCollateralAmount(gomock.Any(), &vclient.MintByCollateralAmountInput{
+			MintFromCollateralAmount(gomock.Any(), &vclient.MintFromCollateralAmountInput{
 				AssetCode:        assetCode,
 				CollateralAmount: collateralAmount,
-			}).Return(&vclient.MintByCollateralAmountCreditOutput{
+			}).Return(&vclient.MintFromCollateralAmountCreditOutput{
 			Tx:      &types.Transaction{},
 			Receipt: &types.Receipt{},
-			Event: &vclient.MintByCollateralAmountEvent{
+			Event: &vclient.MintFromCollateralAmountEvent{
 				AssetCode:           "vUSD",
 				MintAmount:          mintAmount,
 				AssetAddress:        "0x03",
@@ -218,7 +218,7 @@ func TestLogic_MintCreditByCollateral(t *testing.T) {
 			}).Return(h.mockVClient, nil)
 
 		h.mockVClient.EXPECT().
-			MintByCollateralAmount(gomock.Any(), gomock.AssignableToTypeOf(&vclient.MintByCollateralAmountInput{AssetCode: assetCode, CollateralAmount: collateralAmount})).
+			MintFromCollateralAmount(gomock.Any(), gomock.AssignableToTypeOf(&vclient.MintFromCollateralAmountInput{AssetCode: assetCode, CollateralAmount: collateralAmount})).
 			Return(nil, errors.New("error here"))
 
 		output, err := h.logic.MintCreditByCollateral(mockedMintCreditByCollateralInput())

@@ -43,7 +43,7 @@ func (lo *logic) MintCreditByCollateral(input *entity.MintCreditByCollateralInpu
 	ctx, cancel := context.WithTimeout(context.Background(), constants.Timeout)
 	defer cancel()
 
-	output, err := veloClient.MintFromCollateralAmount(ctx, &vclient.MintByCollateralAmountInput{
+	output, err := veloClient.MintFromCollateralAmount(ctx, &vclient.MintFromCollateralAmountInput{
 		AssetCode:        input.AssetCode,
 		CollateralAmount: input.CollateralAmount,
 	})
