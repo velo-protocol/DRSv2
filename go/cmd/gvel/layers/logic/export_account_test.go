@@ -15,19 +15,19 @@ func TestLogic_ExportAccount(t *testing.T) {
 		defer h.done()
 
 		h.mockDbRepo.EXPECT().
-			Get([]byte("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4")).
+			Get([]byte(pub)).
 			Return(accountsBytes(), nil)
 
 		output, err := h.logic.ExportAccount(&entity.ExportAccountInput{
-			PublicAddress: "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+			PublicAddress: pub,
 			Passphrase:    "password",
 		})
 
 		assert.NoError(t, err)
 		assert.NotNil(t, output)
 		assert.NotEmpty(t, output.PrivateKey)
-		assert.Equal(t, "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4", output.PublicAddress)
-		assert.Equal(t, "SBR25NMQRKQ4RLGNV5XB3MMQB4ADVYSMPGVBODQVJE7KPTDR6KGK3XMX", output.PrivateKey)
+		assert.Equal(t, pub, output.PublicAddress)
+		assert.Equal(t, priv, output.PrivateKey)
 	})
 
 	t.Run("fail, unmarshal account error", func(t *testing.T) {
@@ -37,11 +37,11 @@ func TestLogic_ExportAccount(t *testing.T) {
 		badAccountByte, _ := json.Marshal("")
 
 		h.mockDbRepo.EXPECT().
-			Get([]byte("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4")).
+			Get([]byte(pub)).
 			Return(badAccountByte, nil)
 
 		output, err := h.logic.ExportAccount(&entity.ExportAccountInput{
-			PublicAddress: "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+			PublicAddress: pub,
 			Passphrase:    "password",
 		})
 
@@ -55,11 +55,11 @@ func TestLogic_ExportAccount(t *testing.T) {
 		defer h.done()
 
 		h.mockDbRepo.EXPECT().
-			Get([]byte("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4")).
+			Get([]byte(pub)).
 			Return(nil, errors.New("failed to get account from db"))
 
 		output, err := h.logic.ExportAccount(&entity.ExportAccountInput{
-			PublicAddress: "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+			PublicAddress: pub,
 			Passphrase:    "password",
 		})
 
@@ -73,16 +73,16 @@ func TestLogic_ExportAccount(t *testing.T) {
 		defer h.done()
 
 		h.mockDbRepo.EXPECT().
-			Get([]byte("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4")).
+			Get([]byte(pub)).
 			Return(accountsBytes(), nil)
 
 		output, err := h.logic.ExportAccount(&entity.ExportAccountInput{
-			PublicAddress: "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4",
+			PublicAddress: pub,
 			Passphrase:    "bad password",
 		})
 
 		assert.Error(t, err)
 		assert.Nil(t, output)
-		assert.Equal(t, fmt.Sprintf("failed to decrypt the seed of %s with given passphrase: failed to decipher and authenticate: cipher: message authentication failed", "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4"), err.Error())
+		assert.Equal(t, fmt.Sprintf("failed to decrypt the seed of %s with given passphrase: failed to decipher and authenticate: cipher: message authentication failed", "0xf41E18a9573832265F74a671d3E275ec76790b5C"), err.Error())
 	})
 }
