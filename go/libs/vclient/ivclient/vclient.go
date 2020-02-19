@@ -10,4 +10,5 @@ type VClient interface {
 	MintFromCollateralAmount(ctx context.Context, input *vclient.MintFromCollateralAmountInput) (*vclient.MintFromCollateralAmountCreditOutput, error)
 	MintFromStableCreditAmount(ctx context.Context, input *vclient.MintFromStableCreditAmountInput) (*vclient.MintFromStableCreditAmountCreditOutput, error)
 	GetExchangeRate(input *vclient.GetExchangeRateInput) (*vclient.GetExchangeRateOutput, error)
+	Rebalance(ctx context.Context, input *vclient.RebalanceInput) (*vclient.RebalanceOutput, error)
 }

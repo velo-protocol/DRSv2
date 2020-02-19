@@ -1,5 +1,7 @@
 package entity
 
+import "github.com/velo-protocol/DRSv2/go/libs/vclient"
+
 // SetupCredit
 type SetupCreditInput struct {
 	Passphrase          string
@@ -55,4 +57,16 @@ type GetCreditExchangeOutput struct {
 	AssetCode                     string
 	CollateralAssetCode           string
 	PriceInCollateralPerAssetUnit string
+}
+
+// RebalanceCredit
+type RebalanceCreditInput struct {
+	Passphrase string
+}
+type RebalanceCreditOutput struct {
+	Results []*RebalanceCreditResult
+}
+type RebalanceCreditResult struct {
+	TxHash string
+	vclient.RebalanceEvent
 }

@@ -24,16 +24,16 @@ func ExampleClient_Rebalance() {
 	fmt.Println("Message:", output.Message)
 	fmt.Println("Transaction Hashes:", output.Txs)
 	fmt.Println("Transaction Receipts:", output.Receipts)
-	fmt.Println("Events 0 AssetCode:", output.Events[0].AssetCode)
-	fmt.Println("Events 0 CollateralAssetCode:", output.Events[0].CollateralAssetCode)
-	fmt.Println("Events 0 PresentAmount:", output.Events[0].PresentAmount)
-	fmt.Println("Events 0 RequiredAmount:", output.Events[0].RequiredAmount)
+	fmt.Println("Results 0 AssetCode:", output.Events[0].AssetCode)
+	fmt.Println("Results 0 CollateralAssetCode:", output.Events[0].CollateralAssetCode)
+	fmt.Println("Results 0 PresentAmount:", output.Events[0].PresentAmount)
+	fmt.Println("Results 0 RequiredAmount:", output.Events[0].RequiredAmount)
 	// Output:
 	// Message: rebalance process completed.
 	// Transaction Hashes: [0xc000476240]
 	// Transaction Receipts: [0xc000460a80]
-	// Events 0 AssetCode: vUSD
-	// Events 0 CollateralAssetCode: VELO
-	// Events 0 PresentAmount: 1.1253847
-	// Events 0 RequiredAmount: 1.6076923
+	// Results 0 AssetCode: vUSD
+	// Results 0 CollateralAssetCode: VELO
+	// Results 0 PresentAmount: 1.1253847
+	// Results 0 RequiredAmount: 1.6076923
 }
