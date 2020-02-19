@@ -47,7 +47,7 @@ func TestCommandHandler_MintByCredit(t *testing.T) {
 		assert.Equal(t, "🔗 Transaction Hash: "+h.mockTx.Hash().String(), logs[1].Message)
 	})
 
-	t.Run("fail, logic.MintByCollateral returns error", func(t *testing.T) {
+	t.Run("fail, logic.MintCreditByCredit returns error", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
 

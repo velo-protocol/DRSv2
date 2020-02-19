@@ -63,7 +63,7 @@ func TestLogic_MintByCredit(t *testing.T) {
 		})
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to get account from db")
+		assert.Contains(t, err.Error(), "default account is not found")
 	})
 
 	t.Run("fail, VFactory.NewClientFromConfig returns error", func(t *testing.T) {
@@ -91,7 +91,7 @@ func TestLogic_MintByCredit(t *testing.T) {
 		assert.Contains(t, err.Error(), "fail to initiate velo client")
 	})
 
-	t.Run("fail, VFactory.NewClientFromConfig returns error", func(t *testing.T) {
+	t.Run("fail, veloClient.MintFromStableCreditAmount returns error", func(t *testing.T) {
 		acc := accountEntity()
 		h := initTest(t)
 		defer h.done()

@@ -17,7 +17,7 @@ func (lo *logic) MintCreditByCredit(input *entity.MintCreditByCreditInput) (*ent
 	// 2. Prepare private key
 	accountBytes, err := lo.DB.Get([]byte(defaultAccount))
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get account from db")
+		return nil, errors.Wrap(err, "default account is not found")
 	}
 
 	var account entity.Account
