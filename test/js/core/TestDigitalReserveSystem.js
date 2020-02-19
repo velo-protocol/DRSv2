@@ -988,6 +988,11 @@ contract("DigitalReserveSystem test", async accounts => {
         stableCreditVUSD.contract.methods.totalSupply().encodeABI(),
         100000000
       );
+      await mocks.heart.givenMethodReturnUint(
+        heart.contract.methods.getCollateralRatio(Web3.utils.fromAscii("")).encodeABI(),
+        100000000
+      );
+
       await mocks.stableCreditVUSD.givenMethodReturnUint(
         stableCreditVUSD.contract.methods.peggedValue().encodeABI(),
         15000000
@@ -1015,7 +1020,7 @@ contract("DigitalReserveSystem test", async accounts => {
       const requiredAmount = new BN(result[2]).toNumber();
       const presentAmount = new BN(result[3]).toNumber();
       assert.equal(web3.utils.hexToUtf8(result[1]), "VELO");
-      assert.equal(150000000, requiredAmount); //100000000 * 15000000 / 10000000
+      assert.equal(1500000000, requiredAmount); //100000000 * 15000000 * 100000000 / 10000000
       assert.equal(100000000, presentAmount);
       assert.equal(veloCollateralAsset.address, collateralAddress);
     });
@@ -1074,7 +1079,7 @@ contract("DigitalReserveSystem test", async accounts => {
   });
 
   describe("Rebalance", async () => {
-    it("should fail, balance of collateral have been equal none require a rebalance", async () => {
+    it("should rebalance correctly", async () => {
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
         stableCreditVUSD.address
@@ -1090,6 +1095,10 @@ contract("DigitalReserveSystem test", async accounts => {
       await mocks.stableCreditVUSD.givenMethodReturnUint(
         stableCreditVUSD.contract.methods.totalSupply().encodeABI(),
         100000000
+      );
+      await mocks.heart.givenMethodReturnUint(
+        heart.contract.methods.getCollateralRatio(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
       );
       await mocks.stableCreditVUSD.givenMethodReturnUint(
         stableCreditVUSD.contract.methods.peggedValue().encodeABI(),
@@ -1180,7 +1189,7 @@ contract("DigitalReserveSystem test", async accounts => {
       }, 'DigitalReserveSystem.rebalance: collateralAssetCode does not exist');
     });
 
-    it("should fail, balance of collateral have been equal none require a rebalance", async () => {
+    it("should not rebalance, rebalance of collateral have been equal none require a rebalance", async () => {
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
         stableCreditVUSD.address
@@ -1196,6 +1205,10 @@ contract("DigitalReserveSystem test", async accounts => {
       await mocks.stableCreditVUSD.givenMethodReturnUint(
         stableCreditVUSD.contract.methods.totalSupply().encodeABI(),
         100000000
+      );
+      await mocks.heart.givenMethodReturnUint(
+        heart.contract.methods.getCollateralRatio(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
       );
       await mocks.stableCreditVUSD.givenMethodReturnUint(
         stableCreditVUSD.contract.methods.peggedValue().encodeABI(),
@@ -1222,9 +1235,10 @@ contract("DigitalReserveSystem test", async accounts => {
         reserveManager.address
       );
 
-      await helper.assert.throwsWithReason(async () => {
-        await drs.rebalance("vUSD");
-      }, 'DigitalReserveSystem.rebalance: rebalance is not required');
+      const result = await drs.rebalance("vUSD");
+      // this implies that rebalance returns false (no event emitted)
+      assert.equal(result.logs.length, 0);
+
     });
   });
 });
