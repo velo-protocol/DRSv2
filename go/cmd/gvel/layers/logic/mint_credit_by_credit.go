@@ -10,7 +10,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/libs/vclient"
 )
 
-func (lo *logic) MintByCredit(input *entity.MintByCreditInput) (*entity.MintByCreditOutput, error) {
+func (lo *logic) MintCreditByCredit(input *entity.MintCreditByCreditInput) (*entity.MintCreditByCreditOutput, error) {
 	// 1. Get default account
 	defaultAccount := lo.AppConfig.GetDefaultAccount()
 
@@ -49,7 +49,7 @@ func (lo *logic) MintByCredit(input *entity.MintByCreditInput) (*entity.MintByCr
 		return nil, err
 	}
 
-	return &entity.MintByCreditOutput{
+	return &entity.MintCreditByCreditOutput{
 		TxHash:              output.Tx.Hash().String(),
 		AssetCode:           output.Event.AssetCode,
 		MintAmount:          output.Event.MintAmount,

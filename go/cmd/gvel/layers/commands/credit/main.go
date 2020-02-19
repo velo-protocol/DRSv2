@@ -62,7 +62,7 @@ func (creditCommand *CommandHandler) GetMintCreditByCollateralCommand() *cobra.C
 	command := &cobra.Command{
 		Use:   constants.CmdCreditMintByCollateral,
 		Short: "Mint a stable credit by collateral on Velo",
-		Run:   creditCommand.MintCreditByCollateral,
+		Run:   creditCommand.MintByCollateral,
 	}
 
 	return command

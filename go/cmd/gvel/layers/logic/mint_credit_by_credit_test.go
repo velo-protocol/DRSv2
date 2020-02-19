@@ -34,7 +34,7 @@ func TestLogic_MintByCredit(t *testing.T) {
 				Event: &vclient.MintFromStableCreditAmountEvent{},
 			}, nil)
 
-		output, err := h.logic.MintByCredit(&entity.MintByCreditInput{
+		output, err := h.logic.MintCreditByCredit(&entity.MintCreditByCreditInput{
 			Passphrase:   "password",
 			AssetCode:    "vUSD",
 			CreditAmount: "1000",
@@ -56,7 +56,7 @@ func TestLogic_MintByCredit(t *testing.T) {
 			Get([]byte(acc.PublicAddress)).
 			Return(nil, errors.New("some error has occurred"))
 
-		_, err := h.logic.MintByCredit(&entity.MintByCreditInput{
+		_, err := h.logic.MintCreditByCredit(&entity.MintCreditByCreditInput{
 			Passphrase:   "password",
 			AssetCode:    "vUSD",
 			CreditAmount: "1000",
@@ -81,7 +81,7 @@ func TestLogic_MintByCredit(t *testing.T) {
 			NewClientFromConfig(priv).
 			Return(nil, errors.New("some error has occurred"))
 
-		_, err := h.logic.MintByCredit(&entity.MintByCreditInput{
+		_, err := h.logic.MintCreditByCredit(&entity.MintCreditByCreditInput{
 			Passphrase:   "password",
 			AssetCode:    "vUSD",
 			CreditAmount: "1000",
@@ -112,7 +112,7 @@ func TestLogic_MintByCredit(t *testing.T) {
 			}).
 			Return(nil, errors.New("some error has occurred"))
 
-		_, err := h.logic.MintByCredit(&entity.MintByCreditInput{
+		_, err := h.logic.MintCreditByCredit(&entity.MintCreditByCreditInput{
 			Passphrase:   "password",
 			AssetCode:    "vUSD",
 			CreditAmount: "1000",
