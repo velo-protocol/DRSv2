@@ -6,8 +6,8 @@ type CollateralHealthCheckInput struct {
 }
 
 type CollateralHealthCheckOutput struct {
-	CollateralAssetAddress string
-	CollateralAssetCode    string
-	RequiredAmount         string
-	PresentAmount          string
+	CollateralAssetAddress   string
+	CollateralAssetCode      string
+	RequiredCollateralAmount string
+	CollateralPoolAmount     string
 }

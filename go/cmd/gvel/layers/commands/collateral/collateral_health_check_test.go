@@ -12,10 +12,10 @@ import (
 func TestCommandHandler_CollateralHealthCheck(t *testing.T) {
 
 	var (
-		collateralAssetCode    = "VELO"
-		collateralAssetAddress = "0x04"
-		presentAmount          = "1.0000000"
-		requiredAmount         = "2.0000000"
+		collateralAssetCode      = "VELO"
+		collateralAssetAddress   = "0x04"
+		collateralPoolAmount     = "1.0000000"
+		requiredCollateralAmount = "2.0000000"
 	)
 
 	t.Run("success", func(t *testing.T) {
@@ -30,12 +30,12 @@ func TestCommandHandler_CollateralHealthCheck(t *testing.T) {
 			CollateralHealthCheck(&entity.CollateralHealthCheckInput{
 				Passphrase: "password",
 			}).
-			Return([]entity.CollateralHealthCheckOutput{
+			Return([]*entity.CollateralHealthCheckOutput{
 				{
-					CollateralAssetAddress: collateralAssetAddress,
-					CollateralAssetCode:    collateralAssetCode,
-					PresentAmount:          presentAmount,
-					RequiredAmount:         requiredAmount,
+					CollateralAssetAddress:   collateralAssetAddress,
+					CollateralAssetCode:      collateralAssetCode,
+					CollateralPoolAmount:     collateralPoolAmount,
+					RequiredCollateralAmount: requiredCollateralAmount,
 				},
 			}, nil)
 
@@ -48,8 +48,8 @@ func TestCommandHandler_CollateralHealthCheck(t *testing.T) {
 		assert.Contains(t, lines[1], "REQUIRED COLLATERAL")
 
 		assert.Contains(t, lines[3], "VELO (0x04)")
-		assert.Contains(t, lines[3], presentAmount)
-		assert.Contains(t, lines[3], requiredAmount)
+		assert.Contains(t, lines[3], requiredCollateralAmount)
+		assert.Contains(t, lines[3], collateralPoolAmount)
 	})
 
 	t.Run("fail, logic.CollateralHealthCheck returns error", func(t *testing.T) {

@@ -74,8 +74,8 @@ func TestLogic_CollateralHealthCheck(t *testing.T) {
 		assert.NotEmpty(t, output)
 		assert.Equal(t, collateralAssetCode, output[0].CollateralAssetCode)
 		assert.Equal(t, collateralAssetAddress, output[0].CollateralAssetAddress)
-		assert.Equal(t, presentAmount, output[0].PresentAmount)
-		assert.Equal(t, requiredAmount, output[0].RequiredAmount)
+		assert.Equal(t, presentAmount, output[0].CollateralPoolAmount)
+		assert.Equal(t, requiredAmount, output[0].RequiredCollateralAmount)
 	})
 
 	t.Run("fail, default account is not found", func(t *testing.T) {

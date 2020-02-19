@@ -8,7 +8,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/libs/vclient"
 )
 
-func (lo *logic) CollateralHealthCheck(input *entity.CollateralHealthCheckInput) ([]entity.CollateralHealthCheckOutput, error) {
+func (lo *logic) CollateralHealthCheck(input *entity.CollateralHealthCheckInput) ([]*entity.CollateralHealthCheckOutput, error) {
 	defaultAccount := lo.AppConfig.GetDefaultAccount()
 	accountBytes, err := lo.DB.Get([]byte(defaultAccount))
 	if err != nil {
@@ -43,13 +43,13 @@ func (lo *logic) CollateralHealthCheck(input *entity.CollateralHealthCheckInput)
 		return nil, err
 	}
 
-	var collateralHealthCheck []entity.CollateralHealthCheckOutput
+	var collateralHealthCheck []*entity.CollateralHealthCheckOutput
 	for _, collateralHealthCheckOutput := range output {
-		collateralHealthCheck = append(collateralHealthCheck, entity.CollateralHealthCheckOutput{
-			CollateralAssetAddress: collateralHealthCheckOutput.CollateralAssetAddress,
-			CollateralAssetCode:    collateralHealthCheckOutput.CollateralAssetCode,
-			RequiredAmount:         collateralHealthCheckOutput.RequiredAmount,
-			PresentAmount:          collateralHealthCheckOutput.PresentAmount,
+		collateralHealthCheck = append(collateralHealthCheck, &entity.CollateralHealthCheckOutput{
+			CollateralAssetAddress:   collateralHealthCheckOutput.CollateralAssetAddress,
+			CollateralAssetCode:      collateralHealthCheckOutput.CollateralAssetCode,
+			RequiredCollateralAmount: collateralHealthCheckOutput.RequiredAmount,
+			CollateralPoolAmount:     collateralHealthCheckOutput.PresentAmount,
 		})
 	}
 

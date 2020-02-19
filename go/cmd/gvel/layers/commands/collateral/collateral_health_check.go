@@ -25,8 +25,8 @@ func (collateralCommand *CommandHandler) CollateralHealthCheck(_ *cobra.Command,
 	for _, collateralHealthCheck := range collateralHealthCheckOutput {
 		data = append(data, []string{
 			fmt.Sprintf("%s (%s)", collateralHealthCheck.CollateralAssetCode, collateralHealthCheck.CollateralAssetAddress),
-			fmt.Sprintf("%s", collateralHealthCheck.PresentAmount),
-			fmt.Sprintf("%s", collateralHealthCheck.RequiredAmount),
+			fmt.Sprintf("%s", collateralHealthCheck.CollateralPoolAmount),
+			fmt.Sprintf("%s", collateralHealthCheck.RequiredCollateralAmount),
 		})
 	}
 

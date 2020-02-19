@@ -168,10 +168,10 @@ func (mr *MockLogicMockRecorder) GetCreditExchange(input interface{}) *gomock.Ca
 }
 
 // CollateralHealthCheck mocks base method
-func (m *MockLogic) CollateralHealthCheck(input *entity.CollateralHealthCheckInput) ([]entity.CollateralHealthCheckOutput, error) {
+func (m *MockLogic) CollateralHealthCheck(input *entity.CollateralHealthCheckInput) ([]*entity.CollateralHealthCheckOutput, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CollateralHealthCheck", input)
-	ret0, _ := ret[0].([]entity.CollateralHealthCheckOutput)
+	ret0, _ := ret[0].([]*entity.CollateralHealthCheckOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

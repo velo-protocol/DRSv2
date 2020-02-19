@@ -49,7 +49,7 @@ func (collateralCommand *CommandHandler) Command() *cobra.Command {
 func (collateralCommand *CommandHandler) GetHealthCheckCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   constants.CmdCollateralHealthCheck,
-		Short: "Get collateral health check of Velo",
+		Short: "Get collateral health check",
 		Run:   collateralCommand.CollateralHealthCheck,
 	}
 	return command
