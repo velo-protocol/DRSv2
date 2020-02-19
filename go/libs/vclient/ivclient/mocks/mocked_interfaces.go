@@ -50,10 +50,10 @@ func (mr *MockVClientMockRecorder) SetupCredit(ctx, input interface{}) *gomock.C
 }
 
 // MintFromCollateralAmount mocks base method
-func (m *MockVClient) MintFromCollateralAmount(ctx context.Context, input *vclient.MintByCollateralAmountInput) (*vclient.MintByCollateralAmountCreditOutput, error) {
+func (m *MockVClient) MintFromCollateralAmount(ctx context.Context, input *vclient.MintFromCollateralAmountInput) (*vclient.MintFromCollateralAmountCreditOutput, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "MintFromCollateralAmount", ctx, input)
-	ret0, _ := ret[0].(*vclient.MintByCollateralAmountCreditOutput)
+	ret0, _ := ret[0].(*vclient.MintFromCollateralAmountCreditOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -62,6 +62,21 @@ func (m *MockVClient) MintFromCollateralAmount(ctx context.Context, input *vclie
 func (mr *MockVClientMockRecorder) MintFromCollateralAmount(ctx, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintFromCollateralAmount", reflect.TypeOf((*MockVClient)(nil).MintFromCollateralAmount), ctx, input)
+}
+
+// MintFromStableCreditAmount mocks base method
+func (m *MockVClient) MintFromStableCreditAmount(ctx context.Context, input *vclient.MintFromStableCreditAmountInput) (*vclient.MintFromStableCreditAmountCreditOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MintFromStableCreditAmount", ctx, input)
+	ret0, _ := ret[0].(*vclient.MintFromStableCreditAmountCreditOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// MintFromStableCreditAmount indicates an expected call of MintFromStableCreditAmount
+func (mr *MockVClientMockRecorder) MintFromStableCreditAmount(ctx, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintFromStableCreditAmount", reflect.TypeOf((*MockVClient)(nil).MintFromStableCreditAmount), ctx, input)
 }
 
 // GetExchangeRate mocks base method

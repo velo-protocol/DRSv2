@@ -48,3 +48,18 @@ func (mr *MockVFactoryRepoMockRecorder) NewClient(input interface{}) *gomock.Cal
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewClient", reflect.TypeOf((*MockVFactoryRepo)(nil).NewClient), input)
 }
+
+// NewClientFromConfig mocks base method
+func (m *MockVFactoryRepo) NewClientFromConfig(privateKey string) (ivclient.VClient, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NewClientFromConfig", privateKey)
+	ret0, _ := ret[0].(ivclient.VClient)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// NewClientFromConfig indicates an expected call of NewClientFromConfig
+func (mr *MockVFactoryRepoMockRecorder) NewClientFromConfig(privateKey interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewClientFromConfig", reflect.TypeOf((*MockVFactoryRepo)(nil).NewClientFromConfig), privateKey)
+}

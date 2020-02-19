@@ -1,7 +1,13 @@
 package vfactory
 
-type veloFactory struct{}
+import "github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/config"
 
-func NewVeloFactory() Repository {
-	return &veloFactory{}
+type veloFactory struct {
+	AppConfig config.Configuration
+}
+
+func NewVeloFactory(appConfig config.Configuration) Repository {
+	return &veloFactory{
+		AppConfig: appConfig,
+	}
 }
