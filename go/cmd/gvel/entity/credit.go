@@ -25,5 +25,10 @@ type MintByCreditInput struct {
 }
 
 type MintByCreditOutput struct {
-	TxHash string
+	TxHash              string
+	AssetCode           string
+	MintAmount          string
+	AssetAddress        string
+	CollateralAssetCode string
+	CollateralAmount    string
 }

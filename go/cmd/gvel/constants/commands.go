@@ -18,6 +18,7 @@ const (
 	CmdCredit                 = "credit"
 	CmdCreditSetup            = "setup"
 	CmdCreditMintByCollateral = "mint-by-collateral"
+	CmdCreditMintByCredit     = "mint-by-credit"
 	CmdCreditGetExchange      = "get-exchange"
 	CmdCreditRedeem           = "redeem"
 

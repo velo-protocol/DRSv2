@@ -37,7 +37,7 @@ func (lo *logic) MintByCredit(input *entity.MintByCreditInput) (*entity.MintByCr
 		return nil, errors.Wrap(err, "fail to initiate velo client")
 	}
 
-	// 4. Setup credit
+	// 4. Mint credit
 	ctx, cancel := context.WithTimeout(context.Background(), constants.Timeout)
 	defer cancel()
 
@@ -50,6 +50,11 @@ func (lo *logic) MintByCredit(input *entity.MintByCreditInput) (*entity.MintByCr
 	}
 
 	return &entity.MintByCreditOutput{
-		TxHash: output.Tx.Hash().String(),
+		TxHash:              output.Tx.Hash().String(),
+		AssetCode:           output.Event.AssetCode,
+		MintAmount:          output.Event.MintAmount,
+		AssetAddress:        output.Event.AssetAddress,
+		CollateralAssetCode: output.Event.CollateralAssetCode,
+		CollateralAmount:    output.Event.CollateralAmount,
 	}, nil
 }
