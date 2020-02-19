@@ -8,14 +8,10 @@ import (
 )
 
 func ExampleClient_RedeemStableCredit() {
-	client, err := NewClient(smartContractUrl, "b68a7d2260076d2e73f295cc0d946c76db7f6d96f184ea00e97376680a29749a", ContractAddress{
-		DrsAddress:   "0xE5352EB3a0FA6C897da1F5FfB90d57AbA099F5bB",   // 0xBdA518a6245480652d1A217192EBB299C94F623f
-		HeartAddress: "0xF9baEAdFC5e0CAbC0c1E5E88571c2d7a75099Df1", // 0x1623C9c8600319E7CfAff0Ca1c4a05e1a61D954D
+	client, err := NewClient(smartContractUrl, "<PRIVATE_KEY>", ContractAddress{
+		DrsAddress:   "<DRS_CONTRACT_ADDRESS>",   // 0xBdA518a6245480652d1A217192EBB299C94F623f
+		HeartAddress: "<HEART_CONTRACT_ADDRESS>", // 0x1623C9c8600319E7CfAff0Ca1c4a05e1a61D954D
 	})
-	//client, err := NewClient(smartContractUrl, "<PRIVATE_KEY>", ContractAddress{
-	//	DrsAddress:   "<DRS_CONTRACT_ADDRESS>",   // 0xBdA518a6245480652d1A217192EBB299C94F623f
-	//	HeartAddress: "<HEART_CONTRACT_ADDRESS>", // 0x1623C9c8600319E7CfAff0Ca1c4a05e1a61D954D
-	//})
 
 	if err != nil {
 		panic(err)
@@ -35,11 +31,11 @@ func ExampleClient_RedeemStableCredit() {
 	log.Println("Collateral Asset Address: ", result.Event.CollateralAssetAddress)
 	log.Println("Collateral Asset Code: ", result.Event.CollateralAssetCode)
 	log.Println("Collateral Amount: ", result.Event.CollateralAmount)
-	// Output:
-	// Mint From Stable Credit Amount Transaction Hash: 0x1afaa6fc22b88f875bb16235128e245589fa460f8325f84ace2d89bb4204204b
-	// Asset Address: 0x23Cf6f4656218Bd25733f27aadBEe009A0f6C3Fd
-	// Asset Code: vUSD
-	// Collateral Amount: 0.2736842
-	// Collateral Asset Code: VELO
-	// Mint Amount: 2.0000000
+	//Output:
+	//Redeem Stable Credit Transaction Hash:  0xf9647f3e917d75f124876928fe60d015763fa807c621bf956167a37653197d4a
+	//Asset Code:  vUSD
+	//Stable Credit Amount:  104.0000000
+	//Collateral Asset Address:  0x11590aB398DD2fedC2C40b6E9F02fa13cC4d2dEe
+	//Collateral Asset Code:  VELO
+	//Collateral Amount:  0.0000000
 }
