@@ -7,8 +7,8 @@ const (
 	EnvTestNet = "testnet"
 
 	TestNetRpcUrl       = "http://127.0.0.1:7545"
-	TestNetDrsAddress   = "0x3931B8d4C37b2E15555A49cAfAF807ef20CA77D2"
-	TestNetHeartAddress = "0x68C3497D9066C9e237b7140A4fC723658ceA2E47"
+	TestNetDrsAddress   = "0x08d6b93451d00bE089e1c4f2A74D1485F559B6F1"
+	TestNetHeartAddress = "0x833Aa557EDd8520055624E3Adc2315771f98248d"
 
 	MainNetRpcUrl       = "http://10.14.129.254:8545"
 	MainNetDrsAddress   = "0x3B39BaBa62bafF6367AE6BD3352FAD7C34C5938E"

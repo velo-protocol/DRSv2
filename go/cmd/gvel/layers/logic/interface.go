@@ -20,6 +20,9 @@ type Logic interface {
 	GetCreditExchange(input *entity.GetCreditExchangeInput) (*entity.GetCreditExchangeOutput, error)
 	RebalanceCredit(input *entity.RebalanceCreditInput) (*entity.RebalanceCreditOutput, error)
 
+	// Collateral
+	CollateralHealthCheck(input *entity.CollateralHealthCheckInput) ([]*entity.CollateralHealthCheckOutput, error)
+
 	// Environment module
 	SetEnv(input *entity.SetEnvInput) error
 }

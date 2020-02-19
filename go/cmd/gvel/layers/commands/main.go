@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/constants"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/commands/account"
+	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/commands/collateral"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/commands/credit"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/commands/environment"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/commands/initialize"
@@ -13,14 +14,15 @@ import (
 )
 
 type GvelHandler struct {
-	Logic          logic.Logic
-	RootCommand    *cobra.Command
-	InitCommand    *cobra.Command
-	EnvCommand     *cobra.Command
-	AccountCommand *cobra.Command
-	CreditCommand  *cobra.Command
-	Prompt         console.Prompt
-	AppConfig      config.Configuration
+	Logic             logic.Logic
+	RootCommand       *cobra.Command
+	InitCommand       *cobra.Command
+	EnvCommand        *cobra.Command
+	AccountCommand    *cobra.Command
+	CreditCommand     *cobra.Command
+	CollateralCommand *cobra.Command
+	Prompt            console.Prompt
+	AppConfig         config.Configuration
 }
 
 func NewGvelHandler(logic logic.Logic, config config.Configuration) *GvelHandler {
@@ -67,11 +69,19 @@ func (gvelHandler *GvelHandler) Init() {
 			Command()
 	}
 
+	// init CollateralCommand
+	if gvelHandler.CollateralCommand == nil {
+		gvelHandler.CollateralCommand = collateral.
+			NewCommandHandler(gvelHandler.Logic, gvelHandler.Prompt, gvelHandler.AppConfig).
+			Command()
+	}
+
 	// Add commands to root
 	gvelHandler.RootCommand.AddCommand(
 		gvelHandler.InitCommand,
 		gvelHandler.EnvCommand,
 		gvelHandler.AccountCommand,
 		gvelHandler.CreditCommand,
+		gvelHandler.CollateralCommand,
 	)
 }
