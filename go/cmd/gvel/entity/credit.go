@@ -45,3 +45,14 @@ type MintCreditByCreditOutput struct {
 	CollateralAssetCode string
 	CollateralAmount    string
 }
+
+// GetCreditExchange
+type GetCreditExchangeInput struct {
+	AssetCode  string
+	Passphrase string
+}
+type GetCreditExchangeOutput struct {
+	AssetCode                     string
+	CollateralAssetCode           string
+	PriceInCollateralPerAssetUnit string
+}

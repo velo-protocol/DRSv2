@@ -78,3 +78,18 @@ func (mr *MockVClientMockRecorder) MintFromStableCreditAmount(ctx, input interfa
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintFromStableCreditAmount", reflect.TypeOf((*MockVClient)(nil).MintFromStableCreditAmount), ctx, input)
 }
+
+// GetExchangeRate mocks base method
+func (m *MockVClient) GetExchangeRate(input *vclient.GetExchangeRateInput) (*vclient.GetExchangeRateOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetExchangeRate", input)
+	ret0, _ := ret[0].(*vclient.GetExchangeRateOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetExchangeRate indicates an expected call of GetExchangeRate
+func (mr *MockVClientMockRecorder) GetExchangeRate(input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExchangeRate", reflect.TypeOf((*MockVClient)(nil).GetExchangeRate), input)
+}
