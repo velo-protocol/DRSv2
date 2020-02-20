@@ -108,3 +108,18 @@ func (mr *MockVClientMockRecorder) CollateralHealthCheck(input interface{}) *gom
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CollateralHealthCheck", reflect.TypeOf((*MockVClient)(nil).CollateralHealthCheck), input)
 }
+
+// Rebalance mocks base method
+func (m *MockVClient) Rebalance(ctx context.Context, input *vclient.RebalanceInput) (*vclient.RebalanceOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Rebalance", ctx, input)
+	ret0, _ := ret[0].(*vclient.RebalanceOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Rebalance indicates an expected call of Rebalance
+func (mr *MockVClientMockRecorder) Rebalance(ctx, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rebalance", reflect.TypeOf((*MockVClient)(nil).Rebalance), ctx, input)
+}

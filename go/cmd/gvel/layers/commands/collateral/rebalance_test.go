@@ -1,8 +1,10 @@
 package collateral_test
 
 import (
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
+	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 	"github.com/velo-protocol/DRSv2/go/libs/vclient"
 	"strings"
 	"testing"
@@ -51,6 +53,23 @@ func TestCommandHandler_Rebalance(t *testing.T) {
 		assert.Equal(t, "🔗 Transaction Hash:", resultMessages[0])
 		assert.Equal(t, "vUSD (VELO): 0xAAAA", resultMessages[1])
 		assert.Equal(t, "vSGD (VELO): 0xBBBB", resultMessages[2])
+	})
+	t.Run("fail, logic.Rebalance returns an error", func(t *testing.T) {
+		h := initTest(t)
+		defer h.done()
 
+		h.mockPrompt.EXPECT().
+			RequestHiddenString("🔑 Please input passphrase", nil).
+			Return("password")
+
+		h.mockLogic.EXPECT().
+			RebalanceCollateral(&entity.RebalanceCollateralInput{
+				Passphrase: "password",
+			}).
+			Return(nil, errors.New("some error has occurred"))
+
+		assert.PanicsWithValue(t, console.ExitError, func() {
+			h.commandHandler.Rebalance(nil, nil)
+		})
 	})
 }

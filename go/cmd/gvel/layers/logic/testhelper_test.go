@@ -24,6 +24,7 @@ type helper struct {
 	mockVFactory      *mocks.MockVFactoryRepo
 	mockVClient       *vclientmocks.MockVClient
 	mockTx            *types.Transaction
+	mockTx2           *types.Transaction
 	mockController    *gomock.Controller
 	logHook           *test.Hook
 	done              func()
@@ -50,6 +51,7 @@ func initTest(t *testing.T) helper {
 		mockConfiguration: mockConfiguration,
 		mockVClient:       mockVClient,
 		mockTx:            types.NewTransaction(1, common.Address{}, big.NewInt(1), 1, big.NewInt(1), []byte{}),
+		mockTx2:           types.NewTransaction(2, common.Address{}, big.NewInt(1), 1, big.NewInt(1), []byte{}),
 		mockController:    mockCtrl,
 		logHook:           hook,
 		done: func() {
