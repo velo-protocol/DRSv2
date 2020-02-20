@@ -41,6 +41,7 @@ func (collateralCommand *CommandHandler) Command() *cobra.Command {
 
 	command.AddCommand(
 		collateralCommand.GetHealthCheckCommand(),
+		collateralCommand.GetRebalanceCommand(),
 	)
 
 	return command
