@@ -14,15 +14,17 @@ import (
 
 // Client struct
 type Client struct {
-	privateKey  ecdsa.PrivateKey
-	publicKey   common.Address
-	drs         *vabi.DigitalReserveSystem
-	heart       *vabi.Heart
-	priceFeeder *vabi.PriceFeeders
-	collateral  *vabi.Token
+	conn         *ethclient.Client
+	privateKey   ecdsa.PrivateKey
+	publicKey    common.Address
+	drs          *vabi.DigitalReserveSystem
+	heart        *vabi.Heart
+	priceFeeder  map[string]*vabi.PriceFeeders
+	collateral   map[string]*vabi.Token
+	stableCredit map[string]*vabi.StableCredit
 }
 
-func NewClient(contractUrl, drsAddress, heartAddress, priceFeederAddress string) Client {
+func NewClient(contractUrl, drsAddress, heartAddress string) Client {
 	conn, err := ethclient.Dial(contractUrl)
 	if err != nil {
 		panic(err)
@@ -38,16 +40,11 @@ func NewClient(contractUrl, drsAddress, heartAddress, priceFeederAddress string)
 		panic(err)
 	}
 
-	priceFeederContract, err := vabi.NewPriceFeeders(common.HexToAddress(priceFeederAddress), conn)
-	if err != nil {
-		panic(err)
-	}
-
 	return Client{
-
-		drs:         drsContract,
-		heart:       heartContract,
-		priceFeeder: priceFeederContract}
+		drs:   drsContract,
+		heart: heartContract,
+		conn:  conn,
+	}
 }
 
 func HexToPrivateKey(hex string) *ecdsa.PrivateKey {
@@ -56,6 +53,30 @@ func HexToPrivateKey(hex string) *ecdsa.PrivateKey {
 		panic("invalid private key")
 	}
 	return privKey
+}
+
+func (i *Client) AddPriceFeeder(name string, address string) {
+	priceFeederContract, err := vabi.NewPriceFeeders(common.HexToAddress(address), i.conn)
+	if err != nil {
+		panic(err)
+	}
+	i.priceFeeder[name] = priceFeederContract
+}
+
+func (i *Client) AddStableCredit(name string, address string) {
+	stableCreditContract, err := vabi.NewStableCredit(common.HexToAddress(address), i.conn)
+	if err != nil {
+		panic(err)
+	}
+	i.stableCredit[name] = stableCreditContract
+}
+
+func (i *Client) AddCollateral(name string, address string) {
+	collateralContract, err := vabi.NewToken(common.HexToAddress(address), i.conn)
+	if err != nil {
+		panic(err)
+	}
+	i.collateral[name] = collateralContract
 }
 
 func (i *Client) SetCollateralRatio(assetCode, ratio, privateKey string) string {
@@ -82,18 +103,37 @@ func (i *Client) GetCollateralRatio(assetCode string) string {
 	return utils.AmountToString(result)
 }
 
-func (i *Client) GetCollateralBalanceOf(address string) string {
-	result, _ := i.collateral.BalanceOf(nil, common.HexToAddress(address))
+func (i *Client) GetCollateralBalanceOf(collateralName, holderAddress string) string {
+	result, err := i.collateral[collateralName].BalanceOf(nil, common.HexToAddress(holderAddress))
+	if err != nil {
+		panic(err)
+	}
 	return utils.AmountToString(result)
 }
 
-func (i *Client) SetPrice(assetCode, currency, price string) string {
+func (i *Client) GetCollateralTotalSupply(collateralAddress string) string {
+	result, err := i.collateral[collateralAddress].TotalSupply(nil)
+	if err != nil {
+		panic(err)
+	}
+	return utils.AmountToString(result)
+}
+
+func (i *Client) GetStableCreditTotalSupply(stableCreditName string) string {
+	result, err := i.stableCredit[stableCreditName].TotalSupply(nil)
+	if err != nil {
+		panic(err)
+	}
+	return utils.AmountToString(result)
+}
+
+func (i *Client) SetPrice(priceFeederName, assetCode, currency, price string) string {
 
 	intRatio, _ := utils.StringToAmount(price)
 
 	opt := bind.NewKeyedTransactor(&i.privateKey)
 	opt.GasLimit = constants.GasLimit
-	result, err := i.priceFeeder.SetPrice(opt, utils.StringToByte32(assetCode), utils.StringToByte32(currency), intRatio)
+	result, err := i.priceFeeder[priceFeederName].SetPrice(opt, utils.StringToByte32(assetCode), utils.StringToByte32(currency), intRatio)
 	if err != nil {
 		panic(err)
 	}
@@ -101,7 +141,7 @@ func (i *Client) SetPrice(assetCode, currency, price string) string {
 
 }
 
-func (i *Client) GetPrice(assetCode, currency string) string {
+func (i *Client) GetPrice(priceFeederName, assetCode, currency string) string {
 	bytes32Ty, _ := abi.NewType("bytes32", "", nil)
 
 	arguments := abi.Arguments{
@@ -120,7 +160,7 @@ func (i *Client) GetPrice(assetCode, currency string) string {
 	hash := crypto.Keccak256(bytes)
 
 	linkId := utils.BytesToBytes32(hash)
-	price, err := i.priceFeeder.GetMedianPrice(nil, linkId)
+	price, err := i.priceFeeder[priceFeederName].GetMedianPrice(nil, linkId)
 	if err != nil {
 		panic(err)
 	}
@@ -128,6 +168,25 @@ func (i *Client) GetPrice(assetCode, currency string) string {
 }
 
 func main() {
-	client := NewClient("http://127.0.0.1:7545", "0xb06601682f9c32A16C9F3aBE70aACe03676C09C0", "0xf5A513a8CD2ba17836954eC7f3868181302fEfc5", "0x584B126780ff0d68bFCB920dE0F56F4eF1D9aFe3")
-	client.GetPrice("VELO", "USD")
+	client := NewClient(
+		"http://127.0.0.1:7545",
+		"0xb06601682f9c32A16C9F3aBE70aACe03676C09C0",
+		"0xf5A513a8CD2ba17836954eC7f3868181302fEfc5",
+	)
+	// price
+	client.AddPriceFeeder("<priceFeederName>", "<priceFeederAddress>")
+	client.GetPrice("<priceFeederName>", "VELO", "USD")
+	client.SetPrice("<priceFeederName>", "VELO", "USD", "1.5")
+
+	// collateral
+	client.GetCollateralRatio("VELO")
+	client.SetCollateralRatio("VELO", "1.0", "<privateKey>")
+
+	client.AddCollateral("<collateralName>", "<collateralAddress>")
+	client.GetCollateralBalanceOf("<collateralName>", "<address>")
+	client.GetCollateralTotalSupply("<collateralName>")
+
+	// stable credit
+	client.AddStableCredit("<stableCreditName>", "<stableCreditAddress>")
+	client.GetStableCreditTotalSupply("<stableCreditName>")
 }
