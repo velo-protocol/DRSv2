@@ -8,6 +8,8 @@ abigen/gen/all:
 	abigen --abi ../build/contracts/abi/DigitalReserveSystem.abi --bin ../build/contracts/bin/DigitalReserveSystem.bin --pkg vabi --type DigitalReserveSystem --out abi/digital_reserve_system.go
 	abigen --abi ../build/contracts/abi/Heart.abi --bin ../build/contracts/bin/Heart.bin --pkg vabi --type Heart --out abi/heart.go
 	abigen --abi ../build/contracts/abi/StableCredit.abi --bin ../build/contracts/bin/StableCredit.bin --pkg vabi --type StableCredit --out abi/stable_credit.go
+	abigen --abi ../build/contracts/abi/Token.abi --bin ../build/contracts/bin/Token.bin --pkg vabi --type Token --out abi/token.go
+	abigen --abi ../build/contracts/abi/PriceFeeders.abi --bin ../build/contracts/bin/PriceFeeders.bin --pkg vabi --type PriceFeeders --out abi/price_feeders.go
 
 format:
 	go fmt ./...
