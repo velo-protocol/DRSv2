@@ -197,6 +197,21 @@ func (mr *MockLogicMockRecorder) CollateralHealthCheck(input interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CollateralHealthCheck", reflect.TypeOf((*MockLogic)(nil).CollateralHealthCheck), input)
 }
 
+// RebalanceCollateral mocks base method
+func (m *MockLogic) RebalanceCollateral(input *entity.RebalanceCollateralInput) ([]*entity.RebalanceCollateralOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RebalanceCollateral", input)
+	ret0, _ := ret[0].([]*entity.RebalanceCollateralOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RebalanceCollateral indicates an expected call of RebalanceCollateral
+func (mr *MockLogicMockRecorder) RebalanceCollateral(input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RebalanceCollateral", reflect.TypeOf((*MockLogic)(nil).RebalanceCollateral), input)
+}
+
 // SetEnv mocks base method
 func (m *MockLogic) SetEnv(input *entity.SetEnvInput) error {
 	m.ctrl.T.Helper()

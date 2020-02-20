@@ -21,6 +21,7 @@ type Logic interface {
 
 	// Collateral
 	CollateralHealthCheck(input *entity.CollateralHealthCheckInput) ([]*entity.CollateralHealthCheckOutput, error)
+	RebalanceCollateral(input *entity.RebalanceCollateralInput) ([]*entity.RebalanceCollateralOutput, error)
 
 	// Environment module
 	SetEnv(input *entity.SetEnvInput) error

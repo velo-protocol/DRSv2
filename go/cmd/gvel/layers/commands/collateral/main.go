@@ -41,6 +41,7 @@ func (collateralCommand *CommandHandler) Command() *cobra.Command {
 
 	command.AddCommand(
 		collateralCommand.GetHealthCheckCommand(),
+		collateralCommand.GetRebalanceCommand(),
 	)
 
 	return command
@@ -50,7 +51,16 @@ func (collateralCommand *CommandHandler) GetHealthCheckCommand() *cobra.Command 
 	command := &cobra.Command{
 		Use:   constants.CmdCollateralHealthCheck,
 		Short: "Get collateral health check",
-		Run:   collateralCommand.CollateralHealthCheck,
+		Run:   collateralCommand.HealthCheck,
+	}
+	return command
+}
+
+func (collateralCommand *CommandHandler) GetRebalanceCommand() *cobra.Command {
+	command := &cobra.Command{
+		Use:   constants.CmdCollateralRebalance,
+		Short: "Rebalance collateral",
+		Run:   collateralCommand.Rebalance,
 	}
 	return command
 }

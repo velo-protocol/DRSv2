@@ -7,7 +7,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
 
-func (collateralCommand *CommandHandler) CollateralHealthCheck(_ *cobra.Command, _ []string) {
+func (collateralCommand *CommandHandler) HealthCheck(_ *cobra.Command, _ []string) {
 	collateralHealthCheckInput := &entity.CollateralHealthCheckInput{
 		Passphrase: collateralCommand.Prompt.RequestHiddenString("🔑 Please input passphrase", nil),
 	}
