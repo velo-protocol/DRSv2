@@ -41,9 +41,12 @@ func NewClient(contractUrl, drsAddress, heartAddress string) Client {
 	}
 
 	return Client{
-		drs:   drsContract,
-		heart: heartContract,
-		conn:  conn,
+		drs:          drsContract,
+		heart:        heartContract,
+		conn:         conn,
+		priceFeeder:  map[string]*vabi.PriceFeeders{},
+		collateral:   map[string]*vabi.Token{},
+		stableCredit: map[string]*vabi.StableCredit{},
 	}
 }
 
