@@ -60,13 +60,10 @@ type GetCreditExchangeOutput struct {
 }
 
 // RebalanceCredit
-type RebalanceCreditInput struct {
+type RebalanceCollateralInput struct {
 	Passphrase string
 }
-type RebalanceCreditOutput struct {
-	Results []*RebalanceCreditResult
-}
-type RebalanceCreditResult struct {
+type RebalanceCollateralOutput struct {
 	TxHash string
 	vclient.RebalanceEvent
 }

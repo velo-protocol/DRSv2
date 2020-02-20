@@ -39,7 +39,7 @@ func TestCommandHandler_CollateralHealthCheck(t *testing.T) {
 				},
 			}, nil)
 
-		h.commandHandler.CollateralHealthCheck(nil, nil)
+		h.commandHandler.HealthCheck(nil, nil)
 
 		lines := strings.Split(h.tableLogHook.LastEntry().Message, "\n")
 
@@ -67,7 +67,7 @@ func TestCommandHandler_CollateralHealthCheck(t *testing.T) {
 			Return(nil, errors.New("error here"))
 
 		assert.PanicsWithValue(t, console.ExitError, func() {
-			h.commandHandler.CollateralHealthCheck(nil, nil)
+			h.commandHandler.HealthCheck(nil, nil)
 		})
 	})
 }

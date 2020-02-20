@@ -18,10 +18,10 @@ type Logic interface {
 	MintCreditByCollateral(input *entity.MintCreditByCollateralInput) (*entity.MintCreditByCollateralOutput, error)
 	MintCreditByCredit(input *entity.MintCreditByCreditInput) (*entity.MintCreditByCreditOutput, error)
 	GetCreditExchange(input *entity.GetCreditExchangeInput) (*entity.GetCreditExchangeOutput, error)
-	RebalanceCredit(input *entity.RebalanceCreditInput) (*entity.RebalanceCreditOutput, error)
 
 	// Collateral
 	CollateralHealthCheck(input *entity.CollateralHealthCheckInput) ([]*entity.CollateralHealthCheckOutput, error)
+	RebalanceCollateral(input *entity.RebalanceCollateralInput) ([]*entity.RebalanceCollateralOutput, error)
 
 	// Environment module
 	SetEnv(input *entity.SetEnvInput) error

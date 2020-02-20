@@ -10,7 +10,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/libs/vclient"
 )
 
-func (lo *logic) RebalanceCredit(input *entity.RebalanceCreditInput) (*entity.RebalanceCreditOutput, error) {
+func (lo *logic) RebalanceCollateral(input *entity.RebalanceCollateralInput) ([]*entity.RebalanceCollateralOutput, error) {
 	// 1. Get default account
 	defaultAccount := lo.AppConfig.GetDefaultAccount()
 
@@ -37,7 +37,7 @@ func (lo *logic) RebalanceCredit(input *entity.RebalanceCreditInput) (*entity.Re
 		return nil, errors.Wrap(err, "fail to initiate velo client")
 	}
 
-	// 4. Mint credit
+	// 4. Rebalance
 	ctx, cancel := context.WithTimeout(context.Background(), constants.Timeout)
 	defer cancel()
 
@@ -46,15 +46,14 @@ func (lo *logic) RebalanceCredit(input *entity.RebalanceCreditInput) (*entity.Re
 		return nil, err
 	}
 
-	results := make([]*entity.RebalanceCreditResult, len(output.Events))
+	// 5. Map result
+	outputs := make([]*entity.RebalanceCollateralOutput, len(output.Events))
 	for i := range output.Events {
-		results[i] = &entity.RebalanceCreditResult{
+		outputs[i] = &entity.RebalanceCollateralOutput{
 			TxHash:         output.Txs[i].Hash().String(),
 			RebalanceEvent: output.Events[i],
 		}
 	}
 
-	return &entity.RebalanceCreditOutput{
-		Results: results,
-	}, nil
+	return outputs, nil
 }
