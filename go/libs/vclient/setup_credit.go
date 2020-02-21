@@ -128,7 +128,12 @@ func (c *Client) SetupCredit(ctx context.Context, input *SetupCreditInput) (*Set
 		return nil, err
 	}
 
-	eventAbi, err := c.txHelper.ExtractSetupEvent("Setup", receipt.Logs[0])
+	eventLog := utils.FindLogEvent(receipt.Logs, "Setup(string,bytes32,uint256,bytes32,address)")
+	if eventLog == nil {
+		return nil, errors.Errorf("cannot find setup event from transaction receipt %s", tx.Hash().String())
+	}
+
+	eventAbi, err := c.txHelper.ExtractSetupEvent("Setup", eventLog)
 	if err != nil {
 		return nil, err
 	}
