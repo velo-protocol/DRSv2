@@ -37,9 +37,9 @@ func TestCommandHandler_MintByCollateral(t *testing.T) {
 				Passphrase:       "password",
 			}).
 			Return(&entity.MintCreditByCollateralOutput{
-				AssetCode:  assetCode,
-				MintAmount: mintAmount,
-				TxHash:     h.mockTx.Hash().String(),
+				AssetCode:          assetCode,
+				StableCreditAmount: mintAmount,
+				TxHash:             h.mockTx.Hash().String(),
 			}, nil)
 
 		h.commandHandler.MintByCollateral(nil, nil)

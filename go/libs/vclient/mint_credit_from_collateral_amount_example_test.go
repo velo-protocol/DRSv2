@@ -30,12 +30,12 @@ func ExampleClient_MintFromCollateralAmount() {
 	log.Println("Asset Code: ", result.Event.AssetCode)
 	log.Println("Collateral Amount: ", result.Event.CollateralAmount)
 	log.Println("Collateral Asset Code: ", result.Event.CollateralAssetCode)
-	log.Println("Mint Amount: ", result.Event.MintAmount)
+	log.Println("Stable Credit Amount: ", result.Event.StableCreditAmount)
 	// Output:
 	// Mint From Collateral Amount Transaction Hash: 0x0d6658bf79d9e4541de0617a14c17e7d642169d3f00d7a035595136b59f6f8ac
 	// Asset Address: 0x23Cf6f4656218Bd25733f27aadBEe009A0f6C3Fd
 	// Asset Code: vUSD
 	// Collateral Amount:  2.0000000
 	// Collateral Asset Code: VELO
-	// Mint Amount: 4.0000000
+	// Stable Credit Amount: 4.0000000
 }

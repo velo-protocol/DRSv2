@@ -52,8 +52,8 @@ func (lo *logic) MintCreditByCollateral(input *entity.MintCreditByCollateralInpu
 	}
 
 	return &entity.MintCreditByCollateralOutput{
-		AssetCode:  output.Event.AssetCode,
-		MintAmount: output.Event.MintAmount,
-		TxHash:     output.Tx.Hash().String(),
+		AssetCode:          output.Event.AssetCode,
+		StableCreditAmount: output.Event.StableCreditAmount,
+		TxHash:             output.Tx.Hash().String(),
 	}, nil
 }

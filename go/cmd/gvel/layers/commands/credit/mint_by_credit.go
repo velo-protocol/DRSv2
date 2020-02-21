@@ -21,6 +21,6 @@ func (creditCommand *CommandHandler) MintByCredit(_ *cobra.Command, _ []string) 
 		console.ExitWithError(console.ExitError, err)
 	}
 
-	console.Logger.Infof("%s %s minted successfully using %s %s.", output.MintAmount, output.AssetCode, output.CollateralAmount, output.CollateralAssetCode)
+	console.Logger.Infof("%s %s minted successfully using %s %s.", output.StableCreditAmount, output.AssetCode, output.CollateralAmount, output.CollateralAssetCode)
 	console.Logger.Infof("🔗 Transaction Hash: %s", output.TxHash)
 }

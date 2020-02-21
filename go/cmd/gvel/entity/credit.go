@@ -28,9 +28,9 @@ type MintCreditByCollateralInput struct {
 	Passphrase       string
 }
 type MintCreditByCollateralOutput struct {
-	AssetCode  string
-	MintAmount string
-	TxHash     string
+	AssetCode          string
+	StableCreditAmount string
+	TxHash             string
 }
 
 // MintCreditByCredit
@@ -42,7 +42,7 @@ type MintCreditByCreditInput struct {
 type MintCreditByCreditOutput struct {
 	TxHash              string
 	AssetCode           string
-	MintAmount          string
+	StableCreditAmount  string
 	AssetAddress        string
 	CollateralAssetCode string
 	CollateralAmount    string
