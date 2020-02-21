@@ -14,6 +14,10 @@ func TestLogic_ImportAccount(t *testing.T) {
 		defer h.done()
 
 		h.mockDbRepo.EXPECT().
+			Get(gomock.AssignableToTypeOf([]byte{})).
+			Return(nil, errors.New("leveldb: not found"))
+
+		h.mockDbRepo.EXPECT().
 			Save(gomock.AssignableToTypeOf([]byte{}), gomock.AssignableToTypeOf([]byte{})).
 			Return(nil)
 
@@ -35,6 +39,10 @@ func TestLogic_ImportAccount(t *testing.T) {
 	t.Run("success, no default account with SetAsDefaultAccount=false", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
+
+		h.mockDbRepo.EXPECT().
+			Get(gomock.AssignableToTypeOf([]byte{})).
+			Return(nil, errors.New("leveldb: not found"))
 
 		h.mockDbRepo.EXPECT().
 			Save(gomock.AssignableToTypeOf([]byte{}), gomock.AssignableToTypeOf([]byte{})).
@@ -64,6 +72,10 @@ func TestLogic_ImportAccount(t *testing.T) {
 		defer h.done()
 
 		h.mockDbRepo.EXPECT().
+			Get(gomock.AssignableToTypeOf([]byte{})).
+			Return(nil, errors.New("leveldb: not found"))
+
+		h.mockDbRepo.EXPECT().
 			Save(gomock.AssignableToTypeOf([]byte{}), gomock.AssignableToTypeOf([]byte{})).
 			Return(nil)
 
@@ -86,6 +98,44 @@ func TestLogic_ImportAccount(t *testing.T) {
 		assert.Equal(t, "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA4", output.ImportedAccountAddress)
 	})
 
+	t.Run("fail, getting account from db", func(t *testing.T) {
+		h := initTest(t)
+		defer h.done()
+
+		h.mockDbRepo.EXPECT().
+			Get(gomock.AssignableToTypeOf([]byte{})).
+			Return(nil, errors.New("some error has occurred"))
+
+		output, err := h.logic.ImportAccount(&entity.ImportAccountInput{
+			PrivateKey:          "ede4697e04e1e05d58bcec13196a065de82a01f3ce8bf074a4ff36b7cc62d54e",
+			Passphrase:          "strong_password!",
+			SetAsDefaultAccount: false,
+		})
+
+		assert.Error(t, err)
+		assert.Nil(t, output)
+		assert.Contains(t, err.Error(), "failed to get account from db")
+	})
+
+	t.Run("fail, account already exist", func(t *testing.T) {
+		h := initTest(t)
+		defer h.done()
+
+		h.mockDbRepo.EXPECT().
+			Get(gomock.AssignableToTypeOf([]byte{})).
+			Return(accountsBytes(), nil)
+
+		output, err := h.logic.ImportAccount(&entity.ImportAccountInput{
+			PrivateKey:          "ede4697e04e1e05d58bcec13196a065de82a01f3ce8bf074a4ff36b7cc62d54e",
+			Passphrase:          "strong_password!",
+			SetAsDefaultAccount: false,
+		})
+
+		assert.Error(t, err)
+		assert.Nil(t, output)
+		assert.Equal(t, "the account already existed in gvel", err.Error())
+	})
+
 	t.Run("fail, ValidatePrivateKeyFormat returns error", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
@@ -105,6 +155,10 @@ func TestLogic_ImportAccount(t *testing.T) {
 		defer h.done()
 
 		h.mockDbRepo.EXPECT().
+			Get(gomock.AssignableToTypeOf([]byte{})).
+			Return(nil, errors.New("leveldb: not found"))
+
+		h.mockDbRepo.EXPECT().
 			Save(gomock.AssignableToTypeOf([]byte{}), gomock.AssignableToTypeOf([]byte{})).
 			Return(errors.New("some error has occurred"))
 
@@ -121,6 +175,10 @@ func TestLogic_ImportAccount(t *testing.T) {
 	t.Run("fail, AppConfig.SetDefaultAccount returns error", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
+
+		h.mockDbRepo.EXPECT().
+			Get(gomock.AssignableToTypeOf([]byte{})).
+			Return(nil, errors.New("leveldb: not found"))
 
 		h.mockDbRepo.EXPECT().
 			Save(gomock.AssignableToTypeOf([]byte{}), gomock.AssignableToTypeOf([]byte{})).
