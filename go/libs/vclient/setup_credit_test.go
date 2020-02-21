@@ -255,7 +255,7 @@ func TestClient_SetupCredit(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-	t.Run("error, txHelper.ExtractSetupEvent returns an error", func(t *testing.T) {
+	t.Run("error, cannot find event log", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
@@ -275,6 +275,39 @@ func TestClient_SetupCredit(t *testing.T) {
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{},
+				},
+			}, nil)
+
+		_, err := testHelper.Client.SetupCredit(context.Background(), input)
+
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "cannot find setup event from transaction receipt")
+	})
+
+	t.Run("error, txHelper.ExtractSetupEvent returns an error", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &SetupCreditInput{
+			CollateralAssetCode: "VELO",
+			PeggedCurrency:      "USD",
+			AssetCode:           "vUSD",
+			PeggedValue:         "1.50",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			Setup(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.CollateralAssetCode, abiInput.PeggedCurrency, abiInput.AssetCode, abiInput.PeggedValue).
+			Return(&types.Transaction{}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			Return(&types.Receipt{
+				Logs: []*types.Log{
+					{
+						Topics: []common.Hash{
+							crypto.Keccak256Hash([]byte("Setup(string,bytes32,uint256,bytes32,address)")),
+						},
+					},
 				},
 			}, nil)
 		testHelper.MockTxHelper.EXPECT().
