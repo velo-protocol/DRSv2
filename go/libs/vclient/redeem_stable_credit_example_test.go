@@ -18,8 +18,8 @@ func ExampleClient_RedeemStableCredit() {
 	}
 
 	result, err := client.RedeemStableCredit(context.Background(), &RedeemStableCreditInput{
-		RedeemAmount:"104",
-		AssetCode:  "vUSD",
+		RedeemAmount: "104",
+		AssetCode:    "vUSD",
 	})
 	if err != nil {
 		panic(err)

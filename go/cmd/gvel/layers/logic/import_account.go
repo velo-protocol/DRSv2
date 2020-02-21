@@ -5,6 +5,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/crypto"
+	"strings"
 )
 
 func (lo *logic) ImportAccount(input *entity.ImportAccountInput) (*entity.ImportAccountOutput, error) {
@@ -12,6 +13,13 @@ func (lo *logic) ImportAccount(input *entity.ImportAccountInput) (*entity.Import
 	pubAddress, privKey, err := crypto.PrivateKeyToKeyPair(input.PrivateKey)
 	if err != nil {
 		return nil, err
+	}
+	account, err := lo.DB.Get([]byte(*pubAddress))
+	if err != nil && !strings.Contains(err.Error(), "not found") {
+		return nil, errors.Wrapf(err, "failed to get account from db")
+	}
+	if account != nil {
+		return nil, errors.New("the account already existed in gvel")
 	}
 
 	// 2. Encrypt private key
@@ -21,12 +29,12 @@ func (lo *logic) ImportAccount(input *entity.ImportAccountInput) (*entity.Import
 	}
 
 	// 3. Prepare account entity to be saved as bytes
-	account := &entity.Account{
+	accountEntity := &entity.Account{
 		PublicAddress:       *pubAddress,
 		EncryptedPrivateKey: encryptedPrivKey,
 		Nonce:               nonce,
 	}
-	accountBytes, err := json.Marshal(account)
+	accountBytes, err := json.Marshal(accountEntity)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal entity")
 	}
