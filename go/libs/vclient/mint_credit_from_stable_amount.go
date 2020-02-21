@@ -15,8 +15,8 @@ import (
 )
 
 type MintFromStableCreditAmountInput struct {
-	AssetCode  string
-	MintAmount string
+	AssetCode          string
+	StableCreditAmount string
 }
 
 func (i *MintFromStableCreditAmountInput) Validate() error {
@@ -28,19 +28,19 @@ func (i *MintFromStableCreditAmountInput) Validate() error {
 		return errors.New("invalid assetCode format")
 	}
 
-	if i.MintAmount == "" {
-		return errors.New("mintAmount must not be blank")
+	if i.StableCreditAmount == "" {
+		return errors.New("stableCreditAmount must not be blank")
 	}
 
-	amount, err := decimal.NewFromString(i.MintAmount)
+	amount, err := decimal.NewFromString(i.StableCreditAmount)
 	if err != nil {
-		return errors.Wrap(err, "invalid mintAmount format")
+		return errors.Wrap(err, "invalid stableCreditAmount format")
 	}
 	if !utils.IsDecimalValid(amount) {
-		return errors.New("invalid mintAmount format")
+		return errors.New("invalid stableCreditAmount format")
 	}
 	if !amount.IsPositive() {
-		return errors.New("mintAmount must be greater than 0")
+		return errors.New("stableCreditAmount must be greater than 0")
 	}
 
 	return nil
@@ -53,7 +53,7 @@ type MintFromStableCreditAmountAbiInput struct {
 
 func (i *MintFromStableCreditAmountInput) ToAbiInput() *MintFromStableCreditAmountAbiInput {
 
-	MintAmount, _ := utils.StringToAmount(i.MintAmount)
+	MintAmount, _ := utils.StringToAmount(i.StableCreditAmount)
 	return &MintFromStableCreditAmountAbiInput{
 		MintAmount: MintAmount,
 		AssetCode:  i.AssetCode,
@@ -62,7 +62,7 @@ func (i *MintFromStableCreditAmountInput) ToAbiInput() *MintFromStableCreditAmou
 
 type MintFromStableCreditAmountEvent struct {
 	AssetCode           string
-	MintAmount          string
+	StableCreditAmount  string
 	AssetAddress        string
 	CollateralAssetCode string
 	CollateralAmount    string
@@ -71,7 +71,7 @@ type MintFromStableCreditAmountEvent struct {
 
 func (i *MintFromStableCreditAmountEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemMint) {
 	i.AssetCode = eventAbi.AssetCode
-	i.MintAmount = utils.AmountToString(eventAbi.MintAmount)
+	i.StableCreditAmount = utils.AmountToString(eventAbi.MintAmount)
 	i.AssetAddress = eventAbi.AssetAddress.String()
 	i.CollateralAssetCode = utils.Byte32ToString(eventAbi.CollateralAssetCode)
 	i.CollateralAmount = utils.AmountToString(eventAbi.CollateralAmount)

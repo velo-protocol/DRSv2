@@ -42,8 +42,8 @@ func (lo *logic) MintCreditByCredit(input *entity.MintCreditByCreditInput) (*ent
 	defer cancel()
 
 	output, err := veloClient.MintFromStableCreditAmount(ctx, &vclient.MintFromStableCreditAmountInput{
-		AssetCode:  input.AssetCode,
-		MintAmount: input.CreditAmount,
+		AssetCode:          input.AssetCode,
+		StableCreditAmount: input.CreditAmount,
 	})
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (lo *logic) MintCreditByCredit(input *entity.MintCreditByCreditInput) (*ent
 	return &entity.MintCreditByCreditOutput{
 		TxHash:              output.Tx.Hash().String(),
 		AssetCode:           output.Event.AssetCode,
-		MintAmount:          output.Event.MintAmount,
+		StableCreditAmount:  output.Event.StableCreditAmount,
 		AssetAddress:        output.Event.AssetAddress,
 		CollateralAssetCode: output.Event.CollateralAssetCode,
 		CollateralAmount:    output.Event.CollateralAmount,

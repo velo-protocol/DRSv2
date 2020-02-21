@@ -32,7 +32,7 @@ func TestCommandHandler_MintByCredit(t *testing.T) {
 			}).
 			Return(&entity.MintCreditByCreditOutput{
 				AssetCode:           "vUSD",
-				MintAmount:          "1000.0000000",
+				StableCreditAmount:  "1000.0000000",
 				AssetAddress:        "0x1",
 				CollateralAssetCode: "VELO",
 				CollateralAmount:    "100.0000000",

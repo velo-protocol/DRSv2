@@ -18,7 +18,7 @@ func TestLogic_MintCreditByCollateral(t *testing.T) {
 		assetCode           = "vUSD"
 		collateralAssetCode = "VELO"
 		collateralAmount    = "100.0000000"
-		mintAmount          = "100.0000000"
+		stableCreditAmount  = "100.0000000"
 	)
 
 	mockedMintCreditByCollateralInput := func() *entity.MintCreditByCollateralInput {
@@ -69,7 +69,7 @@ func TestLogic_MintCreditByCollateral(t *testing.T) {
 			Receipt: &types.Receipt{},
 			Event: &vclient.MintFromCollateralAmountEvent{
 				AssetCode:           "vUSD",
-				MintAmount:          mintAmount,
+				StableCreditAmount:  stableCreditAmount,
 				AssetAddress:        "0x03",
 				CollateralAssetCode: collateralAssetCode,
 				CollateralAmount:    collateralAmount,
@@ -83,7 +83,7 @@ func TestLogic_MintCreditByCollateral(t *testing.T) {
 		assert.NotEmpty(t, output)
 		assert.Equal(t, assetCode, output.AssetCode)
 		assert.Equal(t, "0xc5b2c658f5fa236c598a6e7fbf7f21413dc42e2a41dd982eb772b30707cba2eb", output.TxHash)
-		assert.Equal(t, mintAmount, output.MintAmount)
+		assert.Equal(t, stableCreditAmount, output.StableCreditAmount)
 	})
 
 	t.Run("fail, failed to load accounts from db", func(t *testing.T) {

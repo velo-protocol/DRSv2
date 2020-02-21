@@ -18,8 +18,8 @@ import (
 func TestMintFromStableCreditAmountInput_Validate(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		err := (&MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "100",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "100",
 		}).Validate()
 
 		assert.NoError(t, err)
@@ -27,7 +27,7 @@ func TestMintFromStableCreditAmountInput_Validate(t *testing.T) {
 
 	t.Run("error, validation fail assetCode must not be blank", func(t *testing.T) {
 		err := (&MintFromStableCreditAmountInput{
-			MintAmount: "100",
+			StableCreditAmount: "100",
 		}).Validate()
 
 		assert.Error(t, err)
@@ -36,57 +36,57 @@ func TestMintFromStableCreditAmountInput_Validate(t *testing.T) {
 
 	t.Run("error, validation fail invalid assetCode format", func(t *testing.T) {
 		err := (&MintFromStableCreditAmountInput{
-			AssetCode:  "AssetCodee!@",
-			MintAmount: "100",
+			AssetCode:          "AssetCodee!@",
+			StableCreditAmount: "100",
 		}).Validate()
 
 		assert.Error(t, err)
 		assert.Equal(t, "invalid assetCode format", err.Error())
 	})
 
-	t.Run("error, validation fail mintAmount must not be blank", func(t *testing.T) {
+	t.Run("error, validation fail stableCreditAmount must not be blank", func(t *testing.T) {
 		err := (&MintFromStableCreditAmountInput{
 			AssetCode: "vUSD",
 		}).Validate()
 
 		assert.Error(t, err)
-		assert.Equal(t, "mintAmount must not be blank", err.Error())
+		assert.Equal(t, "stableCreditAmount must not be blank", err.Error())
 	})
 
-	t.Run("error, validation fail invalid mintAmount format", func(t *testing.T) {
+	t.Run("error, validation fail invalid stableCreditAmount format", func(t *testing.T) {
 		err := (&MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "amount",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "amount",
 		}).Validate()
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid mintAmount format")
+		assert.Contains(t, err.Error(), "invalid stableCreditAmount format")
 
 		err = (&MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "100.00000001",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "100.00000001",
 		}).Validate()
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid mintAmount format")
+		assert.Contains(t, err.Error(), "invalid stableCreditAmount format")
 	})
 
-	t.Run("error, validation fail mintAmount must be greater than 0", func(t *testing.T) {
+	t.Run("error, validation fail stableCreditAmount must be greater than 0", func(t *testing.T) {
 		err := (&MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "0",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "0",
 		}).Validate()
 
 		assert.Error(t, err)
-		assert.Equal(t, "mintAmount must be greater than 0", err.Error())
+		assert.Equal(t, "stableCreditAmount must be greater than 0", err.Error())
 	})
 }
 
 func TestMintFromStableCreditAmountInput_ToAbiInput(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		abiInput := (&MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "100",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "100",
 		}).ToAbiInput()
 
 		assert.Equal(t, "vUSD", abiInput.AssetCode)
@@ -101,8 +101,8 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 		defer testHelper.MockController.Finish()
 
 		input := &MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "100",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 		testHelper.MockDRSContract.EXPECT().
@@ -151,8 +151,8 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 		defer testHelper.MockController.Finish()
 
 		input := &MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "100",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
@@ -171,8 +171,8 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 		defer testHelper.MockController.Finish()
 
 		input := &MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "100",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
@@ -191,8 +191,8 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 		defer testHelper.MockController.Finish()
 
 		input := &MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "100",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
@@ -211,8 +211,8 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 		defer testHelper.MockController.Finish()
 
 		input := &MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "100",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
@@ -231,8 +231,8 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 		defer testHelper.MockController.Finish()
 
 		input := &MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "100",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
@@ -253,8 +253,8 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 		expectedMsg := "some error has occurred"
 
 		input := &MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "100",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
@@ -275,8 +275,8 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 		expectedMsg := "some error has occurred"
 
 		input := &MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "100",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
@@ -300,8 +300,8 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 		expectedMsg := "some error has occurred"
 
 		input := &MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "100",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 
@@ -334,8 +334,8 @@ func TestClient_MintFromStableCreditAmount(t *testing.T) {
 		defer testHelper.MockController.Finish()
 
 		input := &MintFromStableCreditAmountInput{
-			AssetCode:  "vUSD",
-			MintAmount: "100",
+			AssetCode:          "vUSD",
+			StableCreditAmount: "100",
 		}
 		abiInput := input.ToAbiInput()
 

@@ -26,8 +26,8 @@ func TestLogic_MintByCredit(t *testing.T) {
 			Return(h.mockVClient, nil)
 		h.mockVClient.EXPECT().
 			MintFromStableCreditAmount(gomock.Any(), &vclient.MintFromStableCreditAmountInput{
-				AssetCode:  "vUSD",
-				MintAmount: "1000",
+				AssetCode:          "vUSD",
+				StableCreditAmount: "1000",
 			}).
 			Return(&vclient.MintFromStableCreditAmountCreditOutput{
 				Tx:    h.mockTx,
@@ -107,8 +107,8 @@ func TestLogic_MintByCredit(t *testing.T) {
 			Return(h.mockVClient, nil)
 		h.mockVClient.EXPECT().
 			MintFromStableCreditAmount(gomock.Any(), &vclient.MintFromStableCreditAmountInput{
-				AssetCode:  "vUSD",
-				MintAmount: "1000",
+				AssetCode:          "vUSD",
+				StableCreditAmount: "1000",
 			}).
 			Return(nil, errors.New("some error has occurred"))
 

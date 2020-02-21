@@ -18,8 +18,8 @@ func ExampleClient_MintFromStableCreditAmount() {
 	}
 
 	result, err := client.MintFromStableCreditAmount(context.Background(), &MintFromStableCreditAmountInput{
-		AssetCode:  "vUSD",
-		MintAmount: "2",
+		AssetCode:          "vUSD",
+		StableCreditAmount: "2",
 	})
 	if err != nil {
 		panic(err)
@@ -30,12 +30,12 @@ func ExampleClient_MintFromStableCreditAmount() {
 	log.Println("Asset Code: ", result.Event.AssetCode)
 	log.Println("Collateral Amount: ", result.Event.CollateralAmount)
 	log.Println("Collateral Asset Code: ", result.Event.CollateralAssetCode)
-	log.Println("Mint Amount: ", result.Event.MintAmount)
+	log.Println("Stable Credit Amount: ", result.Event.StableCreditAmount)
 	// Output:
 	// Mint From Stable Credit Amount Transaction Hash: 0x1afaa6fc22b88f875bb16235128e245589fa460f8325f84ace2d89bb4204204b
 	// Asset Address: 0x23Cf6f4656218Bd25733f27aadBEe009A0f6C3Fd
 	// Asset Code: vUSD
 	// Collateral Amount: 0.2736842
 	// Collateral Asset Code: VELO
-	// Mint Amount: 2.0000000
+	// Stable Credit Amount: 2.0000000
 }
