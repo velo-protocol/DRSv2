@@ -8,8 +8,8 @@ import (
 
 func (creditCommand *CommandHandler) RedeemStableCredit(_ *cobra.Command, _ []string) {
 	redeemStableCreditInput := &entity.RedeemStableCreditInput{
-		RedeemAmount: creditCommand.Prompt.RequestString("Please input amount of collateral", nil),
-		AssetCode:    creditCommand.Prompt.RequestString("Please enter asset code of credit to be minted", nil),
+		RedeemAmount: creditCommand.Prompt.RequestString("Please input amount of stable credit", nil),
+		AssetCode:    creditCommand.Prompt.RequestString("Please enter asset code of credit to be redeemed", nil),
 		Passphrase:   creditCommand.Prompt.RequestHiddenString("🔑 Please input passphrase", nil),
 	}
 
