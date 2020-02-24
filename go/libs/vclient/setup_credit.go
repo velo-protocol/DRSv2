@@ -117,8 +117,12 @@ func (c *Client) SetupCredit(ctx context.Context, input *SetupCreditInput) (*Set
 		abiInput.PeggedValue,
 	)
 	if err != nil {
-		if strings.Contains(err.Error(), "caller must be a trusted partner") {
+		msg := err.Error()
+		switch {
+		case strings.Contains(msg, "caller must be a trusted partner"):
 			return nil, errors.New("the message sender is not found or does not have sufficient permission to perform setup stable credit")
+		case strings.Contains(msg, "assetCode has already been used"):
+			return nil, errors.Errorf("asset code %s has already been used", abiInput.AssetCode)
 		}
 		return nil, err
 	}
