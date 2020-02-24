@@ -43,6 +43,7 @@ func (creditCommand *CommandHandler) Command() *cobra.Command {
 		creditCommand.GetSetupCommand(),
 		creditCommand.GetMintCreditByCollateralCommand(),
 		creditCommand.GetMintByCreditCommand(),
+		creditCommand.GetRedeemStableCreditCommand(),
 		creditCommand.GetExchangeCommand(),
 	)
 

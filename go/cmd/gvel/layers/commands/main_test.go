@@ -31,11 +31,12 @@ func TestGvelHandler_Init(t *testing.T) {
 	assert.Equal(t, constants.CmdAccountImport, gvelHandler.AccountCommand.Commands()[3].Use)
 	assert.Equal(t, constants.CmdAccountList, gvelHandler.AccountCommand.Commands()[4].Use)
 
-	assert.Len(t, gvelHandler.CreditCommand.Commands(), 4)
+	assert.Len(t, gvelHandler.CreditCommand.Commands(), 5)
 	assert.Equal(t, constants.CmdCreditGetExchange, gvelHandler.CreditCommand.Commands()[0].Use)
 	assert.Equal(t, constants.CmdCreditMintByCollateral, gvelHandler.CreditCommand.Commands()[1].Use)
 	assert.Equal(t, constants.CmdCreditMintByCredit, gvelHandler.CreditCommand.Commands()[2].Use)
-	assert.Equal(t, constants.CmdCreditSetup, gvelHandler.CreditCommand.Commands()[3].Use)
+	assert.Equal(t, constants.CmdCreditRedeem, gvelHandler.CreditCommand.Commands()[3].Use)
+	assert.Equal(t, constants.CmdCreditSetup, gvelHandler.CreditCommand.Commands()[4].Use)
 
 	assert.Len(t, gvelHandler.CollateralCommand.Commands(), 2)
 	assert.Equal(t, constants.CmdCollateralHealthCheck, gvelHandler.CollateralCommand.Commands()[0].Use)
