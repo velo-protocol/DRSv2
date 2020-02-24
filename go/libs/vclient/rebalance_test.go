@@ -42,7 +42,7 @@ func TestRebalance(t *testing.T) {
 			Rebalance(gomock.AssignableToTypeOf(&bind.TransactOpts{}), stableCreditAssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{
@@ -107,7 +107,7 @@ func TestRebalance(t *testing.T) {
 			Rebalance(gomock.AssignableToTypeOf(&bind.TransactOpts{}), stableCreditAssetCodeVUSD).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{
@@ -130,7 +130,7 @@ func TestRebalance(t *testing.T) {
 			Rebalance(gomock.AssignableToTypeOf(&bind.TransactOpts{}), stableCreditAssetCodeVTHB).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{
@@ -206,7 +206,7 @@ func TestRebalance(t *testing.T) {
 			Rebalance(gomock.AssignableToTypeOf(&bind.TransactOpts{}), stableCreditAssetCodeVUSD).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{
@@ -229,7 +229,7 @@ func TestRebalance(t *testing.T) {
 			Rebalance(gomock.AssignableToTypeOf(&bind.TransactOpts{}), stableCreditAssetCodeVTHB).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{
@@ -252,7 +252,7 @@ func TestRebalance(t *testing.T) {
 			Rebalance(gomock.AssignableToTypeOf(&bind.TransactOpts{}), stableCreditAssetCodeVSGD).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{
@@ -374,7 +374,7 @@ func TestRebalance(t *testing.T) {
 			Rebalance(gomock.AssignableToTypeOf(&bind.TransactOpts{}), stableCreditAssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{
@@ -451,7 +451,7 @@ func TestRebalance(t *testing.T) {
 			Rebalance(gomock.AssignableToTypeOf(&bind.TransactOpts{}), stableCreditAssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(nil, errors.New("error here"))
 
 		result, err := testHelper.Client.Rebalance(context.Background(), &RebalanceInput{})
@@ -485,7 +485,7 @@ func TestRebalance(t *testing.T) {
 			Rebalance(gomock.AssignableToTypeOf(&bind.TransactOpts{}), stableCreditAssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{},
@@ -524,7 +524,7 @@ func TestRebalance(t *testing.T) {
 			Rebalance(gomock.AssignableToTypeOf(&bind.TransactOpts{}), stableCreditAssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{

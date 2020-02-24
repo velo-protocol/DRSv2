@@ -114,7 +114,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{
@@ -289,7 +289,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(nil, errors.New(expectedMsg))
 
 		result, err := testHelper.Client.MintFromCollateralAmount(context.Background(), input)
@@ -314,7 +314,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
 			Return(&types.Transaction{}, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{})).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{
@@ -350,7 +350,7 @@ func TestClient_MintFromCollateralAmount(t *testing.T) {
 			MintFromCollateralAmount(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.NetCollateralAmount, abiInput.AssetCode).
 			Return(tx, nil)
 		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(tx)).
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(tx), gomock.AssignableToTypeOf(common.Address{})).
 			Return(&types.Receipt{
 				Logs: []*types.Log{
 					{},
