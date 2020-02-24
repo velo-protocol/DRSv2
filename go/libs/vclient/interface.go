@@ -40,7 +40,7 @@ type StableCreditContract interface {
 }
 
 type TxHelper interface {
-	ConfirmTx(ctx context.Context, tx *types.Transaction) (*types.Receipt, error)
+	ConfirmTx(ctx context.Context, tx *types.Transaction, from common.Address) (*types.Receipt, error)
 	ExtractSetupEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemSetup, error)
 	ExtractMintEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemMint, error)
 	ExtractRedeemEvent(eventName string, log *types.Log) (*vabi.DigitalReserveSystemRedeem, error)

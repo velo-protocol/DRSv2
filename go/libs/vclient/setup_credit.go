@@ -123,7 +123,7 @@ func (c *Client) SetupCredit(ctx context.Context, input *SetupCreditInput) (*Set
 		return nil, err
 	}
 
-	receipt, err := c.txHelper.ConfirmTx(ctx, tx)
+	receipt, err := c.txHelper.ConfirmTx(ctx, tx, opt.From)
 	if err != nil {
 		return nil, err
 	}

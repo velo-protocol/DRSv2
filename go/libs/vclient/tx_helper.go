@@ -2,6 +2,7 @@ package vclient
 
 import (
 	"context"
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -31,10 +32,24 @@ func NewTxHelper(conn Connection) *txHelper {
 	}
 }
 
-func (h *txHelper) ConfirmTx(ctx context.Context, tx *types.Transaction) (*types.Receipt, error) {
+func (h *txHelper) ConfirmTx(ctx context.Context, tx *types.Transaction, from common.Address) (*types.Receipt, error) {
 	receipt, err := bind.WaitMined(ctx, h.conn, tx)
 	if err != nil {
 		return nil, errors.Wrap(err, "fail to confirm transaction")
+	}
+	if receipt.Status == 0 {
+		untrimmedBytes, err := h.conn.CallContract(ctx, ethereum.CallMsg{
+			From:     from,
+			To:       tx.To(),
+			Gas:      tx.Gas(),
+			GasPrice: tx.GasPrice(),
+			Value:    tx.Value(),
+			Data:     tx.Data(),
+		}, receipt.BlockNumber)
+		if err != nil {
+			return nil, errors.Wrap(err, "fail to get revert message")
+		}
+		return nil, errors.New(utils.ParseRevertMessage(untrimmedBytes))
 	}
 	return receipt, nil
 }

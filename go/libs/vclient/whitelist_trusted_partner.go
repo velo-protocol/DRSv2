@@ -69,7 +69,7 @@ func (c *Client) WhitelistTrustedPartner(ctx context.Context, input *WhitelistTr
 		return nil, err
 	}
 
-	receipt, err := c.txHelper.ConfirmTx(ctx, tx)
+	receipt, err := c.txHelper.ConfirmTx(ctx, tx, opt.From)
 	if err != nil {
 		return nil, err
 	}

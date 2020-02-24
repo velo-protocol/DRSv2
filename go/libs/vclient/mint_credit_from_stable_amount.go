@@ -112,7 +112,7 @@ func (c *Client) MintFromStableCreditAmount(ctx context.Context, input *MintFrom
 		}
 	}
 
-	receipt, err := c.txHelper.ConfirmTx(ctx, tx)
+	receipt, err := c.txHelper.ConfirmTx(ctx, tx, opt.From)
 	if err != nil {
 		return nil, err
 	}
