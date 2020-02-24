@@ -232,6 +232,28 @@ func TestClient_SetupCredit(t *testing.T) {
 		assert.Equal(t, "the message sender is not found or does not have sufficient permission to perform setup stable credit", err.Error())
 	})
 
+	t.Run("error, drs.Setup returns an error revert DigitalReserveSystem.setup: assetCode has already been used", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		input := &SetupCreditInput{
+			CollateralAssetCode: "VELO",
+			PeggedCurrency:      "USD",
+			AssetCode:           "vUSD",
+			PeggedValue:         "1.50",
+		}
+		abiInput := input.ToAbiInput()
+
+		testHelper.MockDRSContract.EXPECT().
+			Setup(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.CollateralAssetCode, abiInput.PeggedCurrency, abiInput.AssetCode, abiInput.PeggedValue).
+			Return(nil, errors.New("VM Exception while processing transaction: revert DigitalReserveSystem.setup: assetCode has already been used"))
+
+		_, err := testHelper.Client.SetupCredit(context.Background(), input)
+
+		assert.Error(t, err)
+		assert.Equal(t, "asset code vUSD has already been used", err.Error())
+	})
+
 	t.Run("error, txHelper.ConfirmTx returns an error", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
