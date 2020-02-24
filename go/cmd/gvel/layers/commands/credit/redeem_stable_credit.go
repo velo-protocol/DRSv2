@@ -8,9 +8,9 @@ import (
 
 func (creditCommand *CommandHandler) RedeemStableCredit(_ *cobra.Command, _ []string) {
 	redeemStableCreditInput := &entity.RedeemStableCreditInput{
-		RedeemAmount:     creditCommand.Prompt.RequestString("Please input amount of collateral", nil),
-		AssetCode:        creditCommand.Prompt.RequestString("Please enter asset code of credit to be minted", nil),
-		Passphrase:       creditCommand.Prompt.RequestHiddenString("🔑 Please input passphrase", nil),
+		RedeemAmount: creditCommand.Prompt.RequestString("Please input amount of collateral", nil),
+		AssetCode:    creditCommand.Prompt.RequestString("Please enter asset code of credit to be minted", nil),
+		Passphrase:   creditCommand.Prompt.RequestHiddenString("🔑 Please input passphrase", nil),
 	}
 
 	console.StartLoading("Redeeming stable credit")
@@ -21,6 +21,6 @@ func (creditCommand *CommandHandler) RedeemStableCredit(_ *cobra.Command, _ []st
 		console.ExitWithError(console.ExitError, err)
 	}
 
-	console.Logger.Infof("%s %s redeemed successfully.", output.CollateralAmount, output.AssetCode)
+	console.Logger.Infof("%s %s redeemed successfully.", output.RedeemAmount, output.AssetCode)
 	console.Logger.Infof("🔗 Transaction Hash: %s", output.TxHash)
 }

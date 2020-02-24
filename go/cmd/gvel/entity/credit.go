@@ -60,14 +60,14 @@ type GetCreditExchangeOutput struct {
 }
 
 type RedeemStableCreditInput struct {
-	RedeemAmount     string
-	AssetCode        string
-	Passphrase       string
+	RedeemAmount string
+	AssetCode    string
+	Passphrase   string
 }
 type RedeemStableCreditOutput struct {
-	CollateralAmount     string
-	AssetCode            string
-	TxHash               string
+	RedeemAmount string
+	AssetCode    string
+	TxHash       string
 }
 
 // RebalanceCredit

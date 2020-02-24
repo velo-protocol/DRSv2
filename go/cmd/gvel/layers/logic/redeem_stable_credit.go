@@ -44,16 +44,16 @@ func (lo *logic) RedeemStableCredit(input *entity.RedeemStableCreditInput) (*ent
 	defer cancel()
 
 	output, err := veloClient.RedeemStableCredit(ctx, &vclient.RedeemStableCreditInput{
-		RedeemAmount:     input.RedeemAmount,
-		AssetCode:        input.AssetCode,
+		RedeemAmount: input.RedeemAmount,
+		AssetCode:    input.AssetCode,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return &entity.RedeemStableCreditOutput{
-		CollateralAmount:   output.Event.CollateralAmount,
-		AssetCode:          output.Event.AssetCode,
-		TxHash:             output.Tx.Hash().String(),
+		RedeemAmount: output.Event.StableCreditAmount,
+		AssetCode:    output.Event.AssetCode,
+		TxHash:       output.Tx.Hash().String(),
 	}, nil
 }
