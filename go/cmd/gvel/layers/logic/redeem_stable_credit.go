@@ -10,7 +10,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/libs/vclient"
 )
 
-func (lo *logic) RedeemStableCredit(input *entity.RedeemStableCreditInput) (*entity.RedeemStableCreditOutput, error) {
+func (lo *logic) RedeemCredit(input *entity.RedeemCreditInput) (*entity.RedeemCreditOutput, error) {
 	defaultAccount := lo.AppConfig.GetDefaultAccount()
 	accountBytes, err := lo.DB.Get([]byte(defaultAccount))
 	if err != nil {
@@ -43,7 +43,7 @@ func (lo *logic) RedeemStableCredit(input *entity.RedeemStableCreditInput) (*ent
 	ctx, cancel := context.WithTimeout(context.Background(), constants.Timeout)
 	defer cancel()
 
-	output, err := veloClient.RedeemStableCredit(ctx, &vclient.RedeemStableCreditInput{
+	output, err := veloClient.RedeemCredit(ctx, &vclient.RedeemCreditInput{
 		RedeemAmount: input.RedeemAmount,
 		AssetCode:    input.AssetCode,
 	})
@@ -51,7 +51,7 @@ func (lo *logic) RedeemStableCredit(input *entity.RedeemStableCreditInput) (*ent
 		return nil, err
 	}
 
-	return &entity.RedeemStableCreditOutput{
+	return &entity.RedeemCreditOutput{
 		RedeemAmount: output.Event.StableCreditAmount,
 		AssetCode:    output.Event.AssetCode,
 		TxHash:       output.Tx.Hash().String(),

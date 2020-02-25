@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-func TestLogic_RedeemStableCredit(t *testing.T) {
+func TestLogic_RedeemCredit(t *testing.T) {
 	var (
 		rpcURL              = "http://0.0.0.0:7575"
 		redeemAssetCode     = "vUSD"
@@ -21,8 +21,8 @@ func TestLogic_RedeemStableCredit(t *testing.T) {
 		collateralAmount    = "208"
 	)
 
-	mockedRedeemStableCreditInput := func() *entity.RedeemStableCreditInput {
-		return &entity.RedeemStableCreditInput{
+	mockedRedeemCreditInput := func() *entity.RedeemCreditInput {
+		return &entity.RedeemCreditInput{
 			RedeemAmount: redeemCreditAmount,
 			AssetCode:    redeemAssetCode,
 			Passphrase:   "password",
@@ -61,13 +61,13 @@ func TestLogic_RedeemStableCredit(t *testing.T) {
 			}).Return(h.mockVClient, nil)
 
 		h.mockVClient.EXPECT().
-			RedeemStableCredit(gomock.Any(), &vclient.RedeemStableCreditInput{
+			RedeemCredit(gomock.Any(), &vclient.RedeemCreditInput{
 				RedeemAmount: redeemCreditAmount,
 				AssetCode:     redeemAssetCode,
-			}).Return(&vclient.RedeemStableCreditOutput{
+			}).Return(&vclient.RedeemCreditOutput{
 			Tx:      &types.Transaction{},
 			Receipt: &types.Receipt{},
-			Event: &vclient.RedeemStableCreditEvent{
+			Event: &vclient.RedeemCreditEvent{
 				AssetCode:           "vUSD",
 				StableCreditAmount:  redeemCreditAmount,
 				CollateralAssetAddress:"0x03",
@@ -77,7 +77,7 @@ func TestLogic_RedeemStableCredit(t *testing.T) {
 			},
 		}, nil)
 
-		output, err := h.logic.RedeemStableCredit(mockedRedeemStableCreditInput())
+		output, err := h.logic.RedeemCredit(mockedRedeemCreditInput())
 
 		assert.NoError(t, err)
 		assert.NotEmpty(t, output)
@@ -98,7 +98,7 @@ func TestLogic_RedeemStableCredit(t *testing.T) {
 			Get([]byte(accountEntity().PublicAddress)).
 			Return(nil, errors.New("error here"))
 
-		output, err := h.logic.RedeemStableCredit(mockedRedeemStableCreditInput())
+		output, err := h.logic.RedeemCredit(mockedRedeemCreditInput())
 
 		assert.Nil(t, output)
 		assert.Error(t, err)
@@ -118,7 +118,7 @@ func TestLogic_RedeemStableCredit(t *testing.T) {
 			Get([]byte(accountEntity().PublicAddress)).
 			Return(badAccountByte, nil)
 
-		output, err := h.logic.RedeemStableCredit(mockedRedeemStableCreditInput())
+		output, err := h.logic.RedeemCredit(mockedRedeemCreditInput())
 
 		assert.Error(t, err)
 		assert.Nil(t, output)
@@ -136,9 +136,9 @@ func TestLogic_RedeemStableCredit(t *testing.T) {
 			Get([]byte(accountEntity().PublicAddress)).
 			Return(accountsBytes(), nil)
 
-		mockedBadPassphrase := mockedRedeemStableCreditInput()
+		mockedBadPassphrase := mockedRedeemCreditInput()
 		mockedBadPassphrase.Passphrase = "bad passphrase"
-		output, err := h.logic.RedeemStableCredit(mockedBadPassphrase)
+		output, err := h.logic.RedeemCredit(mockedBadPassphrase)
 
 		assert.Error(t, err)
 		assert.Nil(t, output)
@@ -180,13 +180,13 @@ func TestLogic_RedeemStableCredit(t *testing.T) {
 			}).
 			Return(nil, errors.New("error here"))
 
-		output, err := h.logic.RedeemStableCredit(mockedRedeemStableCreditInput())
+		output, err := h.logic.RedeemCredit(mockedRedeemCreditInput())
 
 		assert.Error(t, err)
 		assert.Nil(t, output)
 	})
 
-	t.Run("fail, connect to veloClient.RedeemStableCredit", func(t *testing.T) {
+	t.Run("fail, connect to veloClient.RedeemCredit", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
 
@@ -218,10 +218,10 @@ func TestLogic_RedeemStableCredit(t *testing.T) {
 			}).Return(h.mockVClient, nil)
 
 		h.mockVClient.EXPECT().
-			RedeemStableCredit(gomock.Any(), gomock.AssignableToTypeOf(&vclient.RedeemStableCreditInput{RedeemAmount:redeemCreditAmount, AssetCode: redeemAssetCode,})).
+			RedeemCredit(gomock.Any(), gomock.AssignableToTypeOf(&vclient.RedeemCreditInput{RedeemAmount:redeemCreditAmount, AssetCode: redeemAssetCode,})).
 			Return(nil, errors.New("error here"))
 
-		output, err := h.logic.RedeemStableCredit(mockedRedeemStableCreditInput())
+		output, err := h.logic.RedeemCredit(mockedRedeemCreditInput())
 
 		assert.Error(t, err)
 		assert.Nil(t, output)
