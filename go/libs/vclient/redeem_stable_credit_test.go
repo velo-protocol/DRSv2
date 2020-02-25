@@ -38,7 +38,7 @@ func TestValidateRedeemStableCredit(t *testing.T) {
 		err := redeemStableCreditInput.Validate()
 
 		assert.NotNil(t, err)
-		assert.Equal(t, "redeemAmount must be positive", err.Error())
+		assert.Equal(t, "amount must be greater than 0", err.Error())
 	})
 
 	t.Run("fail, should throw error assetCode must not be blank", func(t *testing.T) {
