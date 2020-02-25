@@ -67,7 +67,7 @@ type RedeemStableCreditEvent struct {
 	CollateralAssetAddress string
 	CollateralAssetCode    string
 	CollateralAmount       string
-	Raw                    types.Log
+	Raw                    *types.Log
 }
 
 type RedeemStableCreditOutput struct {
@@ -115,7 +115,7 @@ func (c *Client) RedeemStableCredit(ctx context.Context, input *RedeemStableCred
 		CollateralAssetAddress: event.CollateralAssetAddress.String(),
 		CollateralAssetCode:    utils.Byte32ToString(event.CollateralAssetCode),
 		CollateralAmount:       utils.AmountToString(event.CollateralAmount),
-		Raw:                    event.Raw,
+		Raw:                    &event.Raw,
 	}
 	return &RedeemStableCreditOutput{
 		Tx:      tx,
