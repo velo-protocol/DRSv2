@@ -17,7 +17,7 @@ type Logic interface {
 	SetupCredit(input *entity.SetupCreditInput) (*entity.SetupCreditOutput, error)
 	MintCreditByCollateral(input *entity.MintCreditByCollateralInput) (*entity.MintCreditByCollateralOutput, error)
 	MintCreditByCredit(input *entity.MintCreditByCreditInput) (*entity.MintCreditByCreditOutput, error)
-	RedeemStableCredit(input *entity.RedeemStableCreditInput) (*entity.RedeemStableCreditOutput, error)
+	RedeemCredit(input *entity.RedeemCreditInput) (*entity.RedeemCreditOutput, error)
 	GetCreditExchange(input *entity.GetCreditExchangeInput) (*entity.GetCreditExchangeOutput, error)
 
 	// Collateral
