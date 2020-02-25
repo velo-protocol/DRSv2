@@ -64,10 +64,10 @@ func TestRebalance(t *testing.T) {
 
 		result, err := testHelper.Client.Rebalance(context.Background(), &RebalanceInput{})
 
-		assert.Equal(t, "100.0000000", result.Events[0].RequiredAmount)
-		assert.Equal(t, "100.0000000", result.Events[0].PresentAmount)
-		assert.Equal(t, stableCreditAssetCode, result.Events[0].AssetCode)
-		assert.Equal(t, utils.Byte32ToString(collateralAssetCode), result.Events[0].CollateralAssetCode)
+		assert.Equal(t, "100.0000000", result.RebalanceTransactions[0].RequiredAmount)
+		assert.Equal(t, "100.0000000", result.RebalanceTransactions[0].PresentAmount)
+		assert.Equal(t, stableCreditAssetCode, result.RebalanceTransactions[0].AssetCode)
+		assert.Equal(t, utils.Byte32ToString(collateralAssetCode), result.RebalanceTransactions[0].CollateralAssetCode)
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 	})
@@ -153,13 +153,13 @@ func TestRebalance(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, "100.0000000", result.Events[0].RequiredAmount)
-		assert.Equal(t, "100.0000000", result.Events[0].PresentAmount)
-		assert.Equal(t, stableCreditAssetCodeVUSD, result.Events[0].AssetCode)
+		assert.Equal(t, "100.0000000", result.RebalanceTransactions[0].RequiredAmount)
+		assert.Equal(t, "100.0000000", result.RebalanceTransactions[0].PresentAmount)
+		assert.Equal(t, stableCreditAssetCodeVUSD, result.RebalanceTransactions[0].AssetCode)
 
-		assert.Equal(t, "100.0000000", result.Events[1].RequiredAmount)
-		assert.Equal(t, "100.0000000", result.Events[1].PresentAmount)
-		assert.Equal(t, stableCreditAssetCodeVTHB, result.Events[1].AssetCode)
+		assert.Equal(t, "100.0000000", result.RebalanceTransactions[1].RequiredAmount)
+		assert.Equal(t, "100.0000000", result.RebalanceTransactions[1].PresentAmount)
+		assert.Equal(t, stableCreditAssetCodeVTHB, result.RebalanceTransactions[1].AssetCode)
 	})
 
 	t.Run("success, rebalance with stableCredit 3 loop", func(t *testing.T) {
@@ -275,6 +275,44 @@ func TestRebalance(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
+	})
+
+	t.Run("success, no event emit rebalance equilibrium", func(t *testing.T) {
+		testHelper := testHelperWithMock(t)
+		defer testHelper.MockController.Finish()
+
+		stableCreditSize := uint8(1)
+		stableCreditAddress := common.HexToAddress("0x2Fb9287ba799297EB918aD607B5F8D3108a026f0")
+		stableCreditId := utils.StringToByte32("VELO_vUSD_0x2Fb9287ba799297EB918aD607B5F8D3108a026f0")
+		stableCreditAssetCode := "vUSD"
+
+		testHelper.MockHeartContract.EXPECT().
+			GetStableCreditCount(gomock.AssignableToTypeOf(&bind.CallOpts{})).
+			Return(stableCreditSize, nil)
+
+		testHelper.MockHeartContract.EXPECT().
+			GetRecentStableCredit(gomock.AssignableToTypeOf(&bind.CallOpts{})).
+			Return(stableCreditAddress, nil)
+
+		testHelper.MockTxHelper.EXPECT().
+			StableCreditAssetCode(gomock.AssignableToTypeOf(stableCreditAddress)).
+			Return(&stableCreditAssetCode, &stableCreditId, nil)
+
+		testHelper.MockDRSContract.EXPECT().
+			Rebalance(gomock.AssignableToTypeOf(&bind.TransactOpts{}), stableCreditAssetCode).
+			Return(&types.Transaction{}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
+			Return(&types.Receipt{
+				Logs: []*types.Log{
+					{},
+				},
+			}, nil)
+
+		result, err := testHelper.Client.Rebalance(context.Background(), &RebalanceInput{})
+
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 	})
 
 	t.Run("fail, call Heart Contract GetStableCreditCount", func(t *testing.T) {
@@ -458,45 +496,6 @@ func TestRebalance(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
-	})
-
-	t.Run("fail, call FindLogEvent", func(t *testing.T) {
-		testHelper := testHelperWithMock(t)
-		defer testHelper.MockController.Finish()
-
-		stableCreditSize := uint8(1)
-		stableCreditAddress := common.HexToAddress("0x2Fb9287ba799297EB918aD607B5F8D3108a026f0")
-		stableCreditId := utils.StringToByte32("VELO_vUSD_0x2Fb9287ba799297EB918aD607B5F8D3108a026f0")
-		stableCreditAssetCode := "vUSD"
-
-		testHelper.MockHeartContract.EXPECT().
-			GetStableCreditCount(gomock.AssignableToTypeOf(&bind.CallOpts{})).
-			Return(stableCreditSize, nil)
-
-		testHelper.MockHeartContract.EXPECT().
-			GetRecentStableCredit(gomock.AssignableToTypeOf(&bind.CallOpts{})).
-			Return(stableCreditAddress, nil)
-
-		testHelper.MockTxHelper.EXPECT().
-			StableCreditAssetCode(gomock.AssignableToTypeOf(stableCreditAddress)).
-			Return(&stableCreditAssetCode, &stableCreditId, nil)
-
-		testHelper.MockDRSContract.EXPECT().
-			Rebalance(gomock.AssignableToTypeOf(&bind.TransactOpts{}), stableCreditAssetCode).
-			Return(&types.Transaction{}, nil)
-		testHelper.MockTxHelper.EXPECT().
-			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
-			Return(&types.Receipt{
-				Logs: []*types.Log{
-					{},
-				},
-			}, nil)
-
-		result, err := testHelper.Client.Rebalance(context.Background(), &RebalanceInput{})
-
-		assert.Nil(t, result)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "cannot find rebalance event from transaction receipt")
 	})
 
 	t.Run("fail, call txHelper.ExtractRebalanceEvent", func(t *testing.T) {

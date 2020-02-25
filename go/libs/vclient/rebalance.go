@@ -15,34 +15,36 @@ type RebalanceInput struct {
 	// add more if need to add more features.
 }
 
-type RebalanceOutput struct {
-	Message  string
-	Txs      []*types.Transaction
-	Receipts []*types.Receipt
-	Events   []RebalanceEvent
-}
-
-type RebalanceEvent struct {
+type RebalanceTransaction struct {
 	AssetCode           string
 	CollateralAssetCode string
 	RequiredAmount      string
 	PresentAmount       string
 	Raw                 *types.Log
+	Tx                  *types.Transaction
+	Receipt             *types.Receipt
 }
 
-func (i *RebalanceEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemRebalance) {
-	i.AssetCode = eventAbi.AssetCode
-	i.CollateralAssetCode = utils.Byte32ToString(eventAbi.CollateralAssetCode)
-	i.RequiredAmount = utils.AmountToString(eventAbi.RequiredAmount)
-	i.PresentAmount = utils.AmountToString(eventAbi.PresentAmount)
-	i.Raw = &eventAbi.Raw
+type RebalanceOutput struct {
+	Message               string
+	RebalanceTransactions []RebalanceTransaction
+}
+
+func (i *RebalanceTransaction) ToRebalanceOutput(eventAbi *vabi.DigitalReserveSystemRebalance, tx *types.Transaction, receipt *types.Receipt) {
+	if eventAbi != nil {
+		i.AssetCode = eventAbi.AssetCode
+		i.CollateralAssetCode = utils.Byte32ToString(eventAbi.CollateralAssetCode)
+		i.RequiredAmount = utils.AmountToString(eventAbi.RequiredAmount)
+		i.PresentAmount = utils.AmountToString(eventAbi.PresentAmount)
+		i.Raw = &eventAbi.Raw
+	}
+	i.Tx = tx
+	i.Receipt = receipt
 }
 
 func (c *Client) Rebalance(ctx context.Context, input *RebalanceInput) (*RebalanceOutput, error) {
 	rebalanceOutput := &RebalanceOutput{
-		Message:  "rebalance process completed.",
-		Txs:      []*types.Transaction{},
-		Receipts: []*types.Receipt{},
+		RebalanceTransactions: []RebalanceTransaction{},
 	}
 
 	opt := bind.NewKeyedTransactor(&c.privateKey)
@@ -96,23 +98,22 @@ func (c *Client) Rebalance(ctx context.Context, input *RebalanceInput) (*Rebalan
 		if err != nil {
 			return nil, err
 		}
-
+		rebalanceTransaction := new(RebalanceTransaction)
 		eventLog := utils.FindLogEvent(receipt.Logs, "Rebalance(string,bytes32,uint256,uint256)")
 		if eventLog == nil {
-			return nil, errors.Errorf("cannot find rebalance event from transaction receipt %s", tx.Hash().String())
+			// rebalance equilibrium
+			continue
 		}
 
 		eventAbi, err := c.txHelper.ExtractRebalanceEvent("Rebalance", eventLog)
 		if err != nil {
 			return nil, err
 		}
-		event := new(RebalanceEvent)
-		event.ToEventOutput(eventAbi)
 
-		// Append to rebalanceOutput Txs, Receipts, and Events
-		rebalanceOutput.Txs = append(rebalanceOutput.Txs, tx)
-		rebalanceOutput.Receipts = append(rebalanceOutput.Receipts, receipt)
-		rebalanceOutput.Events = append(rebalanceOutput.Events, *event)
+		rebalanceTransaction.ToRebalanceOutput(eventAbi, tx, receipt)
+
+		// Append to rebalanceOutput
+		rebalanceOutput.RebalanceTransactions = append(rebalanceOutput.RebalanceTransactions, *rebalanceTransaction)
 
 		// keep the recent of prevStableCreditAddress from loop
 		prevStableCreditId = curStableCreditId
