@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestCommandHandler_RedeemStableCredit(t *testing.T) {
+func TestCommandHandler_RedeemCredit(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		h := initTest(t)
@@ -25,18 +25,18 @@ func TestCommandHandler_RedeemStableCredit(t *testing.T) {
 			Return("password")
 
 		h.mockLogic.EXPECT().
-			RedeemStableCredit(&entity.RedeemStableCreditInput{
+			RedeemCredit(&entity.RedeemCreditInput{
 				RedeemAmount: "104",
 				AssetCode:    "vUSD",
 				Passphrase:   "password",
 			}).
-			Return(&entity.RedeemStableCreditOutput{
+			Return(&entity.RedeemCreditOutput{
 				RedeemAmount: "104",
 				AssetCode:    "vUSD",
 				TxHash:       h.mockTx.Hash().String(),
 			}, nil)
 
-		h.commandHandler.RedeemStableCredit(nil, nil)
+		h.commandHandler.RedeemCredit(nil, nil)
 
 		logs := h.loggerHook.AllEntries()
 		assert.Len(t, logs, 2)
@@ -44,7 +44,7 @@ func TestCommandHandler_RedeemStableCredit(t *testing.T) {
 		assert.Equal(t, "🔗 Transaction Hash: "+h.mockTx.Hash().String(), logs[1].Message)
 	})
 
-	t.Run("fail, logic.RedeemStableCredit returns error", func(t *testing.T) {
+	t.Run("fail, logic.RedeemCredit returns error", func(t *testing.T) {
 		h := initTest(t)
 		defer h.done()
 
@@ -59,7 +59,7 @@ func TestCommandHandler_RedeemStableCredit(t *testing.T) {
 			Return("password")
 
 		h.mockLogic.EXPECT().
-			RedeemStableCredit(&entity.RedeemStableCreditInput{
+			RedeemCredit(&entity.RedeemCreditInput{
 				RedeemAmount: "104",
 				AssetCode:    "vUSD",
 				Passphrase:   "password",
@@ -67,7 +67,7 @@ func TestCommandHandler_RedeemStableCredit(t *testing.T) {
 			Return(nil, errors.New("some error has occurred"))
 
 		assert.PanicsWithValue(t, console.ExitError, func() {
-			h.commandHandler.RedeemStableCredit(nil, nil)
+			h.commandHandler.RedeemCredit(nil, nil)
 		})
 	})
 }

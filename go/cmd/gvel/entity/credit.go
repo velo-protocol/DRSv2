@@ -59,12 +59,12 @@ type GetCreditExchangeOutput struct {
 	PriceInCollateralPerAssetUnit string
 }
 
-type RedeemStableCreditInput struct {
+type RedeemCreditInput struct {
 	RedeemAmount string
 	AssetCode    string
 	Passphrase   string
 }
-type RedeemStableCreditOutput struct {
+type RedeemCreditOutput struct {
 	RedeemAmount string
 	AssetCode    string
 	TxHash       string
