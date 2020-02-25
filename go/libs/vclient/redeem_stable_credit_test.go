@@ -38,7 +38,7 @@ func TestValidateRedeemStableCredit(t *testing.T) {
 		err := redeemStableCreditInput.Validate()
 
 		assert.NotNil(t, err)
-		assert.Equal(t, "redeemAmount must be positive", err.Error())
+		assert.Equal(t, "amount must be greater than 0", err.Error())
 	})
 
 	t.Run("fail, should throw error assetCode must not be blank", func(t *testing.T) {
@@ -229,5 +229,32 @@ func TestClient_RedeemStableCredit(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, fmt.Sprintf("cannot find redeem event from transaction receipt %s", tx.Hash().String()), err.Error())
+	})
+}
+
+func TestRedeemStableCreditReplaceError(t *testing.T) {
+	t.Run("parsing an error, stableCredit not exist", func(t *testing.T) {
+		err := RedeemStableCreditReplaceError("smart contract call error", &RedeemStableCreditInput{AssetCode: "vUSD"}, errors.New("stableCredit not exist"))
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "the stable credit vUSD is not found")
+		assert.Contains(t, err.Error(), "smart contract call error")
+	})
+	t.Run("parsing an error, valid price not found", func(t *testing.T) {
+		err := RedeemStableCreditReplaceError("smart contract call error", nil, errors.New("valid price not found"))
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "valid price not found")
+		assert.Contains(t, err.Error(), "smart contract call error")
+	})
+	t.Run("parsing an error, ERC20: burn amount exceeds balance", func(t *testing.T) {
+		err := RedeemStableCreditReplaceError("smart contract call error", &RedeemStableCreditInput{AssetCode: "vUSD"}, errors.New("ERC20: burn amount exceeds balance"))
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "the stable credit vUSD in your address is insufficient")
+		assert.Contains(t, err.Error(), "smart contract call error")
+	})
+	t.Run("parsing an error, any error", func(t *testing.T) {
+		err := RedeemStableCreditReplaceError("smart contract call error", nil, errors.New("some error has occured"))
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "some error has occured")
+		assert.Contains(t, err.Error(), "smart contract call error")
 	})
 }
