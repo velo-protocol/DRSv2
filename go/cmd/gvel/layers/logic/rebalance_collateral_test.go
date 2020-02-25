@@ -27,7 +27,7 @@ func TestLogic_RebalanceCollateral(t *testing.T) {
 		h.mockVClient.EXPECT().
 			Rebalance(gomock.Any(), &vclient.RebalanceInput{}).
 			Return(&vclient.RebalanceOutput{
-				RebalanceTransactions: []vclient.RebalanceTransaction{
+				RebalanceTransactions: []*vclient.RebalanceTransaction{
 					{
 						Tx:                  h.mockTx,
 						AssetCode:           "vUSD",

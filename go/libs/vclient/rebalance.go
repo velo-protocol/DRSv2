@@ -27,7 +27,7 @@ type RebalanceTransaction struct {
 
 type RebalanceOutput struct {
 	Message               string
-	RebalanceTransactions []RebalanceTransaction
+	RebalanceTransactions []*RebalanceTransaction
 }
 
 func (i *RebalanceTransaction) ToRebalanceOutput(eventAbi *vabi.DigitalReserveSystemRebalance, tx *types.Transaction, receipt *types.Receipt) {
@@ -44,7 +44,7 @@ func (i *RebalanceTransaction) ToRebalanceOutput(eventAbi *vabi.DigitalReserveSy
 
 func (c *Client) Rebalance(ctx context.Context, input *RebalanceInput) (*RebalanceOutput, error) {
 	rebalanceOutput := &RebalanceOutput{
-		RebalanceTransactions: []RebalanceTransaction{},
+		RebalanceTransactions: []*RebalanceTransaction{},
 	}
 
 	opt := bind.NewKeyedTransactor(&c.privateKey)
@@ -113,7 +113,7 @@ func (c *Client) Rebalance(ctx context.Context, input *RebalanceInput) (*Rebalan
 		rebalanceTransaction.ToRebalanceOutput(eventAbi, tx, receipt)
 
 		// Append to rebalanceOutput
-		rebalanceOutput.RebalanceTransactions = append(rebalanceOutput.RebalanceTransactions, *rebalanceTransaction)
+		rebalanceOutput.RebalanceTransactions = append(rebalanceOutput.RebalanceTransactions, rebalanceTransaction)
 
 		// keep the recent of prevStableCreditAddress from loop
 		prevStableCreditId = curStableCreditId
