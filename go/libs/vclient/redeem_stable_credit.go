@@ -130,7 +130,7 @@ func RedeemStableCreditReplaceError(prefix string, abiInput *RedeemStableCreditI
 	case strings.Contains(msg, "stableCredit not exist"):
 		return errors.Wrap(errors.Errorf("the stable credit %s is not found", abiInput.AssetCode), prefix)
 	case strings.Contains(msg, "valid price not found"):
-		return errors.New("valid price not found")
+		return errors.Wrap(errors.New("valid price not found"), prefix)
 	case strings.Contains(msg, "ERC20: burn amount exceeds balance"):
 		return errors.Wrap(errors.Errorf("the stable credit %s in your address is insufficient", abiInput.AssetCode), prefix)
 	default:
