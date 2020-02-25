@@ -210,7 +210,7 @@ func TestClient_SetupCredit(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-	t.Run("error, drs.Setup returns an error revert DigitalReserveSystem.onlyTrustedPartner: caller must be a trusted partner", func(t *testing.T) {
+	t.Run("error, drs.ConfirmTx returns an error revert DigitalReserveSystem.onlyTrustedPartner: caller must be a trusted partner", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
@@ -224,15 +224,17 @@ func TestClient_SetupCredit(t *testing.T) {
 
 		testHelper.MockDRSContract.EXPECT().
 			Setup(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.CollateralAssetCode, abiInput.PeggedCurrency, abiInput.AssetCode, abiInput.PeggedValue).
+			Return(&types.Transaction{}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(nil, errors.New("VM Exception while processing transaction: revert DigitalReserveSystem.onlyTrustedPartner: caller must be a trusted partner"))
-
 		_, err := testHelper.Client.SetupCredit(context.Background(), input)
 
 		assert.Error(t, err)
-		assert.Equal(t, "the message sender is not found or does not have sufficient permission to perform setup stable credit", err.Error())
+		assert.Equal(t, "confirm transaction error: the message sender is not found or does not have sufficient permission to perform setup stable credit", err.Error())
 	})
 
-	t.Run("error, drs.Setup returns an error revert DigitalReserveSystem.setup: assetCode has already been used", func(t *testing.T) {
+	t.Run("error, drs.ConfirmTx returns an error revert DigitalReserveSystem.setup: assetCode has already been used", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
@@ -246,12 +248,15 @@ func TestClient_SetupCredit(t *testing.T) {
 
 		testHelper.MockDRSContract.EXPECT().
 			Setup(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.CollateralAssetCode, abiInput.PeggedCurrency, abiInput.AssetCode, abiInput.PeggedValue).
+			Return(&types.Transaction{}, nil)
+		testHelper.MockTxHelper.EXPECT().
+			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(nil, errors.New("VM Exception while processing transaction: revert DigitalReserveSystem.setup: assetCode has already been used"))
 
 		_, err := testHelper.Client.SetupCredit(context.Background(), input)
 
 		assert.Error(t, err)
-		assert.Equal(t, "asset code vUSD has already been used", err.Error())
+		assert.Equal(t, "confirm transaction error: asset code vUSD has already been used", err.Error())
 	})
 
 	t.Run("error, txHelper.ConfirmTx returns an error", func(t *testing.T) {

@@ -37,6 +37,13 @@ type WhitelistTrustedPartnerOutput struct {
 	Receipt *types.Receipt
 }
 
+func WhitelistTrustedPartnerReplaceError(prefix string, err error) error {
+	if strings.Contains(err.Error(), "the message sender is not found or does not have sufficient permission") {
+		return errors.Wrap(errors.New("the message sender is not found or does not have sufficient permission to perform whitelist user"), prefix)
+	}
+	return errors.Wrap(err, prefix)
+}
+
 func (c *Client) WhitelistTrustedPartner(ctx context.Context, input *WhitelistTrustedPartnerInput) (*WhitelistTrustedPartnerOutput, error) {
 	err := input.Validate()
 	if err != nil {
@@ -63,15 +70,12 @@ func (c *Client) WhitelistTrustedPartner(ctx context.Context, input *WhitelistTr
 	opt.GasLimit = constants.GasLimit
 	tx, err := c.contract.heart.SetTrustedPartner(opt, input.ToAbiInput().Address)
 	if err != nil {
-		if strings.Contains(err.Error(), "the message sender is not found or does not have sufficient permission") {
-			return nil, errors.New("the message sender is not found or does not have sufficient permission to perform whitelist user")
-		}
-		return nil, err
+		return nil, WhitelistTrustedPartnerReplaceError("smart contract call error", err)
 	}
 
 	receipt, err := c.txHelper.ConfirmTx(ctx, tx, opt.From)
 	if err != nil {
-		return nil, err
+		return nil, WhitelistTrustedPartnerReplaceError("confirm transaction error", err)
 	}
 
 	return &WhitelistTrustedPartnerOutput{

@@ -85,7 +85,7 @@ func TestGetExchangeRate(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
-		assert.Equal(t, "the stable credit vUSD does not exist", err.Error())
+		assert.Equal(t, "smart contract call error: the stable credit vUSD does not exist", err.Error())
 	})
 
 	t.Run("fail, should throw error valid price not found", func(t *testing.T) {
@@ -105,7 +105,7 @@ func TestGetExchangeRate(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
-		assert.Equal(t, "valid price not found", err.Error())
+		assert.Equal(t, "smart contract call error: valid price not found", err.Error())
 	})
 
 	t.Run("fail, should throw error assetCode must not be blank", func(t *testing.T) {
