@@ -79,19 +79,19 @@ func (mr *MockVClientMockRecorder) MintFromStableCreditAmount(ctx, input interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MintFromStableCreditAmount", reflect.TypeOf((*MockVClient)(nil).MintFromStableCreditAmount), ctx, input)
 }
 
-// RedeemStableCredit mocks base method
-func (m *MockVClient) RedeemStableCredit(ctx context.Context, input *vclient.RedeemStableCreditInput) (*vclient.RedeemStableCreditOutput, error) {
+// RedeemCredit mocks base method
+func (m *MockVClient) RedeemCredit(ctx context.Context, input *vclient.RedeemCreditInput) (*vclient.RedeemCreditOutput, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RedeemStableCredit", ctx, input)
-	ret0, _ := ret[0].(*vclient.RedeemStableCreditOutput)
+	ret := m.ctrl.Call(m, "RedeemCredit", ctx, input)
+	ret0, _ := ret[0].(*vclient.RedeemCreditOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// RedeemStableCredit indicates an expected call of RedeemStableCredit
-func (mr *MockVClientMockRecorder) RedeemStableCredit(ctx, input interface{}) *gomock.Call {
+// RedeemCredit indicates an expected call of RedeemCredit
+func (mr *MockVClientMockRecorder) RedeemCredit(ctx, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RedeemStableCredit", reflect.TypeOf((*MockVClient)(nil).RedeemStableCredit), ctx, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RedeemCredit", reflect.TypeOf((*MockVClient)(nil).RedeemCredit), ctx, input)
 }
 
 // GetExchangeRate mocks base method
