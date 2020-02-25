@@ -43,7 +43,7 @@ func (lo *logic) RedeemCredit(input *entity.RedeemCreditInput) (*entity.RedeemCr
 	ctx, cancel := context.WithTimeout(context.Background(), constants.Timeout)
 	defer cancel()
 
-	output, err := veloClient.RedeemCredit(ctx, &vclient.RedeemCreditInput{
+	output, err := veloClient.RedeemStableCredit(ctx, &vclient.RedeemStableCreditInput{
 		RedeemAmount: input.RedeemAmount,
 		AssetCode:    input.AssetCode,
 	})
