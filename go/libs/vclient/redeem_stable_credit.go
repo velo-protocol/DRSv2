@@ -10,6 +10,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"math/big"
 	"regexp"
+	"strings"
 )
 
 type RedeemStableCreditInput struct {
@@ -31,7 +32,7 @@ func (i *RedeemStableCreditInput) Validate() error {
 		return errors.New("invalid redeemAmount format")
 	}
 	if !amount.IsPositive() {
-		return errors.New("redeemAmount must be positive")
+		return errors.New("amount must be greater than 0")
 	}
 
 	// validate AssetCode
@@ -91,11 +92,11 @@ func (c *Client) RedeemStableCredit(ctx context.Context, input *RedeemStableCred
 		abiInput.AssetCode,
 	)
 	if err != nil {
-		return nil, err
+		return nil, RedeemStableCreditReplaceError("smart contract call error", input, err)
 	}
 	receipt, err := c.txHelper.ConfirmTx(ctx, tx, opt.From)
 	if err != nil {
-		return nil, err
+		return nil, RedeemStableCreditReplaceError("confirm transaction error", input, err)
 	}
 
 	eventLog := utils.FindLogEvent(receipt.Logs, "Redeem(string,uint256,address,bytes32,uint256)")
@@ -121,4 +122,18 @@ func (c *Client) RedeemStableCredit(ctx context.Context, input *RedeemStableCred
 		Receipt: receipt,
 		Event:   redeemStableCreditEvent,
 	}, nil
+}
+
+func RedeemStableCreditReplaceError(prefix string, abiInput *RedeemStableCreditInput, err error) error {
+	msg := err.Error()
+	switch {
+	case strings.Contains(msg, "stableCredit not exist"):
+		return errors.Wrap(errors.Errorf("the stable credit %s is not found", abiInput.AssetCode), prefix)
+	case strings.Contains(msg, "valid price not found"):
+		return errors.Wrap(errors.New("valid price not found"), prefix)
+	case strings.Contains(msg, "ERC20: burn amount exceeds balance"):
+		return errors.Wrap(errors.Errorf("the stable credit %s in your address is insufficient", abiInput.AssetCode), prefix)
+	default:
+		return errors.Wrap(err, prefix)
+	}
 }
