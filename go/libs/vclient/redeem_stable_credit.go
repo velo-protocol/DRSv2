@@ -32,7 +32,7 @@ func (i *RedeemStableCreditInput) Validate() error {
 		return errors.New("invalid redeemAmount format")
 	}
 	if !amount.IsPositive() {
-		return errors.New("amount must be greater than 0")
+		return errors.New("redeemAmount must be greater than 0")
 	}
 
 	// validate AssetCode
