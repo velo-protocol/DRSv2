@@ -41,6 +41,13 @@ func (i *WhitelistGovernorInput) ToAbiInput() WhitelistGovernorAbiInput {
 	}
 }
 
+func WhitelistGovernorReplaceError(prefix string, err error) error {
+	if strings.Contains(err.Error(), "the message sender is not found or does not have sufficient permission") {
+		return errors.Wrap(errors.New("the message sender is not found or does not have sufficient permission to perform whitelist user"), prefix)
+	}
+	return errors.Wrap(err, prefix)
+}
+
 func (c *Client) WhitelistGovernor(ctx context.Context, input *WhitelistGovernorInput) (*WhitelistGovernorOutput, error) {
 	err := input.Validate()
 	if err != nil {
@@ -67,15 +74,12 @@ func (c *Client) WhitelistGovernor(ctx context.Context, input *WhitelistGovernor
 	opt.GasLimit = constants.GasLimit
 	tx, err := c.contract.heart.SetGovernor(opt, input.ToAbiInput().Address)
 	if err != nil {
-		if strings.Contains(err.Error(), "the message sender is not found or does not have sufficient permission") {
-			return nil, errors.New("the message sender is not found or does not have sufficient permission to perform whitelist user")
-		}
-		return nil, err
+		return nil, WhitelistGovernorReplaceError("smart contract call error", err)
 	}
 
 	receipt, err := c.txHelper.ConfirmTx(ctx, tx, opt.From)
 	if err != nil {
-		return nil, err
+		return nil, WhitelistGovernorReplaceError("confirm transaction error", err)
 	}
 
 	return &WhitelistGovernorOutput{

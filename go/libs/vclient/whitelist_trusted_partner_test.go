@@ -221,7 +221,7 @@ func TestClient_WhitelistTrustedPartner(t *testing.T) {
 
 		assert.NotNil(t, err)
 		assert.Nil(t, result)
-		assert.Equal(t, "the message sender is not found or does not have sufficient permission to perform whitelist user", err.Error())
+		assert.Equal(t, "smart contract call error: the message sender is not found or does not have sufficient permission to perform whitelist user", err.Error())
 	})
 
 	t.Run("fail, should throw error txHelper.ConfirmTx", func(t *testing.T) {

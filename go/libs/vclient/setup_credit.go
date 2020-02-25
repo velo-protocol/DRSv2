@@ -6,7 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
-	vabi "github.com/velo-protocol/DRSv2/go/abi"
+	"github.com/velo-protocol/DRSv2/go/abi"
 	"github.com/velo-protocol/DRSv2/go/constants"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"math/big"
@@ -100,6 +100,17 @@ type SetupCreditOutput struct {
 	Event   *SetupCreditEvent
 }
 
+func SetupCreditReplaceError(prefix string, abiInput *SetupCreditAbiInput, err error) error {
+	msg := err.Error()
+	switch {
+	case strings.Contains(msg, "caller must be a trusted partner"):
+		return errors.Wrap(errors.New("the message sender is not found or does not have sufficient permission to perform setup stable credit"), prefix)
+	case strings.Contains(msg, "assetCode has already been used"):
+		return errors.Wrap(errors.Errorf("asset code %s has already been used", abiInput.AssetCode), prefix)
+	}
+	return errors.Wrap(err, prefix)
+}
+
 func (c *Client) SetupCredit(ctx context.Context, input *SetupCreditInput) (*SetupCreditOutput, error) {
 	err := input.Validate()
 	if err != nil {
@@ -117,19 +128,12 @@ func (c *Client) SetupCredit(ctx context.Context, input *SetupCreditInput) (*Set
 		abiInput.PeggedValue,
 	)
 	if err != nil {
-		msg := err.Error()
-		switch {
-		case strings.Contains(msg, "caller must be a trusted partner"):
-			return nil, errors.New("the message sender is not found or does not have sufficient permission to perform setup stable credit")
-		case strings.Contains(msg, "assetCode has already been used"):
-			return nil, errors.Errorf("asset code %s has already been used", abiInput.AssetCode)
-		}
-		return nil, err
+		return nil, SetupCreditReplaceError("smart contract call error", abiInput, err)
 	}
 
 	receipt, err := c.txHelper.ConfirmTx(ctx, tx, opt.From)
 	if err != nil {
-		return nil, err
+		return nil, SetupCreditReplaceError("confirm transaction error", abiInput, err)
 	}
 
 	eventLog := utils.FindLogEvent(receipt.Logs, "Setup(string,bytes32,uint256,bytes32,address)")
