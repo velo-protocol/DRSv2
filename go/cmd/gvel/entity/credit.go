@@ -59,6 +59,17 @@ type GetCreditExchangeOutput struct {
 	PriceInCollateralPerAssetUnit string
 }
 
+type RedeemStableCreditInput struct {
+	RedeemAmount string
+	AssetCode    string
+	Passphrase   string
+}
+type RedeemStableCreditOutput struct {
+	RedeemAmount string
+	AssetCode    string
+	TxHash       string
+}
+
 // RebalanceCredit
 type RebalanceCollateralInput struct {
 	Passphrase string

@@ -43,6 +43,7 @@ func (creditCommand *CommandHandler) Command() *cobra.Command {
 		creditCommand.GetSetupCommand(),
 		creditCommand.GetMintCreditByCollateralCommand(),
 		creditCommand.GetMintByCreditCommand(),
+		creditCommand.GetRedeemStableCreditCommand(),
 		creditCommand.GetExchangeCommand(),
 	)
 
@@ -84,6 +85,16 @@ func (creditCommand *CommandHandler) GetExchangeCommand() *cobra.Command {
 		Use:   constants.CmdCreditGetExchange,
 		Short: "Get exchange rate of a stable credit on Velo",
 		Run:   creditCommand.GetExchange,
+	}
+
+	return command
+}
+
+func (creditCommand *CommandHandler) GetRedeemStableCreditCommand() *cobra.Command {
+	command := &cobra.Command{
+		Use:   constants.CmdCreditRedeem,
+		Short: "Redeem stable credit to collateral Asset on Velo",
+		Run:   creditCommand.RedeemStableCredit,
 	}
 
 	return command
