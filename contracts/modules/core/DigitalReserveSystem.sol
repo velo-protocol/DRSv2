@@ -193,10 +193,7 @@ contract DigitalReserveSystem is IDRS {
 
         _rebalance(assetCode);
 
-        uint256 priceInCollateralPerAssetUnit = _calExchangeRate(stableCredit, linkId);
-
-        // collateralAmount = stableCreditAmount * priceInCollateralPerAssetUnit
-        uint256 collateralAmount = stableCreditAmount.mul(priceInCollateralPerAssetUnit).div(10000000);
+        uint256 collateralAmount = _calExchangeRate(stableCredit, linkId, stableCreditAmount);
 
         stableCredit.redeem(msg.sender, stableCreditAmount, collateralAmount);
         stableCredit.approveCollateral();
@@ -225,7 +222,7 @@ contract DigitalReserveSystem is IDRS {
 
         (IStableCredit stableCredit, , bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
 
-        (uint256 priceInCollateralPerAssetUnit) = _calExchangeRate(stableCredit, linkId);
+        (uint256 priceInCollateralPerAssetUnit) = _calExchangeRate(stableCredit, linkId, 10000000);
 
         return (assetCode, collateralAssetCode, priceInCollateralPerAssetUnit);
     }
@@ -335,9 +332,9 @@ contract DigitalReserveSystem is IDRS {
         return creditAmount.mul(credit.peggedValue().mul(collateralRatio)).div(heart.getPriceFeeders().getMedianPrice(linkId));
     }
 
-    function _calExchangeRate(IStableCredit credit, bytes32 linkId) private view returns (uint256) {
-        // priceInCollateralPerAssetUnit = (collateralRatio * peggedValue) / priceInCurrencyPerAssetUnit
-        uint256 priceInCollateralPerAssetUnit = heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()).div(heart.getPriceFeeders().getMedianPrice(linkId));
+    function _calExchangeRate(IStableCredit credit, bytes32 linkId, uint256 stableCreditAmount) private view returns (uint256) {
+        // priceInCollateral = (collateralRatio * peggedValue * stableCreditAmount) / priceInCurrencyPerAssetUnit
+        uint256 priceInCollateralPerAssetUnit = heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()).mul(stableCreditAmount).div(heart.getPriceFeeders().getMedianPrice(linkId)).div(10000000);
         return (priceInCollateralPerAssetUnit);
     }
 }

@@ -731,7 +731,7 @@ contract("DigitalReserveSystem test", async accounts => {
       );
       await mocks.priceFeeder.givenMethodReturnUint(
         priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
-        10000000
+        18000000
       );
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getReserveManager().encodeABI(),
@@ -747,11 +747,11 @@ contract("DigitalReserveSystem test", async accounts => {
       );
       await mocks.heart.givenMethodReturnUint(
         heart.contract.methods.getCollateralRatio(Web3.utils.fromAscii("")).encodeABI(),
-        10000000
+        13000000
       );
       await mocks.stableCreditVTHB.givenMethodReturnUint(
         stableCreditVTHB.contract.methods.peggedValue().encodeABI(),
-        10000000
+        1
       );
       await mocks.stableCreditVTHB.givenMethodReturnBool(
         stableCreditVTHB.contract.methods.redeem(accounts[0], 0, 0).encodeABI(),
@@ -762,17 +762,17 @@ contract("DigitalReserveSystem test", async accounts => {
         true
       );
 
-      const result = await drs.redeem(100000000, "vTHB");
+      const result = await drs.redeem(2000000000, "vTHB");
 
       truffleAssert.eventEmitted(result, 'Redeem', event => {
         const BN = web3.utils.BN;
         const eventMintAmount = new BN(event.stableCreditAmount).toNumber();
         const eventCollateralAmount = new BN(event.collateralAmount).toNumber();
         return event.assetCode === "vTHB"
-          && eventMintAmount === 100000000
+          && eventMintAmount === 2000000000
           && event.collateralAssetAddress === veloCollateralAsset.address
           && web3.utils.hexToUtf8(event.collateralAssetCode) === 'VELO'
-          && eventCollateralAmount === 100000000;
+          && eventCollateralAmount === 144;
       }, 'contract should emit the event correctly');
 
     });
