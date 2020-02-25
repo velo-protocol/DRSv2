@@ -13,12 +13,12 @@ import (
 	"strings"
 )
 
-type RedeemCreditInput struct {
+type RedeemStableCreditInput struct {
 	RedeemAmount string
 	AssetCode    string
 }
 
-func (i *RedeemCreditInput) Validate() error {
+func (i *RedeemStableCreditInput) Validate() error {
 	// validate RedeemAmount
 	if i.RedeemAmount == "" {
 		return errors.New("redeemAmount must not be blank")
@@ -47,20 +47,20 @@ func (i *RedeemCreditInput) Validate() error {
 	return nil
 }
 
-type RedeemCreditAbiInput struct {
+type RedeemStableCreditAbiInput struct {
 	RedeemAmount *big.Int
 	AssetCode    string
 }
 
-func (i *RedeemCreditInput) ToAbiInput() *RedeemCreditAbiInput {
+func (i *RedeemStableCreditInput) ToAbiInput() *RedeemStableCreditAbiInput {
 	redeemAmount, _ := utils.StringToAmount(i.RedeemAmount)
-	return &RedeemCreditAbiInput{
+	return &RedeemStableCreditAbiInput{
 		AssetCode:    i.AssetCode,
 		RedeemAmount: redeemAmount,
 	}
 }
 
-type RedeemCreditEvent struct {
+type RedeemStableCreditEvent struct {
 	// all fields must be string formatted
 	AssetCode              string
 	StableCreditAmount     string
@@ -70,13 +70,13 @@ type RedeemCreditEvent struct {
 	Raw                    *types.Log
 }
 
-type RedeemCreditOutput struct {
+type RedeemStableCreditOutput struct {
 	Tx      *types.Transaction
 	Receipt *types.Receipt
-	Event   *RedeemCreditEvent
+	Event   *RedeemStableCreditEvent
 }
 
-func (c *Client) RedeemCredit(ctx context.Context, input *RedeemCreditInput) (*RedeemCreditOutput, error) {
+func (c *Client) RedeemStableCredit(ctx context.Context, input *RedeemStableCreditInput) (*RedeemStableCreditOutput, error) {
 	err := input.Validate()
 	if err != nil {
 		return nil, err
@@ -92,11 +92,11 @@ func (c *Client) RedeemCredit(ctx context.Context, input *RedeemCreditInput) (*R
 		abiInput.AssetCode,
 	)
 	if err != nil {
-		return nil, RedeemCreditReplaceError("smart contract call error", input, err)
+		return nil, RedeemStableCreditReplaceError("smart contract call error", input, err)
 	}
 	receipt, err := c.txHelper.ConfirmTx(ctx, tx, opt.From)
 	if err != nil {
-		return nil, RedeemCreditReplaceError("confirm transaction error", input, err)
+		return nil, RedeemStableCreditReplaceError("confirm transaction error", input, err)
 	}
 
 	eventLog := utils.FindLogEvent(receipt.Logs, "Redeem(string,uint256,address,bytes32,uint256)")
@@ -109,7 +109,7 @@ func (c *Client) RedeemCredit(ctx context.Context, input *RedeemCreditInput) (*R
 		return nil, err
 	}
 
-	redeemStableCreditEvent := &RedeemCreditEvent{
+	redeemStableCreditEvent := &RedeemStableCreditEvent{
 		AssetCode:              event.AssetCode,
 		StableCreditAmount:     utils.AmountToString(event.StableCreditAmount),
 		CollateralAssetAddress: event.CollateralAssetAddress.String(),
@@ -117,14 +117,14 @@ func (c *Client) RedeemCredit(ctx context.Context, input *RedeemCreditInput) (*R
 		CollateralAmount:       utils.AmountToString(event.CollateralAmount),
 		Raw:                    &event.Raw,
 	}
-	return &RedeemCreditOutput{
+	return &RedeemStableCreditOutput{
 		Tx:      tx,
 		Receipt: receipt,
 		Event:   redeemStableCreditEvent,
 	}, nil
 }
 
-func RedeemCreditReplaceError(prefix string, abiInput *RedeemCreditInput, err error) error {
+func RedeemStableCreditReplaceError(prefix string, abiInput *RedeemStableCreditInput, err error) error {
 	msg := err.Error()
 	switch {
 	case strings.Contains(msg, "stableCredit not exist"):

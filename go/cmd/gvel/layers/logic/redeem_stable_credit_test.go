@@ -63,17 +63,17 @@ func TestLogic_RedeemCredit(t *testing.T) {
 		h.mockVClient.EXPECT().
 			RedeemCredit(gomock.Any(), &vclient.RedeemCreditInput{
 				RedeemAmount: redeemCreditAmount,
-				AssetCode:     redeemAssetCode,
+				AssetCode:    redeemAssetCode,
 			}).Return(&vclient.RedeemCreditOutput{
 			Tx:      &types.Transaction{},
 			Receipt: &types.Receipt{},
 			Event: &vclient.RedeemCreditEvent{
-				AssetCode:           "vUSD",
-				StableCreditAmount:  redeemCreditAmount,
-				CollateralAssetAddress:"0x03",
-				CollateralAssetCode: collateralAssetCode,
-				CollateralAmount:    collateralAmount,
-				Raw:                 nil,
+				AssetCode:              "vUSD",
+				StableCreditAmount:     redeemCreditAmount,
+				CollateralAssetAddress: "0x03",
+				CollateralAssetCode:    collateralAssetCode,
+				CollateralAmount:       collateralAmount,
+				Raw:                    nil,
 			},
 		}, nil)
 
@@ -218,7 +218,7 @@ func TestLogic_RedeemCredit(t *testing.T) {
 			}).Return(h.mockVClient, nil)
 
 		h.mockVClient.EXPECT().
-			RedeemCredit(gomock.Any(), gomock.AssignableToTypeOf(&vclient.RedeemCreditInput{RedeemAmount:redeemCreditAmount, AssetCode: redeemAssetCode,})).
+			RedeemCredit(gomock.Any(), gomock.AssignableToTypeOf(&vclient.RedeemCreditInput{RedeemAmount: redeemCreditAmount, AssetCode: redeemAssetCode})).
 			Return(nil, errors.New("error here"))
 
 		output, err := h.logic.RedeemCredit(mockedRedeemCreditInput())

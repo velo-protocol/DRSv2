@@ -15,16 +15,16 @@ import (
 	"testing"
 )
 
-func TestValidateRedeemCredit(t *testing.T) {
+func TestValidateRedeemStableCredit(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		redeemStableCreditInput := &RedeemCreditInput{RedeemAmount: "100", AssetCode: "vUSD"}
+		redeemStableCreditInput := &RedeemStableCreditInput{RedeemAmount: "100", AssetCode: "vUSD"}
 		err := redeemStableCreditInput.Validate()
 
 		assert.Nil(t, err)
 	})
 
 	t.Run("fail, should throw error invalid redeemAmount format", func(t *testing.T) {
-		err := (&RedeemCreditInput{
+		err := (&RedeemStableCreditInput{
 			RedeemAmount: "10.12345678",
 			AssetCode:    "vUSD",
 		}).Validate()
@@ -34,7 +34,7 @@ func TestValidateRedeemCredit(t *testing.T) {
 	})
 
 	t.Run("fail, should throw error redeemAmount must be positive", func(t *testing.T) {
-		redeemStableCreditInput := &RedeemCreditInput{RedeemAmount: "-2", AssetCode: "vUSD"}
+		redeemStableCreditInput := &RedeemStableCreditInput{RedeemAmount: "-2", AssetCode: "vUSD"}
 		err := redeemStableCreditInput.Validate()
 
 		assert.NotNil(t, err)
@@ -42,7 +42,7 @@ func TestValidateRedeemCredit(t *testing.T) {
 	})
 
 	t.Run("fail, should throw error assetCode must not be blank", func(t *testing.T) {
-		redeemStableCreditInput := &RedeemCreditInput{RedeemAmount: "100", AssetCode: ""}
+		redeemStableCreditInput := &RedeemStableCreditInput{RedeemAmount: "100", AssetCode: ""}
 		err := redeemStableCreditInput.Validate()
 
 		assert.NotNil(t, err)
@@ -50,7 +50,7 @@ func TestValidateRedeemCredit(t *testing.T) {
 	})
 
 	t.Run("fail, should throw error invalid assetCode format", func(t *testing.T) {
-		redeemStableCreditInput := &RedeemCreditInput{RedeemAmount: "100", AssetCode: "BAD_ASSET_CODE"}
+		redeemStableCreditInput := &RedeemStableCreditInput{RedeemAmount: "100", AssetCode: "BAD_ASSET_CODE"}
 		err := redeemStableCreditInput.Validate()
 
 		assert.NotNil(t, err)
@@ -58,22 +58,22 @@ func TestValidateRedeemCredit(t *testing.T) {
 	})
 }
 
-func TestValidateRedeemCreditToAbiInput(t *testing.T) {
+func TestValidateRedeemStableCreditToAbiInput(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		redeemStableCreditInput := &RedeemCreditInput{RedeemAmount: "100", AssetCode: "vUSD"}
+		redeemStableCreditInput := &RedeemStableCreditInput{RedeemAmount: "100", AssetCode: "vUSD"}
 		abiInput := redeemStableCreditInput.ToAbiInput()
 
 		assert.NotNil(t, abiInput)
 	})
 }
 
-func TestClient_RedeemCredit(t *testing.T) {
+func TestClient_RedeemStableCredit(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &RedeemCreditInput{
+		input := &RedeemStableCreditInput{
 			RedeemAmount: "104",
 			AssetCode:    "vUSD",
 		}
@@ -103,7 +103,7 @@ func TestClient_RedeemCredit(t *testing.T) {
 				CollateralAmount:       big.NewInt(1040000000),
 			}, nil)
 
-		result, err := testHelper.Client.RedeemCredit(context.Background(), input)
+		result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
 		assert.NoError(t, err)
 		assert.NotNil(t, result.Tx)
 		assert.NotNil(t, result.Receipt)
@@ -114,7 +114,7 @@ func TestClient_RedeemCredit(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		result, err := testHelper.Client.RedeemCredit(context.Background(), &RedeemCreditInput{})
+		result, err := testHelper.Client.RedeemStableCredit(context.Background(), &RedeemStableCreditInput{})
 		assert.Error(t, err)
 		assert.Nil(t, result)
 	})
@@ -125,7 +125,7 @@ func TestClient_RedeemCredit(t *testing.T) {
 
 		expectedMsg := "some error has occurred"
 
-		input := &RedeemCreditInput{
+		input := &RedeemStableCreditInput{
 			RedeemAmount: "104",
 			AssetCode:    "vUSD",
 		}
@@ -135,7 +135,7 @@ func TestClient_RedeemCredit(t *testing.T) {
 			Redeem(gomock.AssignableToTypeOf(&bind.TransactOpts{}), abiInput.RedeemAmount, abiInput.AssetCode).
 			Return(nil, errors.New(expectedMsg))
 
-		result, err := testHelper.Client.RedeemCredit(context.Background(), input)
+		result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Contains(t, err.Error(), expectedMsg)
@@ -147,7 +147,7 @@ func TestClient_RedeemCredit(t *testing.T) {
 
 		expectedMsg := "some error has occurred"
 
-		input := &RedeemCreditInput{
+		input := &RedeemStableCreditInput{
 			RedeemAmount: "104",
 			AssetCode:    "vUSD",
 		}
@@ -160,7 +160,7 @@ func TestClient_RedeemCredit(t *testing.T) {
 			ConfirmTx(gomock.AssignableToTypeOf(context.Background()), gomock.AssignableToTypeOf(&types.Transaction{}), gomock.AssignableToTypeOf(common.Address{})).
 			Return(nil, errors.New(expectedMsg))
 
-		result, err := testHelper.Client.RedeemCredit(context.Background(), input)
+		result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Contains(t, err.Error(), expectedMsg)
@@ -172,7 +172,7 @@ func TestClient_RedeemCredit(t *testing.T) {
 
 		expectedMsg := "some error has occurred"
 
-		input := &RedeemCreditInput{
+		input := &RedeemStableCreditInput{
 			RedeemAmount: "104",
 			AssetCode:    "vUSD",
 		}
@@ -196,7 +196,7 @@ func TestClient_RedeemCredit(t *testing.T) {
 			ExtractRedeemEvent("Redeem", gomock.AssignableToTypeOf(&types.Log{})).
 			Return(nil, errors.New(expectedMsg))
 
-		result, err := testHelper.Client.RedeemCredit(context.Background(), input)
+		result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Contains(t, err.Error(), expectedMsg)
@@ -206,7 +206,7 @@ func TestClient_RedeemCredit(t *testing.T) {
 		testHelper := testHelperWithMock(t)
 		defer testHelper.MockController.Finish()
 
-		input := &RedeemCreditInput{
+		input := &RedeemStableCreditInput{
 			RedeemAmount: "104",
 			AssetCode:    "vUSD",
 		}
@@ -225,34 +225,34 @@ func TestClient_RedeemCredit(t *testing.T) {
 				},
 			}, nil)
 
-		result, err := testHelper.Client.RedeemCredit(context.Background(), input)
+		result, err := testHelper.Client.RedeemStableCredit(context.Background(), input)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, fmt.Sprintf("cannot find redeem event from transaction receipt %s", tx.Hash().String()), err.Error())
 	})
 }
 
-func TestRedeemCreditReplaceError(t *testing.T) {
+func TestRedeemStableCreditReplaceError(t *testing.T) {
 	t.Run("parsing an error, stableCredit not exist", func(t *testing.T) {
-		err := RedeemCreditReplaceError("smart contract call error", &RedeemCreditInput{AssetCode: "vUSD"}, errors.New("stableCredit not exist"))
+		err := RedeemStableCreditReplaceError("smart contract call error", &RedeemStableCreditInput{AssetCode: "vUSD"}, errors.New("stableCredit not exist"))
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "the stable credit vUSD is not found")
 		assert.Contains(t, err.Error(), "smart contract call error")
 	})
 	t.Run("parsing an error, valid price not found", func(t *testing.T) {
-		err := RedeemCreditReplaceError("smart contract call error", nil, errors.New("valid price not found"))
+		err := RedeemStableCreditReplaceError("smart contract call error", nil, errors.New("valid price not found"))
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "valid price not found")
 		assert.Contains(t, err.Error(), "smart contract call error")
 	})
 	t.Run("parsing an error, ERC20: burn amount exceeds balance", func(t *testing.T) {
-		err := RedeemCreditReplaceError("smart contract call error", &RedeemCreditInput{AssetCode: "vUSD"}, errors.New("ERC20: burn amount exceeds balance"))
+		err := RedeemStableCreditReplaceError("smart contract call error", &RedeemStableCreditInput{AssetCode: "vUSD"}, errors.New("ERC20: burn amount exceeds balance"))
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "the stable credit vUSD in your address is insufficient")
 		assert.Contains(t, err.Error(), "smart contract call error")
 	})
 	t.Run("parsing an error, any error", func(t *testing.T) {
-		err := RedeemCreditReplaceError("smart contract call error", nil, errors.New("some error has occured"))
+		err := RedeemStableCreditReplaceError("smart contract call error", nil, errors.New("some error has occured"))
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "some error has occured")
 		assert.Contains(t, err.Error(), "smart contract call error")

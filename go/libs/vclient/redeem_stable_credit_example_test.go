@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func ExampleClient_RedeemCredit() {
+func ExampleClient_RedeemStableCredit() {
 	client, err := NewClient(smartContractUrl, "<PRIVATE_KEY>", ContractAddress{
 		DrsAddress:   "<DRS_CONTRACT_ADDRESS>",   // 0xBdA518a6245480652d1A217192EBB299C94F623f
 		HeartAddress: "<HEART_CONTRACT_ADDRESS>", // 0x1623C9c8600319E7CfAff0Ca1c4a05e1a61D954D
@@ -17,7 +17,7 @@ func ExampleClient_RedeemCredit() {
 		panic(err)
 	}
 
-	result, err := client.RedeemCredit(context.Background(), &RedeemCreditInput{
+	result, err := client.RedeemStableCredit(context.Background(), &RedeemStableCreditInput{
 		RedeemAmount: "104",
 		AssetCode:    "vUSD",
 	})
