@@ -14,7 +14,7 @@ func (accountCommand *CommandHandler) Default(_ *cobra.Command, _ []string) {
 	}
 
 	if len(accounts) == 0 {
-		console.ExitWithError(console.ExitError, errors.New("account not found in config file, please run gvel account create or gvel account import"))
+		console.ExitWithError(console.ExitError, errors.New("account not found in config file, please run 'gvel account create' or 'gvel account import'"))
 	}
 
 	accountList := make([]string, len(accounts))
