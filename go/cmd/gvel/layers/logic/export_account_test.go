@@ -65,7 +65,7 @@ func TestLogic_ExportAccount(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, output)
-		assert.Equal(t, "account not found in config file, please run gvel account create or gvel account import: failed to get account from db", err.Error())
+		assert.Contains(t, err.Error(), "default account not found in config file, please run `gvel account create` or `gvel account import`")
 	})
 
 	t.Run("fail, to decrypt the seed of passphrase", func(t *testing.T) {

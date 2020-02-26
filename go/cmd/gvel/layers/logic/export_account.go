@@ -11,7 +11,7 @@ import (
 func (lo *logic) ExportAccount(input *entity.ExportAccountInput) (*entity.ExportAccountOutput, error) {
 	accountBytes, err := lo.DB.Get([]byte(input.PublicAddress))
 	if err != nil && !strings.Contains(err.Error(), "not found") {
-		return nil, errors.Wrapf(err, "account not found in config file, please run gvel account create or gvel account import")
+		return nil, errors.Wrapf(err, "default account not found in config file, please run `gvel account create` or `gvel account import`")
 	}
 
 	var account entity.Account
