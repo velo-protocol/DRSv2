@@ -5,7 +5,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
-	"github.com/velo-protocol/DRSv2/go/libs/vclient"
 	"strings"
 	"testing"
 )
@@ -25,22 +24,18 @@ func TestCommandHandler_Rebalance(t *testing.T) {
 			}).
 			Return([]*entity.RebalanceCollateralOutput{
 				{
-					TxHash: "0xAAAA",
-					RebalanceEvent: vclient.RebalanceEvent{
-						AssetCode:           "vUSD",
-						CollateralAssetCode: "VELO",
-						RequiredAmount:      "100.0000000",
-						PresentAmount:       "120.0000000",
-					},
+					TxHash:              "0xAAAA",
+					AssetCode:           "vUSD",
+					CollateralAssetCode: "VELO",
+					RequiredAmount:      "100.0000000",
+					PresentAmount:       "120.0000000",
 				},
 				{
-					TxHash: "0xBBBB",
-					RebalanceEvent: vclient.RebalanceEvent{
-						AssetCode:           "vSGD",
-						CollateralAssetCode: "VELO",
-						RequiredAmount:      "230.0000000",
-						PresentAmount:       "200.0000000",
-					},
+					TxHash:              "0xBBBB",
+					AssetCode:           "vSGD",
+					CollateralAssetCode: "VELO",
+					RequiredAmount:      "230.0000000",
+					PresentAmount:       "200.0000000",
 				},
 			}, nil)
 

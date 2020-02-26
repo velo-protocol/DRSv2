@@ -2,7 +2,6 @@ package logic_test
 
 import (
 	"errors"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
@@ -28,18 +27,16 @@ func TestLogic_RebalanceCollateral(t *testing.T) {
 		h.mockVClient.EXPECT().
 			Rebalance(gomock.Any(), &vclient.RebalanceInput{}).
 			Return(&vclient.RebalanceOutput{
-				Txs: []*types.Transaction{
-					h.mockTx,
-					h.mockTx2,
-				},
-				Events: []vclient.RebalanceEvent{
+				RebalanceTransactions: []*vclient.RebalanceTransaction{
 					{
+						Tx:                  h.mockTx,
 						AssetCode:           "vUSD",
 						CollateralAssetCode: "VELO",
 						RequiredAmount:      "100.0000000",
 						PresentAmount:       "120.0000000",
 					},
 					{
+						Tx:                  h.mockTx2,
 						AssetCode:           "vSGD",
 						CollateralAssetCode: "VELO",
 						RequiredAmount:      "230.0000000",

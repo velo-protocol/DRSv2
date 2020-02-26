@@ -47,11 +47,14 @@ func (lo *logic) RebalanceCollateral(input *entity.RebalanceCollateralInput) ([]
 	}
 
 	// 5. Map result
-	outputs := make([]*entity.RebalanceCollateralOutput, len(output.Events))
-	for i := range output.Events {
+	outputs := make([]*entity.RebalanceCollateralOutput, len(output.RebalanceTransactions))
+	for i := range output.RebalanceTransactions {
 		outputs[i] = &entity.RebalanceCollateralOutput{
-			TxHash:         output.Txs[i].Hash().String(),
-			RebalanceEvent: output.Events[i],
+			TxHash:              output.RebalanceTransactions[i].Tx.Hash().String(),
+			AssetCode:           output.RebalanceTransactions[i].AssetCode,
+			CollateralAssetCode: output.RebalanceTransactions[i].CollateralAssetCode,
+			RequiredAmount:      output.RebalanceTransactions[i].RequiredAmount,
+			PresentAmount:       output.RebalanceTransactions[i].PresentAmount,
 		}
 	}
 
