@@ -81,7 +81,7 @@ func TestCommandHandler_Export(t *testing.T) {
 
 		logEntries := h.logHook.AllEntries()
 
-		assert.Equal(t, "account not found in config file, please run gvel account create or gvel account import", logEntries[0].Message)
+		assert.Equal(t, "account not found in config file, please run `gvel account create` or `gvel account import`", logEntries[0].Message)
 	})
 
 	t.Run("fail, get account list return error", func(t *testing.T) {
