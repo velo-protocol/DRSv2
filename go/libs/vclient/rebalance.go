@@ -100,24 +100,19 @@ func (c *Client) Rebalance(ctx context.Context, input *RebalanceInput) (*Rebalan
 		}
 		rebalanceTransaction := new(RebalanceTransaction)
 		eventLog := utils.FindLogEvent(receipt.Logs, "Rebalance(string,bytes32,uint256,uint256)")
-		if eventLog == nil {
-			// rebalance equilibrium
+		if eventLog != nil {
 
-			// keep the recent of prevStableCreditAddress from loop
-			prevStableCreditId = curStableCreditId
-			continue
+			eventAbi, err := c.txHelper.ExtractRebalanceEvent("Rebalance", eventLog)
+			if err != nil {
+				return nil, err
+			}
+
+			rebalanceTransaction.ToRebalanceOutput(eventAbi, tx, receipt)
+
+			// Append to rebalanceOutput
+			rebalanceOutput.RebalanceTransactions = append(rebalanceOutput.RebalanceTransactions, rebalanceTransaction)
+
 		}
-
-		eventAbi, err := c.txHelper.ExtractRebalanceEvent("Rebalance", eventLog)
-		if err != nil {
-			return nil, err
-		}
-
-		rebalanceTransaction.ToRebalanceOutput(eventAbi, tx, receipt)
-
-		// Append to rebalanceOutput
-		rebalanceOutput.RebalanceTransactions = append(rebalanceOutput.RebalanceTransactions, rebalanceTransaction)
-
 		// keep the recent of prevStableCreditAddress from loop
 		prevStableCreditId = curStableCreditId
 	}
