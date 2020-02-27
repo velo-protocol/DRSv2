@@ -21,6 +21,6 @@ func (creditCommand *CommandHandler) RedeemCredit(_ *cobra.Command, _ []string) 
 		console.ExitWithError(console.ExitError, err)
 	}
 
-	console.Logger.Infof("%s %s redeemed successfully.", output.RedeemAmount, output.AssetCode)
+	console.Logger.Infof("%s %s redeemed successfully.", output.CollateralAmount, output.CollateralAssetCode)
 	console.Logger.Infof("🔗 Transaction Hash: %s", output.TxHash)
 }

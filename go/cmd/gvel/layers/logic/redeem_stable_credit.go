@@ -52,8 +52,8 @@ func (lo *logic) RedeemCredit(input *entity.RedeemCreditInput) (*entity.RedeemCr
 	}
 
 	return &entity.RedeemCreditOutput{
-		RedeemAmount: output.Event.StableCreditAmount,
-		AssetCode:    output.Event.AssetCode,
-		TxHash:       output.Tx.Hash().String(),
+		CollateralAmount:    output.Event.CollateralAmount,
+		CollateralAssetCode: output.Event.CollateralAssetCode,
+		TxHash:              output.Tx.Hash().String(),
 	}, nil
 }

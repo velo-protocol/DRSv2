@@ -81,9 +81,9 @@ func TestLogic_RedeemCredit(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.NotEmpty(t, output)
-		assert.Equal(t, redeemAssetCode, output.AssetCode)
+		assert.Equal(t, collateralAssetCode, output.CollateralAssetCode)
 		assert.Equal(t, "0xc5b2c658f5fa236c598a6e7fbf7f21413dc42e2a41dd982eb772b30707cba2eb", output.TxHash)
-		assert.Equal(t, redeemCreditAmount, output.RedeemAmount)
+		assert.Equal(t, collateralAmount, output.CollateralAmount)
 	})
 
 	t.Run("fail, failed to load accounts from db", func(t *testing.T) {
