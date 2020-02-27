@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/ecdsa"
+	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -15,7 +16,7 @@ import (
 // Client struct
 type Client struct {
 	conn         *ethclient.Client
-	privateKey   ecdsa.PrivateKey
+	privateKey   *ecdsa.PrivateKey
 	publicKey    common.Address
 	drs          *vabi.DigitalReserveSystem
 	heart        *vabi.Heart
@@ -24,7 +25,7 @@ type Client struct {
 	stableCredit map[string]*vabi.StableCredit
 }
 
-func NewClient(contractUrl, drsAddress, heartAddress string) Client {
+func NewClient(contractUrl, drsAddress, heartAddress, privateKey string) Client {
 	conn, err := ethclient.Dial(contractUrl)
 	if err != nil {
 		panic(err)
@@ -40,10 +41,22 @@ func NewClient(contractUrl, drsAddress, heartAddress string) Client {
 		panic(err)
 	}
 
+	privKey, err := crypto.HexToECDSA(privateKey)
+	if err != nil {
+		panic(err)
+	}
+
+	pubKeyECDSA, ok := privKey.Public().(*ecdsa.PublicKey)
+	if !ok {
+		panic(err)
+	}
+
 	return Client{
 		drs:          drsContract,
 		heart:        heartContract,
 		conn:         conn,
+		privateKey:   privKey,
+		publicKey:    crypto.PubkeyToAddress(*pubKeyECDSA),
 		priceFeeder:  map[string]*vabi.PriceFeeders{},
 		collateral:   map[string]*vabi.Token{},
 		stableCredit: map[string]*vabi.StableCredit{},
@@ -134,7 +147,7 @@ func (i *Client) SetPrice(priceFeederName, assetCode, currency, price string) st
 
 	intRatio, _ := utils.StringToAmount(price)
 
-	opt := bind.NewKeyedTransactor(&i.privateKey)
+	opt := bind.NewKeyedTransactor(i.privateKey)
 	opt.GasLimit = constants.GasLimit
 	result, err := i.priceFeeder[priceFeederName].SetPrice(opt, utils.StringToByte32(assetCode), utils.StringToByte32(currency), intRatio)
 	if err != nil {
@@ -173,23 +186,24 @@ func (i *Client) GetPrice(priceFeederName, assetCode, currency string) string {
 func main() {
 	client := NewClient(
 		"http://127.0.0.1:7545",
-		"0xb06601682f9c32A16C9F3aBE70aACe03676C09C0",
-		"0xf5A513a8CD2ba17836954eC7f3868181302fEfc5",
+		"0xf93BF6d3bE161793F1688dFf38E51341552f5aA9",
+		"0xaC06374fc95955fb495cE3De37f18eCF241e62F7",
+		"91c351a1080a4eb4e63ff2e376f3360ddc469f032fdd6d2b136357a6849758dc",
 	)
 	// price
 	client.AddPriceFeeder("<priceFeederName>", "<priceFeederAddress>")
-	client.GetPrice("<priceFeederName>", "VELO", "USD")
 	client.SetPrice("<priceFeederName>", "VELO", "USD", "1.5")
+	fmt.Println(client.GetPrice("<priceFeederName>", "VELO", "USD"))
 
 	// collateral
-	client.GetCollateralRatio("VELO")
+	fmt.Println(client.GetCollateralRatio("VELO"))
 	client.SetCollateralRatio("VELO", "1.0", "<privateKey>")
 
 	client.AddCollateral("<collateralName>", "<collateralAddress>")
-	client.GetCollateralBalanceOf("<collateralName>", "<address>")
-	client.GetCollateralTotalSupply("<collateralName>")
+	fmt.Println(client.GetCollateralBalanceOf("<collateralName>", "<address>"))
+	fmt.Println(client.GetCollateralTotalSupply("<collateralName>"))
 
 	// stable credit
 	client.AddStableCredit("<stableCreditName>", "<stableCreditAddress>")
-	client.GetStableCreditTotalSupply("<stableCreditName>")
+	fmt.Println(client.GetStableCreditTotalSupply("<stableCreditName>"))
 }
