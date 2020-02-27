@@ -102,6 +102,9 @@ func (c *Client) Rebalance(ctx context.Context, input *RebalanceInput) (*Rebalan
 		eventLog := utils.FindLogEvent(receipt.Logs, "Rebalance(string,bytes32,uint256,uint256)")
 		if eventLog == nil {
 			// rebalance equilibrium
+
+			// keep the recent of prevStableCreditAddress from loop
+			prevStableCreditId = curStableCreditId
 			continue
 		}
 
