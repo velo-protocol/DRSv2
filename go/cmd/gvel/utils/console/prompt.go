@@ -17,7 +17,7 @@ func (prompt *prompt) RequestPassphrase() string {
 	passphrase := prompt.RequestHiddenString("🔑 Please enter passphrase", nil)
 
 	_, err := (&promptui.Prompt{
-		Label: "🔑 Please repeat a passphrase to confirm",
+		Label: "🔑 Please repeat a passphrase to confirm ",
 		Mask:  '*',
 		Validate: func(s string) error {
 			if s != passphrase {
@@ -35,7 +35,7 @@ func (prompt *prompt) RequestPassphrase() string {
 
 func (prompt *prompt) RequestHiddenString(label string, validate promptui.ValidateFunc) string {
 	userInput, err := (&promptui.Prompt{
-		Label:    fmt.Sprintf("%s", label),
+		Label:    fmt.Sprintf("%s ", label),
 		Mask:     '*',
 		Validate: validate,
 	}).Run()
@@ -48,7 +48,7 @@ func (prompt *prompt) RequestHiddenString(label string, validate promptui.Valida
 
 func (prompt *prompt) RequestString(label string, validate promptui.ValidateFunc) string {
 	userInput, err := (&promptui.Prompt{
-		Label:    fmt.Sprintf("%s", label),
+		Label:    fmt.Sprintf("%s ", label),
 		Validate: validate,
 	}).Run()
 
@@ -61,7 +61,7 @@ func (prompt *prompt) RequestString(label string, validate promptui.ValidateFunc
 
 func (prompt *prompt) RequestConfirmation(label string) bool {
 	userInput, err := (&promptui.Prompt{
-		Label: fmt.Sprintf("%s (Yes/no)", label),
+		Label: fmt.Sprintf("%s (Yes/no) ", label),
 		Validate: func(s string) error {
 			if strings.ToLower(s) == "yes" || strings.ToLower(s) == "no" {
 				return nil
@@ -88,7 +88,7 @@ func (prompt *prompt) RequestChoice(label string, choices []string, currentChoic
 	}
 
 	index, _, err := (&promptui.Select{
-		Label: fmt.Sprintf("%s", label),
+		Label: fmt.Sprintf("%s ", label),
 		Items: labelledChoices,
 	}).Run()
 
