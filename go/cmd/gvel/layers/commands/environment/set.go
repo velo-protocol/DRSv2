@@ -21,7 +21,7 @@ func (envCommand *CommandHandler) Set(_ *cobra.Command, _ []string) {
 		envList,
 		console.RequestChoiceOptions{
 			ActiveChoice:      envCommand.AppConfig.GetCurrentEnv(),
-			ActiveChoiceLabel: "Current",
+			ActiveChoiceLabel: constants.CursorCurrent,
 		},
 	)
 
