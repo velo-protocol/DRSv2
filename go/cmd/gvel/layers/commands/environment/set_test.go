@@ -55,7 +55,7 @@ func TestCommandHandler_Set(t *testing.T) {
 		h.mockPrompt.EXPECT().
 			RequestChoice(gomock.AssignableToTypeOf(""), constants.DefaultEnvList, console.RequestChoiceOptions{
 				ActiveChoice:      "",
-				ActiveChoiceLabel: "Current",
+				ActiveChoiceLabel: constants.CursorCurrent,
 			}).
 			Return(0)
 		h.mockLogic.EXPECT().
@@ -82,7 +82,7 @@ func TestCommandHandler_Set(t *testing.T) {
 		h.mockPrompt.EXPECT().
 			RequestChoice(gomock.AssignableToTypeOf(""), constants.DefaultEnvList, console.RequestChoiceOptions{
 				ActiveChoice:      "",
-				ActiveChoiceLabel: "Current",
+				ActiveChoiceLabel: constants.CursorCurrent,
 			}).
 			Return(1)
 		h.mockPrompt.EXPECT().
@@ -122,7 +122,7 @@ func TestCommandHandler_Set(t *testing.T) {
 		h.mockPrompt.EXPECT().
 			RequestChoice(gomock.AssignableToTypeOf(""), constants.DefaultEnvList, console.RequestChoiceOptions{
 				ActiveChoice:      constants.EnvMainNet,
-				ActiveChoiceLabel: "Current",
+				ActiveChoiceLabel: constants.CursorCurrent,
 			}).
 			Return(1)
 		h.mockPrompt.EXPECT().
