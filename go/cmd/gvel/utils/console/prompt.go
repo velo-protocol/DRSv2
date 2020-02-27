@@ -19,7 +19,6 @@ func (prompt *prompt) RequestPassphrase() string {
 	_, err := (&promptui.Prompt{
 		Label: "🔑 Please repeat a passphrase to confirm",
 		Mask:  '*',
-
 		Validate: func(s string) error {
 			if s != passphrase {
 				return errors.New("passphrase does not match")
