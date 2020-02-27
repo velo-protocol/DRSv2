@@ -31,9 +31,9 @@ func TestCommandHandler_RedeemCredit(t *testing.T) {
 				Passphrase:   "password",
 			}).
 			Return(&entity.RedeemCreditOutput{
-				RedeemAmount: "104",
-				AssetCode:    "vUSD",
-				TxHash:       h.mockTx.Hash().String(),
+				CollateralAmount:    "104",
+				CollateralAssetCode: "vUSD",
+				TxHash:              h.mockTx.Hash().String(),
 			}, nil)
 
 		h.commandHandler.RedeemCredit(nil, nil)
