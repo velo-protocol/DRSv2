@@ -3,6 +3,7 @@ package account
 import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/velo-protocol/DRSv2/go/cmd/gvel/constants"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
@@ -25,7 +26,10 @@ func (accountCommand *CommandHandler) Export(_ *cobra.Command, _ []string) {
 	choiceIndex := accountCommand.Prompt.RequestChoice(
 		"Please select the account you want to export",
 		accountList,
-		accountCommand.AppConfig.GetDefaultAccount(),
+		console.RequestChoiceOptions{
+			ActiveChoice:      accountCommand.AppConfig.GetDefaultAccount(),
+			ActiveChoiceLabel: constants.CursorDefault,
+		},
 	)
 	selectedAccountExport := accountList[choiceIndex]
 

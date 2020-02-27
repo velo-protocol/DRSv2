@@ -3,6 +3,7 @@ package account
 import (
 	"errors"
 	"github.com/spf13/cobra"
+	"github.com/velo-protocol/DRSv2/go/cmd/gvel/constants"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
@@ -25,7 +26,10 @@ func (accountCommand *CommandHandler) Default(_ *cobra.Command, _ []string) {
 	choiceIndex := accountCommand.Prompt.RequestChoice(
 		"Please select the account you want to make default",
 		accountList,
-		accountCommand.AppConfig.GetDefaultAccount(),
+		console.RequestChoiceOptions{
+			ActiveChoice:      accountCommand.AppConfig.GetDefaultAccount(),
+			ActiveChoiceLabel: constants.CursorCurrent,
+		},
 	)
 	selectedAccountDefault := accountList[choiceIndex]
 

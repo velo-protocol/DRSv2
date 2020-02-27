@@ -76,11 +76,16 @@ func (prompt *prompt) RequestConfirmation(label string) bool {
 	return strings.ToLower(userInput) == "yes"
 }
 
-func (prompt *prompt) RequestChoice(label string, choices []string, currentChoice string) int {
+type RequestChoiceOptions struct {
+	ActiveChoice      string
+	ActiveChoiceLabel string
+}
+
+func (prompt *prompt) RequestChoice(label string, choices []string, opt RequestChoiceOptions) int {
 	labelledChoices := make([]string, len(choices))
 	for i, choice := range choices {
-		if strings.ToLower(currentChoice) == strings.ToLower(choice) {
-			choice = fmt.Sprintf("%s (Current)", choice)
+		if strings.ToLower(opt.ActiveChoice) == strings.ToLower(choice) {
+			choice = fmt.Sprintf("%s (%s)", choice, opt.ActiveChoiceLabel)
 		}
 
 		choice = fmt.Sprintf("%d. %s", i+1, choice)

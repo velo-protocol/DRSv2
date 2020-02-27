@@ -19,7 +19,10 @@ func (envCommand *CommandHandler) Set(_ *cobra.Command, _ []string) {
 	choiceIndex := envCommand.Prompt.RequestChoice(
 		"Pick the env you want to use",
 		envList,
-		envCommand.AppConfig.GetCurrentEnv(),
+		console.RequestChoiceOptions{
+			ActiveChoice:      envCommand.AppConfig.GetCurrentEnv(),
+			ActiveChoiceLabel: constants.CursorCurrent,
+		},
 	)
 
 	chosenEnv := strings.ToLower(envList[choiceIndex])

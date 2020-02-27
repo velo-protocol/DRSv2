@@ -7,6 +7,7 @@ package mockutils
 import (
 	gomock "github.com/golang/mock/gomock"
 	promptui "github.com/manifoldco/promptui"
+	console "github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 	reflect "reflect"
 )
 
@@ -90,15 +91,15 @@ func (mr *MockPromptMockRecorder) RequestConfirmation(label interface{}) *gomock
 }
 
 // RequestChoice mocks base method
-func (m *MockPrompt) RequestChoice(label string, choices []string, currentChoice string) int {
+func (m *MockPrompt) RequestChoice(label string, choices []string, opt console.RequestChoiceOptions) int {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RequestChoice", label, choices, currentChoice)
+	ret := m.ctrl.Call(m, "RequestChoice", label, choices, opt)
 	ret0, _ := ret[0].(int)
 	return ret0
 }
 
 // RequestChoice indicates an expected call of RequestChoice
-func (mr *MockPromptMockRecorder) RequestChoice(label, choices, currentChoice interface{}) *gomock.Call {
+func (mr *MockPromptMockRecorder) RequestChoice(label, choices, opt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RequestChoice", reflect.TypeOf((*MockPrompt)(nil).RequestChoice), label, choices, currentChoice)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RequestChoice", reflect.TypeOf((*MockPrompt)(nil).RequestChoice), label, choices, opt)
 }

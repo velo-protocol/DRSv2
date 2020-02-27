@@ -4,6 +4,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"github.com/velo-protocol/DRSv2/go/cmd/gvel/constants"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/entity"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 	"testing"
@@ -43,7 +44,10 @@ func TestCommandHandler_Default(t *testing.T) {
 			Return("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2")
 
 		h.mockPrompt.EXPECT().
-			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to make default"), mockAccountList, "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2").
+			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to make default"), mockAccountList, console.RequestChoiceOptions{
+				ActiveChoice:      "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2",
+				ActiveChoiceLabel: constants.CursorCurrent,
+			}).
 			Return(0)
 
 		h.mockLogic.EXPECT().
@@ -87,7 +91,10 @@ func TestCommandHandler_Default(t *testing.T) {
 			Return("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2")
 
 		h.mockPrompt.EXPECT().
-			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to make default"), mockAccountList, "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2").
+			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to make default"), mockAccountList, console.RequestChoiceOptions{
+				ActiveChoice:      "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2",
+				ActiveChoiceLabel: constants.CursorCurrent,
+			}).
 			Return(1)
 
 		h.mockLogic.EXPECT().
@@ -165,7 +172,10 @@ func TestCommandHandler_Default(t *testing.T) {
 			Return("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2")
 
 		h.mockPrompt.EXPECT().
-			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to make default"), mockAccountList, "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2").
+			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to make default"), mockAccountList, console.RequestChoiceOptions{
+				ActiveChoice:      "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2",
+				ActiveChoiceLabel: constants.CursorCurrent,
+			}).
 			Return(0)
 
 		h.mockLogic.EXPECT().
