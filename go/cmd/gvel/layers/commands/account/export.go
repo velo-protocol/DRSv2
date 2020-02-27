@@ -25,7 +25,10 @@ func (accountCommand *CommandHandler) Export(_ *cobra.Command, _ []string) {
 	choiceIndex := accountCommand.Prompt.RequestChoice(
 		"Please select the account you want to export",
 		accountList,
-		accountCommand.AppConfig.GetDefaultAccount(),
+		console.RequestChoiceOptions{
+			ActiveChoice:      accountCommand.AppConfig.GetDefaultAccount(),
+			ActiveChoiceLabel: "Default",
+		},
 	)
 	selectedAccountExport := accountList[choiceIndex]
 

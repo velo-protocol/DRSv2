@@ -43,7 +43,10 @@ func TestCommandHandler_Export(t *testing.T) {
 			Return("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2")
 
 		h.mockPrompt.EXPECT().
-			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to export"), mockAccountList, "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2").
+			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to export"), mockAccountList, console.RequestChoiceOptions{
+				ActiveChoice:      "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2",
+				ActiveChoiceLabel: "Default",
+			}).
 			Return(0)
 
 		h.mockPrompt.EXPECT().
@@ -127,7 +130,10 @@ func TestCommandHandler_Export(t *testing.T) {
 			Return("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2")
 
 		h.mockPrompt.EXPECT().
-			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to export"), mockAccountList, "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2").
+			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to export"), mockAccountList, console.RequestChoiceOptions{
+				ActiveChoice:      "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2",
+				ActiveChoiceLabel: "Default",
+			}).
 			Return(0)
 
 		h.mockPrompt.EXPECT().

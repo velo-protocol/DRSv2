@@ -43,7 +43,10 @@ func TestCommandHandler_Default(t *testing.T) {
 			Return("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2")
 
 		h.mockPrompt.EXPECT().
-			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to make default"), mockAccountList, "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2").
+			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to make default"), mockAccountList, console.RequestChoiceOptions{
+				ActiveChoice:      "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2",
+				ActiveChoiceLabel: "Current",
+			}).
 			Return(0)
 
 		h.mockLogic.EXPECT().
@@ -87,7 +90,10 @@ func TestCommandHandler_Default(t *testing.T) {
 			Return("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2")
 
 		h.mockPrompt.EXPECT().
-			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to make default"), mockAccountList, "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2").
+			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to make default"), mockAccountList, console.RequestChoiceOptions{
+				ActiveChoice:      "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2",
+				ActiveChoiceLabel: "Current",
+			}).
 			Return(1)
 
 		h.mockLogic.EXPECT().
@@ -165,7 +171,10 @@ func TestCommandHandler_Default(t *testing.T) {
 			Return("0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2")
 
 		h.mockPrompt.EXPECT().
-			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to make default"), mockAccountList, "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2").
+			RequestChoice(gomock.AssignableToTypeOf("Please select the account you want to make default"), mockAccountList, console.RequestChoiceOptions{
+				ActiveChoice:      "0x0f1D6Ad59AE485A9ec31b36154093820337bdEA2",
+				ActiveChoiceLabel: "Current",
+			}).
 			Return(0)
 
 		h.mockLogic.EXPECT().
