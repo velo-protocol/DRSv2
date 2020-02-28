@@ -6,10 +6,10 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
 
-func (creditCommand *CommandHandler) RedeemCredit(_ *cobra.Command, _ []string) {
+func (creditCommand *CommandHandler) Redeem(_ *cobra.Command, _ []string) {
 	redeemStableCreditInput := &entity.RedeemCreditInput{
 		RedeemAmount: creditCommand.Prompt.RequestString("Please input amount of stable credit", nil),
-		AssetCode:    creditCommand.Prompt.RequestString("Please enter asset code of credit to be redeemed", nil),
+		AssetCode:    creditCommand.Prompt.RequestString("Please input asset code of credit to be redeemed", nil),
 		Passphrase:   creditCommand.Prompt.RequestHiddenString("🔑 Please input passphrase", nil),
 	}
 
@@ -21,6 +21,6 @@ func (creditCommand *CommandHandler) RedeemCredit(_ *cobra.Command, _ []string) 
 		console.ExitWithError(console.ExitError, err)
 	}
 
-	console.Logger.Infof("%s %s redeemed successfully.", output.CollateralAmount, output.CollateralAssetCode)
+	console.Logger.Infof("Redeemed successfully. You got %s %s.", output.CollateralAmount, output.CollateralAssetCode)
 	console.Logger.Infof("🔗 Transaction Hash: %s", output.TxHash)
 }
