@@ -1,8 +1,8 @@
 pragma solidity ^0.5.0;
 
-import "../../../contracts/modules/interfaces/IPRS.sol";
+import "../../../contracts/modules/interfaces/IFeeder.sol";
 
-contract MockIPRS is IPRS {
+contract MockIPRS is IFeeder {
 
     uint256 public value;
 
