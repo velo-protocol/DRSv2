@@ -21,7 +21,7 @@ func TestCommandHandler_MintByCollateral(t *testing.T) {
 		defer h.done()
 
 		h.mockPrompt.EXPECT().
-			RequestString("Please enter asset code of credit to be minted", nil).
+			RequestString("Please input asset code of credit to be minted", nil).
 			Return(assetCode)
 		h.mockPrompt.EXPECT().
 			RequestString("Please input amount of collateral", nil).
@@ -55,7 +55,7 @@ func TestCommandHandler_MintByCollateral(t *testing.T) {
 		defer h.done()
 
 		h.mockPrompt.EXPECT().
-			RequestString("Please enter asset code of credit to be minted", nil).
+			RequestString("Please input asset code of credit to be minted", nil).
 			Return(assetCode)
 		h.mockPrompt.EXPECT().
 			RequestString("Please input amount of collateral", nil).
