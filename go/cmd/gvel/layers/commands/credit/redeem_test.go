@@ -31,8 +31,8 @@ func TestCommandHandler_Redeem(t *testing.T) {
 				Passphrase:   "password",
 			}).
 			Return(&entity.RedeemCreditOutput{
-				CollateralAmount:    "104",
-				CollateralAssetCode: "vUSD",
+				CollateralAmount:    "10.4000000",
+				CollateralAssetCode: "VELO",
 				TxHash:              h.mockTx.Hash().String(),
 			}, nil)
 
@@ -40,7 +40,7 @@ func TestCommandHandler_Redeem(t *testing.T) {
 
 		logs := h.loggerHook.AllEntries()
 		assert.Len(t, logs, 2)
-		assert.Equal(t, "104 vUSD redeemed successfully.", logs[0].Message)
+		assert.Equal(t, "Redeemed successfully. You got 10.4000000 VELO.", logs[0].Message)
 		assert.Equal(t, "🔗 Transaction Hash: "+h.mockTx.Hash().String(), logs[1].Message)
 	})
 
