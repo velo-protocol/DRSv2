@@ -8,7 +8,7 @@ import (
 
 func (creditCommand *CommandHandler) MintByCollateral(_ *cobra.Command, _ []string) {
 	mintCreditByCollateralInput := &entity.MintCreditByCollateralInput{
-		AssetCode:        creditCommand.Prompt.RequestString("Please enter asset code of credit to be minted", nil),
+		AssetCode:        creditCommand.Prompt.RequestString("Please input asset code of credit to be minted", nil),
 		CollateralAmount: creditCommand.Prompt.RequestString("Please input amount of collateral", nil),
 		Passphrase:       creditCommand.Prompt.RequestHiddenString("🔑 Please input passphrase", nil),
 	}
