@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestCommandHandler_RedeemCredit(t *testing.T) {
+func TestCommandHandler_Redeem(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		h := initTest(t)
@@ -18,7 +18,7 @@ func TestCommandHandler_RedeemCredit(t *testing.T) {
 			RequestString("Please input amount of stable credit", nil).
 			Return("104")
 		h.mockPrompt.EXPECT().
-			RequestString("Please enter asset code of credit to be redeemed", nil).
+			RequestString("Please input asset code of credit to be redeemed", nil).
 			Return("vUSD")
 		h.mockPrompt.EXPECT().
 			RequestHiddenString("🔑 Please input passphrase", nil).
@@ -36,7 +36,7 @@ func TestCommandHandler_RedeemCredit(t *testing.T) {
 				TxHash:              h.mockTx.Hash().String(),
 			}, nil)
 
-		h.commandHandler.RedeemCredit(nil, nil)
+		h.commandHandler.Redeem(nil, nil)
 
 		logs := h.loggerHook.AllEntries()
 		assert.Len(t, logs, 2)
@@ -52,7 +52,7 @@ func TestCommandHandler_RedeemCredit(t *testing.T) {
 			RequestString("Please input amount of stable credit", nil).
 			Return("104")
 		h.mockPrompt.EXPECT().
-			RequestString("Please enter asset code of credit to be redeemed", nil).
+			RequestString("Please input asset code of credit to be redeemed", nil).
 			Return("vUSD")
 		h.mockPrompt.EXPECT().
 			RequestHiddenString("🔑 Please input passphrase", nil).
@@ -67,7 +67,7 @@ func TestCommandHandler_RedeemCredit(t *testing.T) {
 			Return(nil, errors.New("some error has occurred"))
 
 		assert.PanicsWithValue(t, console.ExitError, func() {
-			h.commandHandler.RedeemCredit(nil, nil)
+			h.commandHandler.Redeem(nil, nil)
 		})
 	})
 }

@@ -94,7 +94,7 @@ func (creditCommand *CommandHandler) GetRedeemCreditCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   constants.CmdCreditRedeem,
 		Short: "Redeem stable credit to collateral Asset on Velo",
-		Run:   creditCommand.RedeemCredit,
+		Run:   creditCommand.Redeem,
 	}
 
 	return command
