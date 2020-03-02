@@ -21,7 +21,7 @@ contract Medianizer is Initializable, IMedianizer {
 
     uint8 public minFedPrices = 0x1;
 
-    event PriceSet(uint256 price, bool isErr);
+    event MedianSet(uint256 price, bool isErr);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Med.onlyOwner: caller must be an owner of this contract");
@@ -40,7 +40,7 @@ contract Medianizer is Initializable, IMedianizer {
     function post() external {
         (uint256 newMedPrice, bool isErr) = compute();
         _set(newMedPrice);
-        emit PriceSet(newMedPrice, isErr);
+        emit MedianSet(newMedPrice, isErr);
     }
 
     function compute() public view returns (uint256, bool) {
