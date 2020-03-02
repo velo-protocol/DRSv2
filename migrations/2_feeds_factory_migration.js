@@ -1,7 +1,5 @@
-const Web3 = require('web3');
-
-const FeedsFactory = artifacts.require('FeedsFactory');
+const FeederFactory = artifacts.require('FeederFactory');
 
 module.exports = async function (deployer) {
-    await deployer.deploy(FeedsFactory);
+    await deployer.deploy(FeederFactory);
 };

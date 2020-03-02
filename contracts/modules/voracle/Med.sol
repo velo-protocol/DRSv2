@@ -1,11 +1,11 @@
 pragma solidity ^0.5.0;
 
 import "../book-room/LL.sol";
-import "../interfaces/IPRS.sol";
+import "../interfaces/IFeeder.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
-contract Med is Initializable, IPRS {
+contract Med is Initializable, IFeeder {
     using SafeMath for uint256;
 
     address public gov;
@@ -46,7 +46,7 @@ contract Med is Initializable, IPRS {
         uint8 controller = 0;
 
         for(uint8 i = 0; curr != address(1); i++) {
-            (uint256 fedPrice, bool isErr) = IPRS(curr).getWithError();
+            (uint256 fedPrice, bool isErr) = IFeeder(curr).getWithError();
             if(!isErr) {
                 if(controller == 0 || fedPrice >= fedPrices[controller - 1]) {
                     fedPrices[controller] = fedPrice;

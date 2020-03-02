@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
 import "../book-room/LL.sol";
-import "../interfaces/IPRS.sol";
+import "../interfaces/IFeeder.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
 contract Lag {
@@ -85,7 +85,7 @@ contract Lag {
 
     function post() external haltable {
         require(isLagTimePass(), "Lag | lagTime isn't pass yet");
-        (uint256 medPrice, bool isErr) = IPRS(priceRefStorage).getWithError();
+        (uint256 medPrice, bool isErr) = IFeeder(priceRefStorage).getWithError();
         if (!isErr) {
             curr = next;
             next = MedPrice(medPrice, isErr);

@@ -1,10 +1,10 @@
-const Feeds = artifacts.require("Feeds");
+const Feeder = artifacts.require("Feeder");
 
-contract("Feeds test", async accounts => {
+contract("Feeder test", async accounts => {
   let feeds;
 
   beforeEach(async () => {
-    feeds = await Feeds.new(accounts[0]);
+    feeds = await Feeder.new(accounts[0], web3.utils.fromAscii("USD"), web3.utils.fromAscii("VELO"));
   });
 
   it("should set correctly", async () => {

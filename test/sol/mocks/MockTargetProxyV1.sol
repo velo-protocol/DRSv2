@@ -1,9 +1,9 @@
 pragma solidity ^0.5.0;
 
-import "../../../contracts/modules/interfaces/IPRS.sol";
+import "../../../contracts/modules/interfaces/IFeeder.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
-contract MockTargetProxyV1 is Initializable, IPRS {
+contract MockTargetProxyV1 is Initializable, IFeeder {
 
     uint256 public value;
 
