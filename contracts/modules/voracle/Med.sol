@@ -2,10 +2,11 @@ pragma solidity ^0.5.0;
 
 import "../book-room/LL.sol";
 import "../interfaces/IFeeder.sol";
+import "../interfaces/IMED.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
-contract Med is Initializable, IFeeder {
+contract Med is Initializable, IMED {
     using SafeMath for uint256;
 
     address public gov;
