@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 
 import "../../../contracts/modules/interfaces/IFeeder.sol";
 
-contract MockIPRS is IFeeder {
+contract MockIFeeder is IFeeder {
 
     uint256 public value;
 
@@ -19,6 +19,10 @@ contract MockIPRS is IFeeder {
     }
     function set(uint256 newValue) external {
         value = newValue;
+    }
+
+    function enable() external {
+        // do something
     }
 
     function disable() external {

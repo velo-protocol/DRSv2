@@ -1,27 +1,28 @@
 pragma solidity ^0.5.0;
 
-import "../../../contracts/modules/voracle/Med.sol";
-import "../mocks/MockIPRS.sol";
+import "../../../contracts/modules/voracle/Medianizer.sol";
+import "../mocks/MockIFeeder.sol";
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
 
-contract TestMed {
-    MockIPRS public mockIPRS1;
-    MockIPRS public mockIPRS2;
+contract TestMedianizer {
+    MockIFeeder public mockIFeeder1;
+    MockIFeeder public mockIFeeder2;
 
     constructor() public {
-        mockIPRS1 = new MockIPRS(100);
-        mockIPRS2 = new MockIPRS(120);
+        mockIFeeder1 = new MockIFeeder(100);
+        mockIFeeder2 = new MockIFeeder(120);
     }
 
     function testInitialize() public {
-        Med med = Med(DeployedAddresses.Med());
-        med.initialize(address(this), "VELOUSD");
-        Assert.equal(med.pair(), "VELOUSD", "pair must be VELOUSD");
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
+        med.initialize(address(this), "USD", "VELO");
+        Assert.equal(med.fiatCode(), "USD", "fiatCode must be USD");
+        Assert.equal(med.collateralCode(), "VELO", "fiatCode must be VELO");
     }
 
     function testGetWhenPriceIsLessThanZero() public {
-        Med med = Med(DeployedAddresses.Med());
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
         (bool r, ) = address(med).call(abi.encodePacked(med.get.selector));
 
@@ -29,7 +30,7 @@ contract TestMed {
     }
 
     function testGetWithErrorWhenPriceIsLessThanZero() public {
-        Med med = Med(DeployedAddresses.Med());
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
         (uint256 price, bool isErr) = med.getWithError();
 
@@ -38,7 +39,7 @@ contract TestMed {
     }
 
     function testSetMinFedPrices() public {
-        Med med = Med(DeployedAddresses.Med());
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
         med.setMinFedPrices(2);
         Assert.equal(uint(med.minFedPrices()), uint(2), "minFedPrices must be 2");
 
@@ -47,23 +48,23 @@ contract TestMed {
     }
 
     function testAddFeeder() public {
-        Med med = Med(DeployedAddresses.Med());
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
-        med.addFeeder(address(mockIPRS1));
-        med.addFeeder(address(mockIPRS2));
+        med.addFeeder(address(mockIFeeder1));
+        med.addFeeder(address(mockIFeeder2));
 
         address[] memory feeders = med.getFeeders();
 
-        Assert.equal(feeders[0], address(mockIPRS2), "feeder[0] must be address(mockIPRS2)");
-        Assert.equal(feeders[1], address(mockIPRS1), "feeder[1] must be address(mockIPRS1)");
+        Assert.equal(feeders[0], address(mockIFeeder2), "feeder[0] must be address(mockIPRS2)");
+        Assert.equal(feeders[1], address(mockIFeeder1), "feeder[1] must be address(mockIPRS1)");
         Assert.equal(feeders.length, 2, "feeders.length must be 2");
     }
 
     function testRemoveFeeder() public {
-        Med med = Med(DeployedAddresses.Med());
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
-        med.removeFeeder(address(mockIPRS1), address(mockIPRS2));
-        med.removeFeeder(address(mockIPRS2), address(1));
+        med.removeFeeder(address(mockIFeeder1), address(mockIFeeder2));
+        med.removeFeeder(address(mockIFeeder2), address(1));
 
         address[] memory feeders = med.getFeeders();
 
@@ -71,22 +72,22 @@ contract TestMed {
     }
 
     function testComputeOddFeeder() public {
-        Med med = Med(DeployedAddresses.Med());
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
-        med.addFeeder(address(mockIPRS1));
+        med.addFeeder(address(mockIFeeder1));
         (uint256 median, bool isErr) = med.compute();
 
         Assert.equal(median, 100, "median must be 100");
         Assert.equal(isErr, false, "isErr must be false");
 
-        med.removeFeeder(address(mockIPRS1), address(1));
+        med.removeFeeder(address(mockIFeeder1), address(1));
         address[] memory feeders = med.getFeeders();
 
         Assert.equal(feeders.length, 0, "feeders.length must be 0");
     }
 
     function testComputeEvenFeeder() public {
-        Med med = Med(DeployedAddresses.Med());
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
         testAddFeeder();
 
@@ -99,12 +100,12 @@ contract TestMed {
     }
 
     function testPost() public {
-        Med med = Med(DeployedAddresses.Med());
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
-        med.addFeeder(address(mockIPRS1));
-        med.addFeeder(address(mockIPRS2));
+        med.addFeeder(address(mockIFeeder1));
+        med.addFeeder(address(mockIFeeder2));
 
-        mockIPRS1.set(130);
+        mockIFeeder1.set(130);
 
         med.post();
 
@@ -114,7 +115,7 @@ contract TestMed {
     }
 
     function testGet() public {
-        Med med = Med(DeployedAddresses.Med());
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
         uint256 medianPrice = med.get();
 
@@ -122,7 +123,7 @@ contract TestMed {
     }
 
     function testGetWithError() public {
-        Med med = Med(DeployedAddresses.Med());
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
         (uint256 medianPrice, bool isErr) = med.getWithError();
 
@@ -131,21 +132,27 @@ contract TestMed {
     }
 
     function testNoOtherCanCallSet() public {
-        Med med = Med(DeployedAddresses.Med());
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
         (bool r, ) = address(med).call(abi.encodePacked(med.set.selector));
 
         Assert.equal(r, false, "med.set(...) must throw error");
     }
 
+    function testEnable() public {
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
+        med.enable();
+        Assert.equal(med.active(), true, "active must be true");
+    }
+
     function testDisable() public {
-        Med med = Med(DeployedAddresses.Med());
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
         med.disable();
         Assert.equal(med.active(), false, "active must be false");
     }
 
     function testGetWithErrorWhenActiveIsFalse() public {
-        Med med = Med(DeployedAddresses.Med());
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
         (uint256 price, bool isErr) = med.getWithError();
 
