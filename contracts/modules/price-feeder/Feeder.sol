@@ -8,10 +8,10 @@ contract Feeder is IFeeder {
     uint256 public valueTimestamp;
     bool public active;
 
-    bytes32 fiatCode;
-    bytes32 collateralCode;
+    bytes32 public fiatCode;
+    bytes32 public collateralCode;
 
-    event LogPriceSet(uint256 prevValue, uint prevTimestamp, uint curPrice, uint curTimestamp);
+    event PriceSet(uint256 prevValue, uint prevTimestamp, uint curPrice, uint curTimestamp);
 
     constructor(address _owner, bytes32 _fiatCode, bytes32 _collateralCode) public {
         active = true;
@@ -43,7 +43,7 @@ contract Feeder is IFeeder {
         value = newValue;
         valueTimestamp = block.timestamp;
 
-        emit LogPriceSet(
+        emit PriceSet(
             oldValue,
             oldTimestamp,
             value,
@@ -58,5 +58,4 @@ contract Feeder is IFeeder {
     function disable() external onlyOwner {
         active = false;
     }
-
 }
