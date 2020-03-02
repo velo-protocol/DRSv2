@@ -2,35 +2,37 @@ pragma solidity ^0.5.0;
 
 import "../book-room/LL.sol";
 import "../interfaces/IFeeder.sol";
-import "../interfaces/IMED.sol";
+import "../interfaces/IMedianizer.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
-contract Med is Initializable, IMED {
+contract Medianizer is Initializable, IMedianizer {
     using SafeMath for uint256;
-
-    address public gov;
-    bool public active;
 
     LL.List public feeders;
     using LL for LL.List;
 
+    address public owner;
+    bool public active;
     uint256 public price;
     bytes32 public pair;
+    bytes32 public fiatCode;
+    bytes32 public collateralCode;
 
     uint8 public minFedPrices = 0x1;
 
-    event LogMedPrice(uint256 price, bool isErr);
+    event PriceSet(uint256 price, bool isErr);
 
-    modifier onlyGov() {
-        require(msg.sender == gov, "Med | caller must be GOV");
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Med.onlyOwner: caller must be an owner of this contract");
         _;
     }
 
-    function initialize(address _gov, bytes32 _pair) public initializer {
+    function initialize(address _owner, bytes32 _fiatCode, bytes32 _collateralCode) public initializer {
         active = true;
-        gov = _gov;
-        pair = _pair;
+        owner = _owner;
+        fiatCode = _fiatCode;
+        collateralCode = _collateralCode;
 
         feeders.init();
     }
@@ -38,7 +40,7 @@ contract Med is Initializable, IMED {
     function post() external {
         (uint256 newMedPrice, bool isErr) = compute();
         _set(newMedPrice);
-        emit LogMedPrice(newMedPrice, isErr);
+        emit PriceSet(newMedPrice, isErr);
     }
 
     function compute() public view returns (uint256, bool) {
@@ -82,12 +84,12 @@ contract Med is Initializable, IMED {
         return (medPrice, false);
     }
 
-    function setMinFedPrices(uint8 newMinFedPrices) onlyGov public {
+    function setMinFedPrices(uint8 newMinFedPrices) onlyOwner public {
         require(newMinFedPrices != 0, "Med | minFedPrices must more than 0");
         minFedPrices = newMinFedPrices;
     }
 
-    function addFeeder(address feeder) onlyGov public {
+    function addFeeder(address feeder) onlyOwner public {
         feeders.add(feeder);
     }
 
@@ -117,7 +119,11 @@ contract Med is Initializable, IMED {
         price = newPrice;
     }
 
-    function disable() onlyGov external {
+    function enable() onlyOwner external {
+        active = true;
+    }
+
+    function disable() onlyOwner external {
         active = false;
     }
 }

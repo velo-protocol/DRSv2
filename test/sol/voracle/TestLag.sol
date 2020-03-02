@@ -1,14 +1,14 @@
 pragma solidity ^0.5.0;
 
 import "../../../contracts/modules/voracle/Lag.sol";
-import "../mocks/MockIPRS.sol";
+import "../mocks/MockIFeeder.sol";
 import "truffle/Assert.sol";
 
 contract TestLag {
     Lag public lag;
     Lag public lagNoneGov;
-    MockIPRS public mockIPRS;
-    MockIPRS public mockIPRS2;
+    MockIFeeder public mockIPRS;
+    MockIFeeder public mockIPRS2;
 
     function beforeEach() public {
         mockIPRS = new MockIPRS(10);
