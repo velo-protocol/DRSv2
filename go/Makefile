@@ -10,6 +10,7 @@ abigen/gen/all:
 	abigen --abi ../build/contracts/abi/StableCredit.abi --bin ../build/contracts/bin/StableCredit.bin --pkg vabi --type StableCredit --out abi/stable_credit.go
 	abigen --abi ../build/contracts/abi/Token.abi --bin ../build/contracts/bin/Token.bin --pkg vabi --type Token --out abi/token.go
 	abigen --abi ../build/contracts/abi/PriceFeeders.abi --bin ../build/contracts/bin/PriceFeeders.bin --pkg vabi --type PriceFeeders --out abi/price_feeders.go
+	abigen --abi ../build/contracts/abi/Feeder.abi --bin ../build/contracts/bin/Feeder.bin --pkg vabi --type Feeder --out abi/feeder.go
 
 format:
 	go fmt ./...
