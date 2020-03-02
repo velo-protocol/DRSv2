@@ -32,7 +32,7 @@ module.exports = async (deployer, network, accounts) => {
     const thbFeeder = await Feeder.at(thbFeederAddr);
     await thbFeeder.set(53000000); // 5.3 THB/VELO
 
-    const sgdFeeder = await Feeder.at(thbFeederAddr);
+    const sgdFeeder = await Feeder.at(sgdFeederAddr);
     await sgdFeeder.set(27000000); // 2.7 THB/VELO
   }
 };
