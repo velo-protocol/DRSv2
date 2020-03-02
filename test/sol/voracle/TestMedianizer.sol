@@ -159,4 +159,16 @@ contract TestMedianizer {
         Assert.equal(price, 125, "med.getWithError() must return price = 125");
         Assert.equal(isErr, true, "med.getWithError() must return isErr = true");
     }
+
+    function testSetValidityPeriod() public {
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
+        med.setValidityPeriod(20);
+        Assert.equal(med.validityPeriod(), 20 minutes, "validityPeriod must be 20 minutes");
+    }
+
+    function testGetValidityPeriod() public {
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
+        med.setValidityPeriod(25);
+        Assert.equal(med.getValidityPeriod(), 25, "validityPeriod must be 25");
+    }
 }

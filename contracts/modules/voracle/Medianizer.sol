@@ -20,6 +20,7 @@ contract Medianizer is Initializable, IMedianizer {
     bytes32 public collateralCode;
 
     uint8 public minFedPrices = 0x1;
+    uint256 public validityPeriod = 15 minutes;
 
     event MedianSet(uint256 price, bool isErr);
 
@@ -48,18 +49,18 @@ contract Medianizer is Initializable, IMedianizer {
         uint256[] memory fedPrices = new uint256[](feeders.llSize);
         uint8 controller = 0;
 
-        for(uint8 i = 0; curr != address(1); i++) {
+        for (uint8 i = 0; curr != address(1); i++) {
             (uint256 fedPrice, bool isErr) = IFeeder(curr).getWithError();
-            if(!isErr) {
-                if(controller == 0 || fedPrice >= fedPrices[controller - 1]) {
+            if (!isErr) {
+                if (controller == 0 || fedPrice >= fedPrices[controller - 1]) {
                     fedPrices[controller] = fedPrice;
                 } else {
                     uint8 j = 0;
-                    while(fedPrice >= fedPrices[j]) {
-                        j = j+1;
+                    while (fedPrice >= fedPrices[j]) {
+                        j = j + 1;
                     }
-                    for(uint8 k = controller; k > j; k--) {
-                        fedPrices[k] = fedPrices[k-1];
+                    for (uint8 k = controller; k > j; k--) {
+                        fedPrices[k] = fedPrices[k - 1];
                     }
                     fedPrices[j] = fedPrice;
                 }
@@ -68,17 +69,17 @@ contract Medianizer is Initializable, IMedianizer {
             curr = feeders.next[curr];
         }
 
-        if(controller < minFedPrices) {
+        if (controller < minFedPrices) {
             return (price, true);
         }
 
         uint256 medPrice;
         if (controller % 2 == 0) {
-            uint256 val1 = fedPrices[(controller/2) - 1];
-            uint256 val2 = fedPrices[(controller/2)];
+            uint256 val1 = fedPrices[(controller / 2) - 1];
+            uint256 val2 = fedPrices[(controller / 2)];
             medPrice = val1.add(val2).div(2);
         } else {
-            medPrice = fedPrices[(controller-1)/2];
+            medPrice = fedPrices[(controller - 1) / 2];
         }
 
         return (medPrice, false);
@@ -93,7 +94,7 @@ contract Medianizer is Initializable, IMedianizer {
         feeders.add(feeder);
     }
 
-    function removeFeeder(address feeder, address prevFeeder) public  {
+    function removeFeeder(address feeder, address prevFeeder) public {
         feeders.remove(feeder, prevFeeder);
     }
 
@@ -125,5 +126,13 @@ contract Medianizer is Initializable, IMedianizer {
 
     function disable() onlyOwner external {
         active = false;
+    }
+
+    function getValidityPeriod() external view returns (uint256) {
+        return validityPeriod / 1 minutes;
+    }
+
+    function setValidityPeriod(uint256 valueInMinute) public {
+        validityPeriod = valueInMinute * 1 minutes;
     }
 }
