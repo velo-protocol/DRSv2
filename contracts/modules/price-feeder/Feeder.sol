@@ -25,8 +25,8 @@ contract Feeder is IFeeder {
         _;
     }
 
-    function getWithError() external view returns (uint256, bool) {
-        return (value, !active);
+    function getWithError() external view returns (uint256, uint256, bool) {
+        return (value, valueTimestamp, !active);
     }
 
     function get() external view returns (uint256) {

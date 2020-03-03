@@ -24,8 +24,9 @@ contract TestFeeder {
     }
 
     function testGetWithError() public {
-        (uint256 value, bool isErr) = feeder.getWithError();
+        (uint256 value, uint256 valueTimestamp, bool isErr) = feeder.getWithError();
         Assert.equal(value, feeder.value(), "value should be the same as feeds.value");
+        Assert.equal(valueTimestamp, feeder.valueTimestamp(), "valueTimestamp should be the same as feeds.valueTimestamp");
         Assert.equal(isErr, false, "isErr should be false");
     }
 

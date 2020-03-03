@@ -11,8 +11,8 @@ contract MockTargetProxyV1 is Initializable, IFeeder {
         value = 10;
     }
 
-    function getWithError() external view returns (uint256, bool) {
-        return (value, false);
+    function getWithError() external view returns (uint256, uint256, bool) {
+        return (value, now, false);
     }
 
     function get() external view returns (uint256) {
@@ -20,6 +20,10 @@ contract MockTargetProxyV1 is Initializable, IFeeder {
     }
     function set(uint256 newValue) external {
         value = newValue;
+    }
+
+    function enable() external {
+        // do something
     }
 
     function disable() external {

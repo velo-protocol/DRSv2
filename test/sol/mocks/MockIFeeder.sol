@@ -10,8 +10,8 @@ contract MockIFeeder is IFeeder {
         value = _value;
     }
 
-    function getWithError() external view returns (uint256, bool) {
-        return (value, false);
+    function getWithError() external view returns (uint256, uint256, bool) {
+        return (value, now, false);
     }
 
     function get() external view returns (uint256) {
