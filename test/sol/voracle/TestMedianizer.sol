@@ -64,11 +64,15 @@ contract TestMedianizer {
     function testRemoveFeeder() public {
         Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
-        med.removeFeeder(address(mockIFeeder1), address(mockIFeeder2));
-        med.removeFeeder(address(mockIFeeder2), address(1));
-
         address[] memory feeders = med.getFeeders();
+        Assert.equal(feeders.length, 2, "feeders.length must be 2");
 
+        med.removeFeeder(address(mockIFeeder1));
+        feeders = med.getFeeders();
+        Assert.equal(feeders.length, 1, "feeders.length must be 1");
+
+        med.removeFeeder(address(mockIFeeder2));
+        feeders = med.getFeeders();
         Assert.equal(feeders.length, 0, "feeders.length must be 0");
     }
 
@@ -81,7 +85,7 @@ contract TestMedianizer {
         Assert.equal(median, 100, "median must be 100");
         Assert.equal(isErr, false, "isErr must be false");
 
-        med.removeFeeder(address(mockIFeeder1), address(1));
+        med.removeFeeder(address(mockIFeeder1));
         address[] memory feeders = med.getFeeders();
 
         Assert.equal(feeders.length, 0, "feeders.length must be 0");
