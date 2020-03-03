@@ -15,7 +15,6 @@ contract Medianizer is Initializable, IMedianizer {
     address public owner;
     bool public active;
     uint256 public price;
-    bytes32 public pair;
     bytes32 public fiatCode;
     bytes32 public collateralCode;
 
@@ -50,7 +49,12 @@ contract Medianizer is Initializable, IMedianizer {
         uint8 controller = 0;
 
         for (uint8 i = 0; curr != address(1); i++) {
-            (uint256 fedPrice, bool isErr) = IFeeder(curr).getWithError();
+            (uint256 fedPrice, uint256 timestamp, bool isErr) = IFeeder(curr).getWithError();
+
+            if (timestamp < now - validityPeriod) {
+                isErr = true;
+            }
+
             if (!isErr) {
                 if (controller == 0 || fedPrice >= fedPrices[controller - 1]) {
                     fedPrices[controller] = fedPrice;
@@ -70,7 +74,7 @@ contract Medianizer is Initializable, IMedianizer {
         }
 
         if (controller < minFedPrices) {
-            return (price, true);
+            return (0, true);
         }
 
         uint256 medPrice;

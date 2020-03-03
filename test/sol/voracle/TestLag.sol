@@ -7,12 +7,12 @@ import "truffle/Assert.sol";
 contract TestLag {
     Lag public lag;
     Lag public lagNoneGov;
-    MockIFeeder public mockIPRS;
-    MockIFeeder public mockIPRS2;
+    MockIFeeder public mockIFeeder;
+    MockIFeeder public mockIFeeder2;
 
     function beforeEach() public {
-        mockIPRS = new MockIPRS(10);
-        mockIPRS2 = new MockIPRS(11);
+        mockIFeeder = new MockIFeeder(10);
+        mockIFeeder2 = new MockIFeeder(11);
         lag = new Lag(address(this), address(0));
     }
 
@@ -38,8 +38,8 @@ contract TestLag {
     }
 
     function testSetPriceRefStorage() public {
-        address expectedPriceRefStorage = address(mockIPRS);
-        lag.setPriceRefStorage(address(mockIPRS));
+        address expectedPriceRefStorage = address(mockIFeeder);
+        lag.setPriceRefStorage(address(mockIFeeder));
 
         Assert.equal(lag.priceRefStorage(), expectedPriceRefStorage, "lag.setPriceRefStorage() should be 0xb04aD816e86bFA5515c35Ad02081F71D9E848C88");
     }
@@ -75,7 +75,7 @@ contract TestLag {
     }
 
     function testPost() public {
-        lag.setPriceRefStorage(address(mockIPRS));
+        lag.setPriceRefStorage(address(mockIFeeder));
         lag.addConsumer(address(this));
 
         lag.post();
@@ -135,7 +135,7 @@ contract TestLag {
     }
 
     function testGetAfterPost() public {
-        lag.setPriceRefStorage(address(mockIPRS));
+        lag.setPriceRefStorage(address(mockIFeeder));
         lag.addConsumer(address(this));
         lag.post();
 
@@ -150,12 +150,12 @@ contract TestLag {
     }
 
     function testAddConsumer() public {
-        lag.addConsumer(address(mockIPRS));
+        lag.addConsumer(address(mockIFeeder));
 
         address[] memory consumers = lag.getConsumers();
 
         Assert.equal(consumers.length, 1, "consumers.length must be 1");
-        Assert.equal(consumers[0], address(mockIPRS), "consumers[0] must be address(this)");
+        Assert.equal(consumers[0], address(mockIFeeder), "consumers[0] must be address(this)");
     }
 
     function testAddConsumerWithError() public {
@@ -167,20 +167,20 @@ contract TestLag {
     }
 
     function testRemoveConsumer() public {
-        lag.addConsumer(address(mockIPRS));
-        lag.addConsumer(address(mockIPRS2));
+        lag.addConsumer(address(mockIFeeder));
+        lag.addConsumer(address(mockIFeeder2));
         address[] memory consumers = lag.getConsumers();
 
-        Assert.equal(consumers[0], address(mockIPRS2), "consumers[0] must be address(this)");
-        Assert.equal(consumers[1], address(mockIPRS), "consumers[1] must be address(this)");
+        Assert.equal(consumers[0], address(mockIFeeder2), "consumers[0] must be address(this)");
+        Assert.equal(consumers[1], address(mockIFeeder), "consumers[1] must be address(this)");
 
-        lag.removeConsumer(address(mockIPRS), address(mockIPRS2));
+        lag.removeConsumer(address(mockIFeeder), address(mockIFeeder2));
         Assert.equal(consumers.length, 2, "consumers.length must be 2");
     }
 
     function testRemoveConsumerWithErrorWhenNonePrevConsumer() public {
         bytes4 selector = lag.removeConsumer.selector;
-        bytes memory data = abi.encodeWithSelector(selector, address(mockIPRS));
+        bytes memory data = abi.encodeWithSelector(selector, address(mockIFeeder));
         (bool r,) = address(lag).call(data);
 
         Assert.equal(r, false, "lag.removeConsumer() should throw an error");

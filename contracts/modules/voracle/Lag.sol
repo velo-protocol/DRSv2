@@ -85,7 +85,7 @@ contract Lag {
 
     function post() external haltable {
         require(isLagTimePass(), "Lag | lagTime isn't pass yet");
-        (uint256 medPrice, bool isErr) = IFeeder(priceRefStorage).getWithError();
+        (uint256 medPrice, , bool isErr) = IFeeder(priceRefStorage).getWithError();
         if (!isErr) {
             curr = next;
             next = MedPrice(medPrice, isErr);
