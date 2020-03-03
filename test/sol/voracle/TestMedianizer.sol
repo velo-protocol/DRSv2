@@ -106,7 +106,7 @@ contract TestMedianizer {
         med.addFeeder(address(mockIFeeder1));
         med.addFeeder(address(mockIFeeder2));
 
-        mockIFeeder1.set(130);
+        mockIFeeder1.post(130);
 
         med.post();
 

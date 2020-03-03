@@ -16,9 +16,9 @@ contract TestFeeder {
         Assert.equal(feeder.owner(), address(this), "owner should be address(this)");
     }
 
-    function testSet() public {
+    function testPost() public {
         uint256 expected = 120;
-        feeder.set(expected);
+        feeder.post(expected);
         Assert.equal(feeder.value(), expected, "feeds.value should be 120");
         Assert.equal(feeder.valueTimestamp(), block.timestamp, "feeder.valueTimestamp must be set to now timestamp");
     }

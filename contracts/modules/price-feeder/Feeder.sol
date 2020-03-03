@@ -35,7 +35,7 @@ contract Feeder is IFeeder {
         return value;
     }
 
-    function set(uint256 newValue) external onlyOwner {
+    function post(uint256 newValue) external onlyOwner {
         uint oldValue = value;
         uint oldTimestamp = valueTimestamp;
 

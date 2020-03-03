@@ -65,7 +65,7 @@ contract TestBaseProxy {
     }
 
     function testCallLogicV1Function() public {
-        MockTargetProxyV1(address(baseProxy)).set(100);
+        MockTargetProxyV1(address(baseProxy)).post(100);
         Assert.equal(MockTargetProxyV1(address(baseProxy)).value(), 100, "value as baseProxy context must be 100");
     }
 
@@ -76,7 +76,7 @@ contract TestBaseProxy {
     }
 
     function testCallLogicV2Function() public {
-        MockTargetProxyV2(address(baseProxy)).set(5);
+        MockTargetProxyV2(address(baseProxy)).post(5);
         Assert.equal(MockTargetProxyV1(address(baseProxy)).value(), 10, "value as baseProxy context must be 100");
     }
 
