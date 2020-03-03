@@ -27,12 +27,12 @@ module.exports = async (deployer, network, accounts) => {
 
     // 2. Feed the price
     const usdFeeder = await Feeder.at(usdFeederAddr);
-    await usdFeeder.set(12000000); // 1.2 USD/VELO
+    await usdFeeder.post(12000000); // 1.2 USD/VELO
 
     const thbFeeder = await Feeder.at(thbFeederAddr);
-    await thbFeeder.set(53000000); // 5.3 THB/VELO
+    await thbFeeder.post(53000000); // 5.3 THB/VELO
 
     const sgdFeeder = await Feeder.at(sgdFeederAddr);
-    await sgdFeeder.set(27000000); // 2.7 THB/VELO
+    await sgdFeeder.post(27000000); // 2.7 THB/VELO
   }
 };

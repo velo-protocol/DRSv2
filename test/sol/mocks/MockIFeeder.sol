@@ -17,7 +17,7 @@ contract MockIFeeder is IFeeder {
     function get() external view returns (uint256) {
         return value;
     }
-    function set(uint256 newValue) external {
+    function post(uint256 newValue) external {
         value = newValue;
     }
 
