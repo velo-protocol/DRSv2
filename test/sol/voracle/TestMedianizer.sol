@@ -24,7 +24,7 @@ contract TestMedianizer {
     function testGetWhenPriceIsLessThanZero() public {
         Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
-        (bool r, ) = address(med).call(abi.encodePacked(med.get.selector));
+        (bool r,) = address(med).call(abi.encodePacked(med.get.selector));
 
         Assert.equal(r, false, "med.get() must throw error");
     }
@@ -32,9 +32,10 @@ contract TestMedianizer {
     function testGetWithErrorWhenPriceIsLessThanZero() public {
         Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
-        (uint256 price, bool isErr) = med.getWithError();
+        (uint256 price, bool isActive, bool isErr) = med.getWithError();
 
         Assert.equal(price, 0, "med.getWithError() must return price = 0");
+        Assert.equal(isActive, true, "med.getWithError() must return isActive = true");
         Assert.equal(isErr, true, "med.getWithError() must return isErr = true");
     }
 
@@ -126,16 +127,17 @@ contract TestMedianizer {
     function testGetWithError() public {
         Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
-        (uint256 medianPrice, bool isErr) = med.getWithError();
+        (uint256 medianPrice, bool isActive, bool isErr) = med.getWithError();
 
         Assert.equal(medianPrice, 125, "med.getWithError() should return 125");
+        Assert.equal(isActive, true, "med.getWithError() should return true");
         Assert.equal(isErr, false, "med.getWithError() should return false");
     }
 
     function testNoOtherCanCallSet() public {
         Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
-        (bool r, ) = address(med).call(abi.encodePacked(med.set.selector));
+        (bool r,) = address(med).call(abi.encodePacked(med.set.selector));
 
         Assert.equal(r, false, "med.set(...) must throw error");
     }
@@ -155,10 +157,11 @@ contract TestMedianizer {
     function testGetWithErrorWhenActiveIsFalse() public {
         Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
-        (uint256 price, bool isErr) = med.getWithError();
+        (uint256 price, bool isActive, bool isErr) = med.getWithError();
 
         Assert.equal(price, 125, "med.getWithError() must return price = 125");
-        Assert.equal(isErr, true, "med.getWithError() must return isErr = true");
+        Assert.equal(isActive, false, "med.getWithError() must return isActive = false");
+        Assert.equal(isErr, false, "med.getWithError() must return isErr = false");
     }
 
     function testSetValidityPeriod() public {

@@ -111,8 +111,8 @@ contract Medianizer is Initializable, IMedianizer {
         return price;
     }
 
-    function getWithError() external view returns (uint256, bool) {
-        return (price, price <= 0 || !active);
+    function getWithError() external view returns (uint256, bool, bool) {
+        return (price, active, price <= 0);
     }
 
     function set(uint256 newPrice) external {
