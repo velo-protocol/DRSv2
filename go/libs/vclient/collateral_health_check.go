@@ -48,8 +48,8 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 	var curStableCreditId *[32]byte
 	var prevStableCreditId [32]byte
 	// 2. loop StableCredit from stableCreditSize
-	for i := 0; i < int(stableCreditSize); i++ {
-		if i == 0 {
+	for index := 0; index < int(stableCreditSize); index++ {
+		if index == 0 {
 			// 2.1 get recent StableCredit from linklist in Heart Contract
 			curStableCreditAddress, err = c.contract.heart.GetRecentStableCredit(nil)
 			if err != nil {
@@ -95,7 +95,7 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 
 	var collateralHealthCheckOutput []CollateralHealthCheckOutput
 	outputMap := map[[32]byte]CollateralHealthCheckAbiOutput{}
-	for index, collateralOutput := range collateralOutputs {
+	for _, collateralOutput := range collateralOutputs {
 		collateralAssetAddress := collateralOutput.CollateralAssetAddress
 		collateralAssetCode := collateralOutput.CollateralAssetCode
 		requiredAmount := collateralOutput.RequiredAmount
@@ -109,6 +109,8 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 			// calculate presentAmount to repeat outputMap[output.CollateralAssetCode].PresentAmount
 			requiredAmount = new(big.Int).Add(outputMap[output.CollateralAssetCode].RequiredAmount, requiredAmount)
 			presentAmount = new(big.Int).Add(outputMap[output.CollateralAssetCode].PresentAmount, presentAmount)
+			*outputMap[output.CollateralAssetCode].RequiredAmount = *requiredAmount
+			*outputMap[output.CollateralAssetCode].PresentAmount = *presentAmount
 
 			// put back to repeat of collateralHealthCheckOutput record after calculate requiredAmount and presentAmount
 			if len(collateralHealthCheckOutput) == 0 {
@@ -123,7 +125,7 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 			output.CollateralAssetCode = collateralAssetCode
 			output.RequiredAmount = requiredAmount
 			output.PresentAmount = presentAmount
-			output.IndexKey = index
+			output.IndexKey = len(collateralHealthCheckOutput)
 
 			// store for checked map key of CollateralAssetCode in next loop
 			outputMap[output.CollateralAssetCode] = output
