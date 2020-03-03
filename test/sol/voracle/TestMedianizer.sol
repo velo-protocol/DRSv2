@@ -89,7 +89,8 @@ contract TestMedianizer {
     function testComputeEvenFeeder() public {
         Medianizer med = Medianizer(DeployedAddresses.Medianizer());
 
-        testAddFeeder();
+        med.addFeeder(address(mockIFeeder1));
+        med.addFeeder(address(mockIFeeder2));
 
         (uint256 median, bool isErr) = med.compute();
 
