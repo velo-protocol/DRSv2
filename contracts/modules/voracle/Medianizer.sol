@@ -98,7 +98,21 @@ contract Medianizer is Initializable, IMedianizer {
         feeders.add(feeder);
     }
 
-    function removeFeeder(address feeder, address prevFeeder) public {
+    function removeFeeder(address feeder) public {
+        address[] memory feedersArray = getFeeders();
+        address prevFeeder = address(1);
+        bool found = false;
+        for (uint i = 0; i < feedersArray.length; i++) {
+            if (feeder == feedersArray[i]) {
+                found = true;
+                break;
+            }
+
+            prevFeeder = feedersArray[i];
+        }
+
+        require(found, "Medianizer.removeFeeder: a specified feeder not found");
+
         feeders.remove(feeder, prevFeeder);
     }
 
