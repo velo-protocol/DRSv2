@@ -134,36 +134,6 @@ contract TestMedianizer {
         Assert.equal(isErr, false, "med.getWithError() should return false");
     }
 
-    function testNoOtherCanCallSet() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-
-        (bool r,) = address(med).call(abi.encodePacked(med.set.selector));
-
-        Assert.equal(r, false, "med.set(...) must throw error");
-    }
-
-    function testEnable() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-        med.enable();
-        Assert.equal(med.active(), true, "active must be true");
-    }
-
-    function testDisable() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-        med.disable();
-        Assert.equal(med.active(), false, "active must be false");
-    }
-
-    function testGetWithErrorWhenActiveIsFalse() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-
-        (uint256 price, bool isActive, bool isErr) = med.getWithError();
-
-        Assert.equal(price, 125, "med.getWithError() must return price = 125");
-        Assert.equal(isActive, false, "med.getWithError() must return isActive = false");
-        Assert.equal(isErr, false, "med.getWithError() must return isErr = false");
-    }
-
     function testSetValidityPeriod() public {
         Medianizer med = Medianizer(DeployedAddresses.Medianizer());
         med.setValidityPeriod(20);
@@ -174,5 +144,18 @@ contract TestMedianizer {
         Medianizer med = Medianizer(DeployedAddresses.Medianizer());
         med.setValidityPeriod(25);
         Assert.equal(med.getValidityPeriod(), 25, "validityPeriod must be 25");
+    }
+
+    function testVoid() public {
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
+        med.void();
+        Assert.equal(med.active(), false, "active must be false");
+        Assert.equal(med.price(), 0, "price must be 0");
+    }
+
+    function testEnable() public {
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
+        med.enable();
+        Assert.equal(med.active(), true, "active must be true");
     }
 }

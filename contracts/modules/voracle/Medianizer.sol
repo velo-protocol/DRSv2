@@ -115,11 +115,6 @@ contract Medianizer is Initializable, IMedianizer {
         return (price, active, price <= 0);
     }
 
-    function set(uint256 newPrice) external {
-        require(msg.sender == address(this), "Med | caller must be Med");
-        _set(newPrice);
-    }
-
     function _set(uint256 newPrice) internal {
         price = newPrice;
     }
@@ -128,7 +123,8 @@ contract Medianizer is Initializable, IMedianizer {
         active = true;
     }
 
-    function disable() onlyOwner external {
+    function void() onlyOwner external {
+        price = 0;
         active = false;
     }
 
