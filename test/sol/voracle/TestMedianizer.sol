@@ -134,6 +134,23 @@ contract TestMedianizer {
         Assert.equal(isErr, false, "med.getWithError() should return false");
     }
 
+    function testGetWithErrorWhenActiveIsFalse() public {
+        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
+        med.addFeeder(address(mockIFeeder1));
+        med.addFeeder(address(mockIFeeder2));
+
+        mockIFeeder1.post(130);
+
+        med.void();
+        med.post();
+
+        (uint256 price, bool isActive, bool isErr) = med.getWithError();
+
+        Assert.equal(price, 125, "med.getWithError() must return price = 125");
+        Assert.equal(isActive, false, "med.getWithError() must return isActive = false");
+        Assert.equal(isErr, false, "med.getWithError() must return isErr = false");
+    }
+
     function testSetValidityPeriod() public {
         Medianizer med = Medianizer(DeployedAddresses.Medianizer());
         med.setValidityPeriod(20);
