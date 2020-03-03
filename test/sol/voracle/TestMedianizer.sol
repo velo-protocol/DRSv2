@@ -174,9 +174,9 @@ contract TestMedianizer {
         Assert.equal(med.price(), 0, "price must be 0");
     }
 
-    function testEnable() public {
+    function testActivate() public {
         Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-        med.enable();
+        med.activate();
         Assert.equal(med.active(), true, "active must be true");
     }
 }
