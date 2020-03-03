@@ -24,7 +24,7 @@ contract Medianizer is Initializable, IMedianizer {
     event MedianSet(uint256 price, bool isErr);
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Med.onlyOwner: caller must be an owner of this contract");
+        require(msg.sender == owner, "Medianizer.onlyOwner: The message sender is not found or does not have sufficient permission");
         _;
     }
 
