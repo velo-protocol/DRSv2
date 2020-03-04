@@ -1,5 +1,7 @@
 const FeederFactory = artifacts.require('FeederFactory');
 const Feeder = artifacts.require('Feeder');
+const MedianizerProxy = artifacts.require('MedianizerProxy');
+const Medianizer = artifacts.require('Medianizer');
 
 module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(FeederFactory);
@@ -34,5 +36,51 @@ module.exports = async (deployer, network, accounts) => {
 
     const sgdFeeder = await Feeder.at(sgdFeederAddr);
     await sgdFeeder.post(27000000); // 2.7 THB/VELO
+
+    await deployer.deploy(Medianizer);
+    const medLogic = await Medianizer.deployed();
+
+    // Medianizer USD
+    await deployer.deploy(MedianizerProxy, accounts[0]);
+    const medProxyUSD = await MedianizerProxy.deployed();
+
+    const medInstanceUSD = new web3.eth.Contract(Medianizer.abi, medLogic.address);
+    const initializeUSDCalldata = medInstanceUSD.methods.initialize(accounts[0], usdBytes32, veloBytes32).encodeABI();
+
+    await medProxyUSD.initialize(medLogic.address, initializeUSDCalldata);
+
+    const medUSD = await Medianizer.at(medProxyUSD.address);
+    await medUSD.addFeeder(usdFeeder.address);
+
+    // Medianizer THB
+
+    await deployer.deploy(MedianizerProxy, accounts[0]);
+    const medProxyTHB = await MedianizerProxy.deployed();
+
+    const medInstanceTHB = new web3.eth.Contract(Medianizer.abi, medLogic.address);
+    const initializeTHBCalldata = medInstanceTHB.methods.initialize(accounts[0], usdBytes32, veloBytes32).encodeABI();
+
+    await medProxyTHB.initialize(medLogic.address, initializeTHBCalldata);
+
+    const medTHB = await Medianizer.at(medProxyTHB.address);
+    await medTHB.addFeeder(thbFeeder.address);
+
+    // Medianizer SGD
+
+    await deployer.deploy(MedianizerProxy, accounts[0]);
+    const medProxySGD = await MedianizerProxy.deployed();
+
+    const medInstanceSGD = new web3.eth.Contract(Medianizer.abi, medLogic.address);
+    const initializeSGDCalldata = medInstanceSGD.methods.initialize(accounts[0], usdBytes32, veloBytes32).encodeABI();
+
+    await medProxySGD.initialize(medLogic.address, initializeSGDCalldata);
+
+    const medSGD = await Medianizer.at(medProxySGD.address);
+    await medSGD.addFeeder(sgdFeeder.address);
+
+    console.log('medProxyUSD',medProxyUSD.address)
+    console.log('medProxyTHB',medProxyTHB.address)
+    console.log('medProxySGD',medProxySGD.address)
+
   }
 };
