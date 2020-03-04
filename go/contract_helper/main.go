@@ -1,13 +1,17 @@
 package main
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"fmt"
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/pkg/errors"
 	"github.com/velo-protocol/DRSv2/go/abi"
 	"github.com/velo-protocol/DRSv2/go/constants"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
@@ -63,6 +67,28 @@ func NewClient(contractUrl, drsAddress, heartAddress, privateKey string) Client 
 	}
 }
 
+func ConfirmTx(ctx context.Context, client *Client, tx *types.Transaction, from common.Address) error {
+	receipt, err := bind.WaitMined(ctx, client.conn, tx)
+	if err != nil {
+		return errors.Wrap(err, "fail to confirm transaction")
+	}
+	if receipt.Status == 0 {
+		untrimmedBytes, err := client.conn.CallContract(ctx, ethereum.CallMsg{
+			From:     from,
+			To:       tx.To(),
+			Gas:      tx.Gas(),
+			GasPrice: tx.GasPrice(),
+			Value:    tx.Value(),
+			Data:     tx.Data(),
+		}, receipt.BlockNumber)
+		if err != nil {
+			return errors.Wrap(err, "fail to get revert message")
+		}
+		return errors.New(utils.ParseRevertMessage(untrimmedBytes))
+	}
+	return nil
+}
+
 func HexToPrivateKey(hex string) *ecdsa.PrivateKey {
 	privKey, err := crypto.HexToECDSA(hex)
 	if err != nil {
@@ -105,6 +131,11 @@ func (i *Client) SetCollateralRatio(assetCode, ratio, privateKey string) string 
 	result, err := i.heart.SetCollateralRatio(opt, utils.StringToByte32(assetCode), intRatio)
 	if err != nil {
 		panic(err)
+	}
+
+	err = ConfirmTx(context.Background(), i, result, i.publicKey)
+	if err != nil {
+		fmt.Println(err)
 	}
 
 	return result.Hash().String()
@@ -152,6 +183,11 @@ func (i *Client) SetPrice(priceFeederName, assetCode, currency, price string) st
 	result, err := i.priceFeeder[priceFeederName].SetPrice(opt, utils.StringToByte32(assetCode), utils.StringToByte32(currency), intRatio)
 	if err != nil {
 		panic(err)
+	}
+
+	err = ConfirmTx(context.Background(), i, result, i.publicKey)
+	if err != nil {
+		fmt.Println(err)
 	}
 	return result.Hash().String()
 
