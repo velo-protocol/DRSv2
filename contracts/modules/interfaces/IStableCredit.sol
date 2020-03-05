@@ -15,7 +15,7 @@ interface IStableCredit {
 
     function getId() external view returns (bytes32);
 
-    function transferCollateral(address recipient, uint256 amount) external returns (bool);
+    function transferCollateralToReserve(uint256 amount) external returns (bool);
 
     // Getter functions
     function assetCode() external view returns (string memory);

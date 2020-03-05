@@ -259,7 +259,7 @@ contract DigitalReserveSystem is IDRS {
         if (requiredAmount > presentAmount) {
             reserveManager.injectCollateral(collateralAssetCode, address(stableCredit), requiredAmount.sub(presentAmount));
         } else {
-            stableCredit.transferCollateral(address(reserveManager), presentAmount.sub(requiredAmount));
+            stableCredit.transferCollateralToReserve(presentAmount.sub(requiredAmount));
         }
 
         emit Rebalance(

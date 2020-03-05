@@ -1183,7 +1183,7 @@ contract("DigitalReserveSystem test", async accounts => {
         reserveManager.address
       );
       await mocks.stableCreditVUSD.givenMethodReturnBool(
-        stableCreditVUSD.contract.methods.transferCollateral(reserveManager.address,10000000).encodeABI(),
+        stableCreditVUSD.contract.methods.transferCollateralToReserve(10000000).encodeABI(),
         true
       );
 

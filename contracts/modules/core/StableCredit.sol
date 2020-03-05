@@ -72,8 +72,8 @@ contract StableCredit is ERC20, ERC20Detailed {
         return this.name();
     }
 
-    function transferCollateral(address recipient, uint256 amount) external onlyDRSSC returns (bool) {
-        ICollateralAsset(collateral).transfer(recipient, amount);
+    function transferCollateralToReserve(uint256 amount) external onlyDRSSC returns (bool) {
+        ICollateralAsset(collateral).transfer(address(heart.getReserveManager()), amount);
         return true;
     }
 
