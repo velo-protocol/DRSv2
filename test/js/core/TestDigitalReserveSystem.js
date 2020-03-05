@@ -1079,7 +1079,7 @@ contract("DigitalReserveSystem test", async accounts => {
   });
 
   describe("Rebalance", async () => {
-    it("should rebalance correctly", async () => {
+    it("should rebalance correctly requiredAmount > presentAmount", async () => {
       await mocks.heart.givenMethodReturnAddress(
         heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
         stableCreditVUSD.address
@@ -1134,6 +1134,68 @@ contract("DigitalReserveSystem test", async accounts => {
           && web3.utils.hexToUtf8(event.collateralAssetCode) === 'VELO'
           && eventRequiredAmount === 150000000
           && eventPresentAmount === 100000000
+      }, 'contract should emit the event correctly');
+    });
+
+    it("should rebalance correctly requiredAmount < presentAmount", async () => {
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getStableCreditById(Web3.utils.fromAscii("")).encodeABI(),
+        stableCreditVUSD.address
+      );
+      await mocks.stableCreditVUSD.givenMethodReturn(
+        stableCreditVUSD.contract.methods.collateralAssetCode().encodeABI(),
+        '0x' + abi.rawEncode(['bytes32'], ['VELO']).toString("hex")
+      );
+      await mocks.stableCreditVUSD.givenMethodReturnAddress(
+        stableCreditVUSD.contract.methods.collateral().encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.stableCreditVUSD.givenMethodReturnUint(
+        stableCreditVUSD.contract.methods.totalSupply().encodeABI(),
+        100000000
+      );
+      await mocks.heart.givenMethodReturnUint(
+        heart.contract.methods.getCollateralRatio(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
+      );
+      await mocks.stableCreditVUSD.givenMethodReturnUint(
+        stableCreditVUSD.contract.methods.peggedValue().encodeABI(),
+        15000000
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getCollateralAsset(Web3.utils.fromAscii("")).encodeABI(),
+        veloCollateralAsset.address
+      );
+      await mocks.veloCollateralAsset.givenMethodReturnUint(
+        veloCollateralAsset.contract.methods.balanceOf(stableCreditVUSD.address).encodeABI(),
+        200000000
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getPriceFeeders().encodeABI(),
+        priceFeeder.address
+      );
+      await mocks.priceFeeder.givenMethodReturnUint(
+        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+        10000000
+      );
+      await mocks.heart.givenMethodReturnAddress(
+        heart.contract.methods.getReserveManager().encodeABI(),
+        reserveManager.address
+      );
+      await mocks.stableCreditVUSD.givenMethodReturnBool(
+        stableCreditVUSD.contract.methods.transferCollateralToReserve(10000000).encodeABI(),
+        true
+      );
+
+      const result = await drs.rebalance("vUSD");
+      truffleAssert.eventEmitted(result, 'Rebalance', event => {
+        const BN = web3.utils.BN;
+        const eventRequiredAmount = new BN(event.requiredAmount).toNumber();
+        const eventPresentAmount = new BN(event.presentAmount).toNumber();
+        return event.assetCode === "vUSD"
+          && web3.utils.hexToUtf8(event.collateralAssetCode) === 'VELO'
+          && eventRequiredAmount === 150000000
+          && eventPresentAmount === 200000000
       }, 'contract should emit the event correctly');
     });
 

@@ -28,10 +28,10 @@ var (
 )
 
 // FeederABI is the input ABI used to generate the binding from.
-const FeederABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"_fiatCode\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_collateralCode\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"prevValue\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"prevTimestamp\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"curPrice\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"curTimestamp\",\"type\":\"uint256\"}],\"name\":\"PriceSet\",\"type\":\"event\"},{\"constant\":true,\"inputs\":[],\"name\":\"active\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"collateralCode\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"fiatCode\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"value\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"valueTimestamp\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getWithError\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"get\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newValue\",\"type\":\"uint256\"}],\"name\":\"set\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"enable\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"disable\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const FeederABI = "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"_fiatCode\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_collateralCode\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"prevValue\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"prevTimestamp\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"curPrice\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"curTimestamp\",\"type\":\"uint256\"}],\"name\":\"PriceSet\",\"type\":\"event\"},{\"constant\":true,\"inputs\":[],\"name\":\"active\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"collateralCode\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"fiatCode\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"value\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"valueTimestamp\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getWithError\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"get\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newValue\",\"type\":\"uint256\"}],\"name\":\"post\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"enable\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"disable\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // FeederBin is the compiled bytecode used for deploying new contracts.
-var FeederBin = "0x608060405234801561001057600080fd5b5060405161051d38038061051d8339818101604052606081101561003357600080fd5b50805160208201516040909201516003805460ff19166001179055600080546001600160a01b039093166001600160a01b031990931692909217909155600491909155600555610495806100886000396000f3fe608060405234801561001057600080fd5b50600436106100a95760003560e01c806360fe47b11161007157806360fe47b11461011757806364bc5204146101345780636d4ce63c1461013c5780638da5cb5b14610144578063a3907d7114610168578063dc9eaf3814610170576100a9565b806302fb0c5e146100ae5780632f2770db146100ca5780633fa4f245146100d4578063498b5828146100ee5780635587c4361461010f575b600080fd5b6100b6610178565b604080519115158252519081900360200190f35b6100d2610181565b005b6100dc6101d6565b60408051918252519081900360200190f35b6100f66101dc565b6040805192835290151560208301528051918290030190f35b6100dc6101ea565b6100d26004803603602081101561012d57600080fd5b50356101f0565b6100dc6102d2565b6100dc6102d8565b61014c61038e565b604080516001600160a01b039092168252519081900360200190f35b6100d261039d565b6100dc6103f5565b60035460ff1681565b6000546001600160a01b031633146101ca5760405162461bcd60e51b815260040180806020018281038252603a8152602001806103fc603a913960400191505060405180910390fd5b6003805460ff19169055565b60015481565b60015460035460ff16159091565b60055481565b6000546001600160a01b031633146102395760405162461bcd60e51b815260040180806020018281038252603a8152602001806103fc603a913960400191505060405180910390fd5b6001546002548261027b5760405162461bcd60e51b815260040180806020018281038252602b815260200180610436602b913960400191505060405180910390fd5b600183905542600281905560408051848152602081018490528082018690526060810192909252517f409a3cd8da9fd5287dcd055b527b58b542d9e4efcb0c72732ed3f0046b77d8689181900360800190a1505050565b60045481565b60008060015411610330576040805162461bcd60e51b815260206004820152601f60248201527f4665656465722e6765743a2076616c7565206e6f7420617661696c61626c6500604482015290519081900360640190fd5b60035460ff16610387576040805162461bcd60e51b815260206004820152601f60248201527f4665656465722e6765743a20616374697665206d757374206265207472756500604482015290519081900360640190fd5b5060015490565b6000546001600160a01b031681565b6000546001600160a01b031633146103e65760405162461bcd60e51b815260040180806020018281038252603a8152602001806103fc603a913960400191505060405180910390fd5b6003805460ff19166001179055565b6002548156fe4665656465722e6f6e6c794f776e65723a2063616c6c6572206d75737420626520616e206f776e6572206f66207468697320636f6e74726163744665656465722e7365743a206e657756616c7565206d7573742062652067726561746572207468616e2030a265627a7a7231582024eee13d39c9883d8740a7d86475a1cf852700fcca7bac6c110a20a3d1c9aba064736f6c63430005100032"
+var FeederBin = "0x608060405234801561001057600080fd5b506040516105283803806105288339818101604052606081101561003357600080fd5b50805160208201516040909201516003805460ff19166001179055600080546001600160a01b039093166001600160a01b0319909316929092179091556004919091556005556104a0806100886000396000f3fe608060405234801561001057600080fd5b50600436106100a95760003560e01c806364bc52041161007157806364bc52041461011e5780636d4ce63c146101265780638da5cb5b1461012e578063a3907d7114610152578063caa5863c1461015a578063dc9eaf3814610177576100a9565b806302fb0c5e146100ae5780632f2770db146100ca5780633fa4f245146100d4578063498b5828146100ee5780635587c43614610116575b600080fd5b6100b661017f565b604080519115158252519081900360200190f35b6100d2610188565b005b6100dc6101dd565b60408051918252519081900360200190f35b6100f66101e3565b604080519384526020840192909252151582820152519081900360600190f35b6100dc6101f5565b6100dc6101fb565b6100dc610201565b6101366102b7565b604080516001600160a01b039092168252519081900360200190f35b6100d26102c6565b6100d26004803603602081101561017057600080fd5b503561031e565b6100dc610400565b60035460ff1681565b6000546001600160a01b031633146101d15760405162461bcd60e51b815260040180806020018281038252603a815260200180610407603a913960400191505060405180910390fd5b6003805460ff19169055565b60015481565b60015460025460035460ff1615909192565b60055481565b60045481565b60008060015411610259576040805162461bcd60e51b815260206004820152601f60248201527f4665656465722e6765743a2076616c7565206e6f7420617661696c61626c6500604482015290519081900360640190fd5b60035460ff166102b0576040805162461bcd60e51b815260206004820152601f60248201527f4665656465722e6765743a20616374697665206d757374206265207472756500604482015290519081900360640190fd5b5060015490565b6000546001600160a01b031681565b6000546001600160a01b0316331461030f5760405162461bcd60e51b815260040180806020018281038252603a815260200180610407603a913960400191505060405180910390fd5b6003805460ff19166001179055565b6000546001600160a01b031633146103675760405162461bcd60e51b815260040180806020018281038252603a815260200180610407603a913960400191505060405180910390fd5b600154600254826103a95760405162461bcd60e51b815260040180806020018281038252602b815260200180610441602b913960400191505060405180910390fd5b600183905542600281905560408051848152602081018490528082018690526060810192909252517f409a3cd8da9fd5287dcd055b527b58b542d9e4efcb0c72732ed3f0046b77d8689181900360800190a1505050565b6002548156fe4665656465722e6f6e6c794f776e65723a2063616c6c6572206d75737420626520616e206f776e6572206f66207468697320636f6e74726163744665656465722e7365743a206e657756616c7565206d7573742062652067726561746572207468616e2030a265627a7a723158201bc2098842696384611ee0ec4e47db6403690eb5617f167f2c3ac49e8596f15c64736f6c63430005100032"
 
 // DeployFeeder deploys a new Ethereum contract, binding an instance of Feeder to it.
 func DeployFeeder(auth *bind.TransactOpts, backend bind.ContractBackend, _owner common.Address, _fiatCode [32]byte, _collateralCode [32]byte) (common.Address, *types.Transaction, *Feeder, error) {
@@ -295,31 +295,33 @@ func (_Feeder *FeederCallerSession) Get() (*big.Int, error) {
 
 // GetWithError is a free data retrieval call binding the contract method 0x498b5828.
 //
-// Solidity: function getWithError() constant returns(uint256, bool)
-func (_Feeder *FeederCaller) GetWithError(opts *bind.CallOpts) (*big.Int, bool, error) {
+// Solidity: function getWithError() constant returns(uint256, uint256, bool)
+func (_Feeder *FeederCaller) GetWithError(opts *bind.CallOpts) (*big.Int, *big.Int, bool, error) {
 	var (
 		ret0 = new(*big.Int)
-		ret1 = new(bool)
+		ret1 = new(*big.Int)
+		ret2 = new(bool)
 	)
 	out := &[]interface{}{
 		ret0,
 		ret1,
+		ret2,
 	}
 	err := _Feeder.contract.Call(opts, out, "getWithError")
-	return *ret0, *ret1, err
+	return *ret0, *ret1, *ret2, err
 }
 
 // GetWithError is a free data retrieval call binding the contract method 0x498b5828.
 //
-// Solidity: function getWithError() constant returns(uint256, bool)
-func (_Feeder *FeederSession) GetWithError() (*big.Int, bool, error) {
+// Solidity: function getWithError() constant returns(uint256, uint256, bool)
+func (_Feeder *FeederSession) GetWithError() (*big.Int, *big.Int, bool, error) {
 	return _Feeder.Contract.GetWithError(&_Feeder.CallOpts)
 }
 
 // GetWithError is a free data retrieval call binding the contract method 0x498b5828.
 //
-// Solidity: function getWithError() constant returns(uint256, bool)
-func (_Feeder *FeederCallerSession) GetWithError() (*big.Int, bool, error) {
+// Solidity: function getWithError() constant returns(uint256, uint256, bool)
+func (_Feeder *FeederCallerSession) GetWithError() (*big.Int, *big.Int, bool, error) {
 	return _Feeder.Contract.GetWithError(&_Feeder.CallOpts)
 }
 
@@ -443,25 +445,25 @@ func (_Feeder *FeederTransactorSession) Enable() (*types.Transaction, error) {
 	return _Feeder.Contract.Enable(&_Feeder.TransactOpts)
 }
 
-// Set is a paid mutator transaction binding the contract method 0x60fe47b1.
+// Post is a paid mutator transaction binding the contract method 0xcaa5863c.
 //
-// Solidity: function set(uint256 newValue) returns()
-func (_Feeder *FeederTransactor) Set(opts *bind.TransactOpts, newValue *big.Int) (*types.Transaction, error) {
-	return _Feeder.contract.Transact(opts, "set", newValue)
+// Solidity: function post(uint256 newValue) returns()
+func (_Feeder *FeederTransactor) Post(opts *bind.TransactOpts, newValue *big.Int) (*types.Transaction, error) {
+	return _Feeder.contract.Transact(opts, "post", newValue)
 }
 
-// Set is a paid mutator transaction binding the contract method 0x60fe47b1.
+// Post is a paid mutator transaction binding the contract method 0xcaa5863c.
 //
-// Solidity: function set(uint256 newValue) returns()
-func (_Feeder *FeederSession) Set(newValue *big.Int) (*types.Transaction, error) {
-	return _Feeder.Contract.Set(&_Feeder.TransactOpts, newValue)
+// Solidity: function post(uint256 newValue) returns()
+func (_Feeder *FeederSession) Post(newValue *big.Int) (*types.Transaction, error) {
+	return _Feeder.Contract.Post(&_Feeder.TransactOpts, newValue)
 }
 
-// Set is a paid mutator transaction binding the contract method 0x60fe47b1.
+// Post is a paid mutator transaction binding the contract method 0xcaa5863c.
 //
-// Solidity: function set(uint256 newValue) returns()
-func (_Feeder *FeederTransactorSession) Set(newValue *big.Int) (*types.Transaction, error) {
-	return _Feeder.Contract.Set(&_Feeder.TransactOpts, newValue)
+// Solidity: function post(uint256 newValue) returns()
+func (_Feeder *FeederTransactorSession) Post(newValue *big.Int) (*types.Transaction, error) {
+	return _Feeder.Contract.Post(&_Feeder.TransactOpts, newValue)
 }
 
 // FeederPriceSetIterator is returned from FilterPriceSet and is used to iterate over the raw logs and unpacked data for PriceSet events raised by the Feeder contract.
