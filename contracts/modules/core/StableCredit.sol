@@ -60,15 +60,21 @@ contract StableCredit is ERC20, ERC20Detailed {
         _burn(redeemer, burnAmount);
     }
 
-    function getCollateralDetail() external view returns(uint256, address) {
+    function getCollateralDetail() external view returns (uint256, address) {
         return (collateral.balanceOf(address(this)), address(collateral));
     }
 
-    function getId() external view returns(bytes32) {
+    function getId() external view returns (bytes32) {
         return Hasher.stableCreditId(this.name());
     }
 
-    function assetCode() external view returns(string memory) {
+    function assetCode() external view returns (string memory) {
         return this.name();
     }
+
+    function transferCollateral(address recipient, uint256 amount) external onlyDRSSC returns (bool) {
+        ICollateralAsset(collateral).transfer(recipient, amount);
+        return true;
+    }
+
 }
