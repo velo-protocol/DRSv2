@@ -21,17 +21,18 @@ func ExampleClient_Rebalance() {
 		panic(err)
 	}
 
-	fmt.Println("Message:", output.Message)
-	fmt.Println("Transaction Hashes:", output.RebalanceTransactions[0].Tx)
-	fmt.Println("Transaction Receipt:", output.RebalanceTransactions[0].Receipt)
-	fmt.Println("Events 0 AssetCode:", output.RebalanceTransactions[0].AssetCode)
-	fmt.Println("Events 0 CollateralAssetCode:", output.RebalanceTransactions[0].CollateralAssetCode)
-	fmt.Println("Events 0 PresentAmount:", output.RebalanceTransactions[0].PresentAmount)
-	fmt.Println("Events 0 RequiredAmount:", output.RebalanceTransactions[0].RequiredAmount)
+	for index, rebalanceTransaction := range output.RebalanceTransactions {
+		fmt.Printf("Event %d Transaction Hashes: %s", index, rebalanceTransaction.Tx.Hash().String())
+		fmt.Printf("Event %d Transaction Receipt: %d", index, rebalanceTransaction.Receipt.Status)
+		fmt.Printf("Events %d AssetCode: %s", index, rebalanceTransaction.AssetCode)
+		fmt.Printf("Events %d CollateralAssetCode: %s", index, rebalanceTransaction.CollateralAssetCode)
+		fmt.Printf("Events %d PresentAmount: %s", index, rebalanceTransaction.PresentAmount)
+		fmt.Printf("Events %d RequiredAmount: %s", index, rebalanceTransaction.RequiredAmount)
+	}
+
 	// Output:
-	// Message: rebalance process completed.
-	// Transaction Hashes: [0xc000476240]
-	// Transaction Receipt: [0xc000460a80]
+	// Event 0 Transaction Hashes: 0xf9647f3e917d75f124876928fe60d015763fa807c621bf956167a37653197d4a
+	// Event 0 Transaction Receipt: 1
 	// Events 0 AssetCode: vUSD
 	// Events 0 CollateralAssetCode: VELO
 	// Events 0 PresentAmount: 1.1253847
