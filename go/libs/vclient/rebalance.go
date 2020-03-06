@@ -26,7 +26,6 @@ type RebalanceTransaction struct {
 }
 
 type RebalanceOutput struct {
-	Message               string
 	RebalanceTransactions []*RebalanceTransaction
 }
 
