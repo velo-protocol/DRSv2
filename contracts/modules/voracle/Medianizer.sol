@@ -100,7 +100,7 @@ contract Medianizer is Initializable, IMedianizer {
         feeders.add(feeder);
     }
 
-    function removeFeeder(address feeder) public {
+    function removeFeeder(address feeder) onlyOwner public {
         address[] memory feedersArray = getFeeders();
         address prevFeeder = address(1);
         bool found = false;
