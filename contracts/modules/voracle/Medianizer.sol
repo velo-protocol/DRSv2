@@ -18,8 +18,8 @@ contract Medianizer is Initializable, IMedianizer {
     bytes32 public fiatCode;
     bytes32 public collateralCode;
 
-    uint8 public minFedPrices = 0x1;
-    uint256 public validityPeriod = 15 minutes;
+    uint8 public minFedPrices;
+    uint256 public validityPeriod;
 
     event MedianSet(uint256 price, bool isErr);
 
@@ -33,6 +33,8 @@ contract Medianizer is Initializable, IMedianizer {
         owner = _owner;
         fiatCode = _fiatCode;
         collateralCode = _collateralCode;
+        minFedPrices = 0x1;
+        validityPeriod = 15 minutes;
 
         feeders.init();
     }
