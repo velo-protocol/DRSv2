@@ -84,7 +84,13 @@ contract Lag {
 
     function post() external mustBeActive {
         require(isLagTimePass(), "Lag.post: lag time is not pass yet");
-        (uint256 medPrice, , bool isErr) = IMedianizer(medianizerAddr).getWithError();
+        (uint256 medPrice, bool isActive, bool isErr) = IMedianizer(medianizerAddr).getWithError();
+        if (!isActive) {
+            currentPrice = nextPrice = MedPrice(0, true);
+            active = false;
+            isErr = true;
+        }
+
         if (!isErr) {
             currentPrice = nextPrice;
             nextPrice = MedPrice(medPrice, isErr);
