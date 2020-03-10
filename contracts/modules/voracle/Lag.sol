@@ -9,9 +9,9 @@ contract Lag {
     using SafeMath for uint16;
 
     // Governance
-    address public gov;
-    modifier onlyGov {
-        require(msg.sender == gov, "Lag | caller must be Gov");
+    address public owner;
+    modifier onlyOwner {
+        require(msg.sender == owner, "Lag.onlyOwner: The message sender is not found or does not have sufficient permission");
         _;
     }
 
@@ -41,22 +41,22 @@ contract Lag {
 
     event LogLaggedPrice(uint256 laggedPrice);
 
-    constructor(address _gov, address _priceRefStorage) public {
+    constructor(address _owner, address _medianizerAddr) public {
         consumers.init();
-        medianizerAddr = _priceRefStorage;
-        gov = _gov;
+        medianizerAddr = _medianizerAddr;
+        owner = _owner;
         lagTime = uint16(DEFAULT_LAG_TIME);
     }
 
-    function halt() external onlyGov {
+    function halt() external onlyOwner {
         halted = true;
     }
 
-    function resume() external onlyGov {
+    function resume() external onlyOwner {
         halted = false;
     }
 
-    function setMedianizer(address newMedianizerAddr) external onlyGov {
+    function setMedianizer(address newMedianizerAddr) external onlyOwner {
         medianizerAddr = newMedianizerAddr;
     }
 
@@ -69,12 +69,12 @@ contract Lag {
         return timestamp.sub(timestamp % lagTime);
     }
 
-    function setLagTime(uint16 newLagTime) external onlyGov {
+    function setLagTime(uint16 newLagTime) external onlyOwner {
         require(newLagTime > 0, "Lag | newLagTime must more than 0");
         lagTime = newLagTime;
     }
 
-    function void() external onlyGov {
+    function void() external onlyOwner {
         currentPrice = nextPrice = MedPrice(0, true);
         halted = true;
     }
@@ -107,12 +107,12 @@ contract Lag {
         return currentPrice.price;
     }
 
-    function addConsumer(address newConsumer) external onlyGov {
+    function addConsumer(address newConsumer) external onlyOwner {
         require(newConsumer != address(0), "Lag | newConsumer must no be address(0)");
         consumers.add(newConsumer);
     }
 
-    function removeConsumer(address consumer, address prevConsumer) external onlyGov {
+    function removeConsumer(address consumer, address prevConsumer) external onlyOwner {
         consumers.remove(consumer, prevConsumer);
     }
 
@@ -120,7 +120,7 @@ contract Lag {
         return consumers.getAll();
     }
 
-    function addConsumers(address[] calldata newConsumers) external onlyGov {
+    function addConsumers(address[] calldata newConsumers) external onlyOwner {
         for(uint i = 0; i < newConsumers.length; i++) {
             require(newConsumers[i] != address(0), "Lag | newConsumers[x] must not be address(0)");
             consumers.add(newConsumers[i]);
