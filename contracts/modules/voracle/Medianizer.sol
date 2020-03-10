@@ -136,7 +136,8 @@ contract Medianizer is Initializable, IMedianizer {
     }
 
     function activate() onlyOwner external {
-        require(!active, "Medianizer.activate: medianizer must be inactive");
+        require(!active, "Medianizer.activate: the medianizer is active");
+        require(price > 0, "Medianizer.activate: the medianizer does not have a valid price");
         active = true;
     }
 
