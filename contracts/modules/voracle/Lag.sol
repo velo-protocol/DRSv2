@@ -15,9 +15,12 @@ contract Lag {
         _;
     }
 
-    // Halt
-    bool public halted;
-    modifier haltable { require(halted == false, "Lag | Lag has been halted"); _; }
+    // active
+    bool public active;
+    modifier mustBeActive {
+        require(active == true, "Lag.mustBeActive: lag is inactive");
+        _;
+    }
 
     address public medianizerAddr;
 
@@ -34,26 +37,21 @@ contract Lag {
 
     uint256 timeLastUpdate;
 
-    // Consumer contracts
-    LL.List public consumers;
-    using LL for LL.List;
-    modifier onlyConsumer { require(consumers.has(msg.sender), "Lag | caller must be in consumer list"); _; }
-
     event LogLaggedPrice(uint256 laggedPrice);
+    event VoidLagEvent(address caller, address lagAddress, bool currentStatus);
 
     constructor(address _owner, address _medianizerAddr) public {
-        consumers.init();
         medianizerAddr = _medianizerAddr;
         owner = _owner;
         lagTime = uint16(DEFAULT_LAG_TIME);
     }
 
-    function halt() external onlyOwner {
-        halted = true;
+    function deactivate() external onlyOwner {
+        active = false;
     }
 
-    function resume() external onlyOwner {
-        halted = false;
+    function activate() external onlyOwner {
+        active = true;
     }
 
     function setMedianizer(address newMedianizerAddr) external onlyOwner {
@@ -76,14 +74,15 @@ contract Lag {
 
     function void() external onlyOwner {
         currentPrice = nextPrice = MedPrice(0, true);
-        halted = true;
+        active = false;
+        emit VoidLagEvent(msg.sender, address(this), active);
     }
 
     function isLagTimePass() public view returns (bool) {
         return getBlockTimestamp() >= timeLastUpdate.add(lagTime);
     }
 
-    function post() external haltable {
+    function post() external mustBeActive {
         require(isLagTimePass(), "Lag.post: lag time is not pass yet");
         (uint256 medPrice, , bool isErr) = IMedianizer(medianizerAddr).getWithError();
         if (!isErr) {
@@ -94,37 +93,16 @@ contract Lag {
         }
     }
 
-    function getWithError() external view onlyConsumer returns (uint256, bool) {
+    function getWithError() external view returns (uint256, bool) {
         return (currentPrice.price, currentPrice.isErr);
     }
 
-    function getNextWithError() external view onlyConsumer returns (uint256, bool) {
+    function getNextWithError() external view returns (uint256, bool) {
         return (nextPrice.price, nextPrice.isErr);
     }
 
-    function get() external view onlyConsumer returns (uint256) {
-        require(currentPrice.isErr == false, "Lag | curr must not error");
+    function get() external view returns (uint256) {
+        require(currentPrice.isErr == false, "Lag.get: currentPrice has an error");
         return currentPrice.price;
     }
-
-    function addConsumer(address newConsumer) external onlyOwner {
-        require(newConsumer != address(0), "Lag | newConsumer must no be address(0)");
-        consumers.add(newConsumer);
-    }
-
-    function removeConsumer(address consumer, address prevConsumer) external onlyOwner {
-        consumers.remove(consumer, prevConsumer);
-    }
-
-    function getConsumers() public view returns (address[] memory) {
-        return consumers.getAll();
-    }
-
-    function addConsumers(address[] calldata newConsumers) external onlyOwner {
-        for(uint i = 0; i < newConsumers.length; i++) {
-            require(newConsumers[i] != address(0), "Lag | newConsumers[x] must not be address(0)");
-            consumers.add(newConsumers[i]);
-        }
-    }
-
 }
