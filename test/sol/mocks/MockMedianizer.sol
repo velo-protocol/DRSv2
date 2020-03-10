@@ -15,6 +15,6 @@ contract MockMedianizer is IMedianizer {
     }
 
     function getWithError() external view returns (uint256, bool, bool){
-        return (value, false, false);
+        return (value, true, false);
     }
 }
