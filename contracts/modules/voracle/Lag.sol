@@ -109,6 +109,7 @@ contract Lag {
 
     function get() external view returns (uint256) {
         require(currentPrice.isErr == false, "Lag.get: currentPrice has an error");
+        require(active, "Lag.get: lag is inactive");
         return currentPrice.price;
     }
 }
