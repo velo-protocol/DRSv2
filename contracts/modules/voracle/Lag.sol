@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
 import "../book-room/LL.sol";
-import "../interfaces/IFeeder.sol";
+import "../interfaces/IMedianizer.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
 contract Lag {
@@ -19,9 +19,9 @@ contract Lag {
     bool public halted;
     modifier haltable { require(halted == false, "Lag | Lag has been halted"); _; }
 
-    address public priceRefStorage;
+    address public medianizerAddr;
 
-    uint16 constant DEFAULT_LAG_TIME = 60*60*15;
+    uint16 constant DEFAULT_LAG_TIME = 15 minutes;
     uint16 public lagTime;
 
     struct MedPrice {
@@ -29,10 +29,10 @@ contract Lag {
         bool isErr;
     }
 
-    MedPrice next;
-    MedPrice curr;
+    MedPrice nextPrice;
+    MedPrice currentPrice;
 
-    uint256 lastUpdate;
+    uint256 timeLastUpdate;
 
     // Consumer contracts
     LL.List public consumers;
@@ -43,7 +43,7 @@ contract Lag {
 
     constructor(address _gov, address _priceRefStorage) public {
         consumers.init();
-        priceRefStorage = _priceRefStorage;
+        medianizerAddr = _priceRefStorage;
         gov = _gov;
         lagTime = uint16(DEFAULT_LAG_TIME);
     }
@@ -56,8 +56,8 @@ contract Lag {
         halted = false;
     }
 
-    function setPriceRefStorage(address newPriceRefStorage) external onlyGov {
-        priceRefStorage = newPriceRefStorage;
+    function setMedianizer(address newMedianizerAddr) external onlyGov {
+        medianizerAddr = newMedianizerAddr;
     }
 
     function getBlockTimestamp() internal view returns (uint) {
@@ -75,36 +75,36 @@ contract Lag {
     }
 
     function void() external onlyGov {
-        curr = next = MedPrice(0, true);
+        currentPrice = nextPrice = MedPrice(0, true);
         halted = true;
     }
 
     function isLagTimePass() public view returns (bool) {
-        return getBlockTimestamp() >= lastUpdate.add(lagTime);
+        return getBlockTimestamp() >= timeLastUpdate.add(lagTime);
     }
 
     function post() external haltable {
-        require(isLagTimePass(), "Lag | lagTime isn't pass yet");
-        (uint256 medPrice, , bool isErr) = IFeeder(priceRefStorage).getWithError();
+        require(isLagTimePass(), "Lag.post: lag time is not pass yet");
+        (uint256 medPrice, , bool isErr) = IMedianizer(medianizerAddr).getWithError();
         if (!isErr) {
-            curr = next;
-            next = MedPrice(medPrice, isErr);
-            lastUpdate = calLastUpdate(getBlockTimestamp());
-            emit LogLaggedPrice(curr.price);
+            currentPrice = nextPrice;
+            nextPrice = MedPrice(medPrice, isErr);
+            timeLastUpdate = calLastUpdate(getBlockTimestamp());
+            emit LogLaggedPrice(currentPrice.price);
         }
     }
 
     function getWithError() external view onlyConsumer returns (uint256, bool) {
-        return (curr.price, curr.isErr);
+        return (currentPrice.price, currentPrice.isErr);
     }
 
     function getNextWithError() external view onlyConsumer returns (uint256, bool) {
-        return (next.price, next.isErr);
+        return (nextPrice.price, nextPrice.isErr);
     }
 
     function get() external view onlyConsumer returns (uint256) {
-        require(curr.isErr == false, "Lag | curr must not error");
-        return curr.price;
+        require(currentPrice.isErr == false, "Lag | curr must not error");
+        return currentPrice.price;
     }
 
     function addConsumer(address newConsumer) external onlyGov {
