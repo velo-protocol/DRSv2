@@ -48,11 +48,11 @@ contract Lag {
         lagTime = uint16(DEFAULT_LAG_TIME);
     }
 
-    function deactivate() external onlyGov {
+    function deactivate() external onlyOwner {
         active = false;
     }
 
-    function activate() external onlyGov {
+    function activate() external onlyOwner {
         active = true;
     }
 

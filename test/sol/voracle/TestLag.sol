@@ -79,6 +79,7 @@ contract TestLag {
     }
 
     function testPost() public {
+        lag.activate();
         lag.setMedianizer(address(mockMedianizer));
         lag.addConsumer(address(this));
 
@@ -139,6 +140,7 @@ contract TestLag {
     }
 
     function testGetAfterPost() public {
+        lag.activate();
         lag.setMedianizer(address(mockMedianizer));
         lag.addConsumer(address(this));
         lag.post();
