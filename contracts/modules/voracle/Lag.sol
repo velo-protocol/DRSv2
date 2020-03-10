@@ -16,8 +16,8 @@ contract Lag {
     }
 
     // Halt
-    bool public halted;
-    modifier haltable { require(halted == false, "Lag | Lag has been halted"); _; }
+    bool public active;
+    modifier haltable { require(active == false, "Lag | Lag has been halted"); _; }
 
     address public priceRefStorage;
 
@@ -48,12 +48,12 @@ contract Lag {
         lagTime = uint16(DEFAULT_LAG_TIME);
     }
 
-    function halt() external onlyGov {
-        halted = true;
+    function deactivate() external onlyGov {
+        active = false;
     }
 
-    function resume() external onlyGov {
-        halted = false;
+    function activate() external onlyGov {
+        active = true;
     }
 
     function setPriceRefStorage(address newPriceRefStorage) external onlyGov {
@@ -76,7 +76,7 @@ contract Lag {
 
     function void() external onlyGov {
         curr = next = MedPrice(0, true);
-        halted = true;
+        active = false;
     }
 
     function isLagTimePass() public view returns (bool) {
@@ -94,7 +94,7 @@ contract Lag {
         }
     }
 
-    function getWithError() external view onlyConsumer returns (uint256, bool) {
+    function getWithError() external view returns (uint256, bool) {
         return (curr.price, curr.isErr);
     }
 

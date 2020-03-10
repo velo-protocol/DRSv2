@@ -16,25 +16,25 @@ contract TestLag {
         lag = new Lag(address(this), address(0));
     }
 
-    function testHalt() public {
-        Assert.isFalse(lag.halted(), "lag.halted() should be false");
-        lag.halt();
-        Assert.isTrue(lag.halted(), "lag.halted() should be true");
+    function testDeactivate() public {
+        lag.activate();
+        Assert.isTrue(lag.active(), "lag.active() should be true");
+        lag.deactivate();
+        Assert.isFalse(lag.active(), "lag.active() should be false");
     }
 
-    function testHaltWhenNotGov() public {
+    function testDeactivateWhenNotGov() public {
         lagNoneGov = new Lag(address(1), address(2));
-        (bool r,) = address(lagNoneGov).call(abi.encodePacked(lagNoneGov.halt.selector));
+        (bool r,) = address(lagNoneGov).call(abi.encodePacked(lagNoneGov.deactivate.selector));
 
-        Assert.equal(r, false, "lag.halted() should be false");
+        Assert.equal(r, false, "lag.active() should be false");
     }
 
-    function testResume() public {
-        Assert.isFalse(lag.halted(), "lag.halted() should be false");
-        lag.halt();
-        Assert.isTrue(lag.halted(), "lag.halted() should be true");
-        lag.resume();
-        Assert.isFalse(lag.halted(), "lag.halted() should be false");
+    function testActivate() public {
+        lag.deactivate();
+        Assert.isFalse(lag.active(), "lag.active() should be false");
+        lag.activate();
+        Assert.isTrue(lag.active(), "lag.active() should be true");
     }
 
     function testSetPriceRefStorage() public {
@@ -64,8 +64,12 @@ contract TestLag {
 
     function testVoid() public {
         lag.void();
+        Assert.equal(lag.active(), false, "lag.active() should be false after lag.void() has been called");
 
-        Assert.equal(lag.halted(), true, "lag.halted() should be true after lag.void() has been called");
+        (uint256 price, bool isErr) = lag.getWithError();
+        Assert.equal(price, 0, "lag.getWithError() should return price equal to 0");
+        Assert.equal(isErr, true, "lag.getWithError() should return isErr equal to true");
+
     }
 
     function testIsLagTimePass() public {
@@ -92,8 +96,8 @@ contract TestLag {
         Assert.equal(r, false, "lag.post() should throw an error");
     }
 
-    function testPostWhenHalted() public {
-        lag.halt();
+    function testPostWhenDeactivated() public {
+        lag.deactivate();
         (bool r,) = address(lag).call(abi.encodePacked(lag.post.selector));
 
         Assert.equal(r, false, "lag.post() should throw an error");
