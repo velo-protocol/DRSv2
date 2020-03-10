@@ -123,7 +123,8 @@ contract Medianizer is Initializable, IMedianizer {
     }
 
     function get() external view returns (uint256) {
-        require(price > 0, "Med | invalid price");
+        require(price > 0, "Medianizer.get: invalid price");
+        require(active, "Medianizer.get: medianizer is inactive");
         return price;
     }
 

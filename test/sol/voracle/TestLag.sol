@@ -118,6 +118,7 @@ contract TestLag {
     }
 
     function testGet() public {
+        lag.activate();
         uint256 currPrice = lag.get();
 
         Assert.equal(currPrice, 0, "lag.get() should be 0");
