@@ -17,8 +17,8 @@ contract Lag {
 
     // active
     bool public active;
-    modifier isActive {
-        require(active == true, "Lag.isActive: lag is inactive");
+    modifier mustBeActive {
+        require(active == true, "Lag.mustBeActive: lag is inactive");
         _;
     }
 
@@ -82,7 +82,7 @@ contract Lag {
         return getBlockTimestamp() >= timeLastUpdate.add(lagTime);
     }
 
-    function post() external isActive {
+    function post() external mustBeActive {
         require(isLagTimePass(), "Lag.post: lag time is not pass yet");
         (uint256 medPrice, , bool isErr) = IMedianizer(medianizerAddr).getWithError();
         if (!isErr) {
