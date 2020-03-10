@@ -176,6 +176,7 @@ contract TestMedianizer {
 
     function testActivate() public {
         Medianizer med = Medianizer(DeployedAddresses.Medianizer());
+        med.post();
         med.activate();
         Assert.equal(med.active(), true, "active must be true");
     }
