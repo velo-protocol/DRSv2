@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
 import "../book-room/LL.sol";
-import "../interfaces/IFeeder.sol";
+import "../interfaces/IMedianizer.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
 contract Lag {
@@ -9,9 +9,9 @@ contract Lag {
     using SafeMath for uint16;
 
     // Governance
-    address public gov;
-    modifier onlyGov {
-        require(msg.sender == gov, "Lag | caller must be Gov");
+    address public owner;
+    modifier onlyOwner {
+        require(msg.sender == owner, "Lag.onlyOwner: The message sender is not found or does not have sufficient permission");
         _;
     }
 
@@ -19,9 +19,9 @@ contract Lag {
     bool public halted;
     modifier haltable { require(halted == false, "Lag | Lag has been halted"); _; }
 
-    address public priceRefStorage;
+    address public medianizerAddr;
 
-    uint16 constant DEFAULT_LAG_TIME = 60*60*15;
+    uint16 constant DEFAULT_LAG_TIME = 15 minutes;
     uint16 public lagTime;
 
     struct MedPrice {
@@ -29,10 +29,10 @@ contract Lag {
         bool isErr;
     }
 
-    MedPrice next;
-    MedPrice curr;
+    MedPrice nextPrice;
+    MedPrice currentPrice;
 
-    uint256 lastUpdate;
+    uint256 timeLastUpdate;
 
     // Consumer contracts
     LL.List public consumers;
@@ -41,23 +41,23 @@ contract Lag {
 
     event LogLaggedPrice(uint256 laggedPrice);
 
-    constructor(address _gov, address _priceRefStorage) public {
+    constructor(address _owner, address _medianizerAddr) public {
         consumers.init();
-        priceRefStorage = _priceRefStorage;
-        gov = _gov;
+        medianizerAddr = _medianizerAddr;
+        owner = _owner;
         lagTime = uint16(DEFAULT_LAG_TIME);
     }
 
-    function halt() external onlyGov {
+    function halt() external onlyOwner {
         halted = true;
     }
 
-    function resume() external onlyGov {
+    function resume() external onlyOwner {
         halted = false;
     }
 
-    function setPriceRefStorage(address newPriceRefStorage) external onlyGov {
-        priceRefStorage = newPriceRefStorage;
+    function setMedianizer(address newMedianizerAddr) external onlyOwner {
+        medianizerAddr = newMedianizerAddr;
     }
 
     function getBlockTimestamp() internal view returns (uint) {
@@ -69,50 +69,50 @@ contract Lag {
         return timestamp.sub(timestamp % lagTime);
     }
 
-    function setLagTime(uint16 newLagTime) external onlyGov {
+    function setLagTime(uint16 newLagTime) external onlyOwner {
         require(newLagTime > 0, "Lag | newLagTime must more than 0");
         lagTime = newLagTime;
     }
 
-    function void() external onlyGov {
-        curr = next = MedPrice(0, true);
+    function void() external onlyOwner {
+        currentPrice = nextPrice = MedPrice(0, true);
         halted = true;
     }
 
     function isLagTimePass() public view returns (bool) {
-        return getBlockTimestamp() >= lastUpdate.add(lagTime);
+        return getBlockTimestamp() >= timeLastUpdate.add(lagTime);
     }
 
     function post() external haltable {
-        require(isLagTimePass(), "Lag | lagTime isn't pass yet");
-        (uint256 medPrice, , bool isErr) = IFeeder(priceRefStorage).getWithError();
+        require(isLagTimePass(), "Lag.post: lag time is not pass yet");
+        (uint256 medPrice, , bool isErr) = IMedianizer(medianizerAddr).getWithError();
         if (!isErr) {
-            curr = next;
-            next = MedPrice(medPrice, isErr);
-            lastUpdate = calLastUpdate(getBlockTimestamp());
-            emit LogLaggedPrice(curr.price);
+            currentPrice = nextPrice;
+            nextPrice = MedPrice(medPrice, isErr);
+            timeLastUpdate = calLastUpdate(getBlockTimestamp());
+            emit LogLaggedPrice(currentPrice.price);
         }
     }
 
     function getWithError() external view onlyConsumer returns (uint256, bool) {
-        return (curr.price, curr.isErr);
+        return (currentPrice.price, currentPrice.isErr);
     }
 
     function getNextWithError() external view onlyConsumer returns (uint256, bool) {
-        return (next.price, next.isErr);
+        return (nextPrice.price, nextPrice.isErr);
     }
 
     function get() external view onlyConsumer returns (uint256) {
-        require(curr.isErr == false, "Lag | curr must not error");
-        return curr.price;
+        require(currentPrice.isErr == false, "Lag | curr must not error");
+        return currentPrice.price;
     }
 
-    function addConsumer(address newConsumer) external onlyGov {
+    function addConsumer(address newConsumer) external onlyOwner {
         require(newConsumer != address(0), "Lag | newConsumer must no be address(0)");
         consumers.add(newConsumer);
     }
 
-    function removeConsumer(address consumer, address prevConsumer) external onlyGov {
+    function removeConsumer(address consumer, address prevConsumer) external onlyOwner {
         consumers.remove(consumer, prevConsumer);
     }
 
@@ -120,7 +120,7 @@ contract Lag {
         return consumers.getAll();
     }
 
-    function addConsumers(address[] calldata newConsumers) external onlyGov {
+    function addConsumers(address[] calldata newConsumers) external onlyOwner {
         for(uint i = 0; i < newConsumers.length; i++) {
             require(newConsumers[i] != address(0), "Lag | newConsumers[x] must not be address(0)");
             consumers.add(newConsumers[i]);

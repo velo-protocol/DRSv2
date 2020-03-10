@@ -1,18 +1,18 @@
 pragma solidity ^0.5.0;
 
 import "../../../contracts/modules/voracle/Lag.sol";
-import "../mocks/MockIFeeder.sol";
+import "../mocks/MockMedianizer.sol";
 import "truffle/Assert.sol";
 
 contract TestLag {
     Lag public lag;
     Lag public lagNoneGov;
-    MockIFeeder public mockIFeeder;
-    MockIFeeder public mockIFeeder2;
+    MockMedianizer public mockMedianizer;
+    MockMedianizer public mockMedianizer2;
 
     function beforeEach() public {
-        mockIFeeder = new MockIFeeder(10);
-        mockIFeeder2 = new MockIFeeder(11);
+        mockMedianizer = new MockMedianizer(10);
+        mockMedianizer2 = new MockMedianizer(11);
         lag = new Lag(address(this), address(0));
     }
 
@@ -38,10 +38,10 @@ contract TestLag {
     }
 
     function testSetPriceRefStorage() public {
-        address expectedPriceRefStorage = address(mockIFeeder);
-        lag.setPriceRefStorage(address(mockIFeeder));
+        address expectedMedianizer = address(mockMedianizer);
+        lag.setMedianizer(address(mockMedianizer));
 
-        Assert.equal(lag.priceRefStorage(), expectedPriceRefStorage, "lag.setPriceRefStorage() should be 0xb04aD816e86bFA5515c35Ad02081F71D9E848C88");
+        Assert.equal(lag.medianizerAddr(), expectedMedianizer, "lag.setMedianizer() should be 0xb04aD816e86bFA5515c35Ad02081F71D9E848C88");
     }
 
     function testSetLagTime() public {
@@ -75,7 +75,7 @@ contract TestLag {
     }
 
     function testPost() public {
-        lag.setPriceRefStorage(address(mockIFeeder));
+        lag.setMedianizer(address(mockMedianizer));
         lag.addConsumer(address(this));
 
         lag.post();
@@ -135,7 +135,7 @@ contract TestLag {
     }
 
     function testGetAfterPost() public {
-        lag.setPriceRefStorage(address(mockIFeeder));
+        lag.setMedianizer(address(mockMedianizer));
         lag.addConsumer(address(this));
         lag.post();
 
@@ -150,12 +150,12 @@ contract TestLag {
     }
 
     function testAddConsumer() public {
-        lag.addConsumer(address(mockIFeeder));
+        lag.addConsumer(address(mockMedianizer));
 
         address[] memory consumers = lag.getConsumers();
 
         Assert.equal(consumers.length, 1, "consumers.length must be 1");
-        Assert.equal(consumers[0], address(mockIFeeder), "consumers[0] must be address(this)");
+        Assert.equal(consumers[0], address(mockMedianizer), "consumers[0] must be address(this)");
     }
 
     function testAddConsumerWithError() public {
@@ -167,20 +167,20 @@ contract TestLag {
     }
 
     function testRemoveConsumer() public {
-        lag.addConsumer(address(mockIFeeder));
-        lag.addConsumer(address(mockIFeeder2));
+        lag.addConsumer(address(mockMedianizer));
+        lag.addConsumer(address(mockMedianizer2));
         address[] memory consumers = lag.getConsumers();
 
-        Assert.equal(consumers[0], address(mockIFeeder2), "consumers[0] must be address(this)");
-        Assert.equal(consumers[1], address(mockIFeeder), "consumers[1] must be address(this)");
+        Assert.equal(consumers[0], address(mockMedianizer2), "consumers[0] must be address(this)");
+        Assert.equal(consumers[1], address(mockMedianizer), "consumers[1] must be address(this)");
 
-        lag.removeConsumer(address(mockIFeeder), address(mockIFeeder2));
+        lag.removeConsumer(address(mockMedianizer), address(mockMedianizer2));
         Assert.equal(consumers.length, 2, "consumers.length must be 2");
     }
 
     function testRemoveConsumerWithErrorWhenNonePrevConsumer() public {
         bytes4 selector = lag.removeConsumer.selector;
-        bytes memory data = abi.encodeWithSelector(selector, address(mockIFeeder));
+        bytes memory data = abi.encodeWithSelector(selector, address(mockMedianizer));
         (bool r,) = address(lag).call(data);
 
         Assert.equal(r, false, "lag.removeConsumer() should throw an error");
