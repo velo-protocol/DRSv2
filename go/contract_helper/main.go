@@ -158,6 +158,24 @@ func (i *Client) GetCollateralBalanceOf(collateralName, holderAddress string) st
 	return utils.AmountToString(result)
 }
 
+func (i *Client) ApproveCollateral(collateralName, spender, allowAmount string) string {
+	amount, _ := utils.StringToAmount(allowAmount)
+	spenderAddress := common.HexToAddress(spender)
+	opt := bind.NewKeyedTransactor(i.privateKey)
+	opt.GasLimit = constants.GasLimit
+	result, err := i.collateral[collateralName].Approve(opt, spenderAddress, amount)
+	if err != nil {
+		panic(err)
+	}
+
+	err = ConfirmTx(context.Background(), i, result, i.publicKey)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return result.Hash().String()
+
+}
+
 func (i *Client) GetCollateralTotalSupply(collateralAddress string) string {
 	result, err := i.collateral[collateralAddress].TotalSupply(nil)
 	if err != nil {
