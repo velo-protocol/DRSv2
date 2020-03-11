@@ -157,8 +157,8 @@ contract TestMedianizer {
 
     function testSetValidityPeriod() public {
         Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-        med.setValidityPeriod(20);
-        Assert.equal(med.validityPeriod(), 20 minutes, "validityPeriod must be 20 minutes");
+        med.setValidityPeriod(5 minutes);
+        Assert.equal(med.validityPeriod(), 300, "validityPeriod must be 300 seconds");
     }
 
     function testGetValidityPeriod() public {
