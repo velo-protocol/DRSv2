@@ -148,10 +148,10 @@ contract Medianizer is Initializable, IMedianizer {
     }
 
     function getValidityPeriod() external view returns (uint256) {
-        return validityPeriod / 1 minutes;
+        return validityPeriod;
     }
 
-    function setValidityPeriod(uint256 valueInMinute) onlyOwner external {
-        validityPeriod = valueInMinute * 1 minutes;
+    function setValidityPeriod(uint256 valueInSecond) onlyOwner external {
+        validityPeriod = valueInSecond;
     }
 }
