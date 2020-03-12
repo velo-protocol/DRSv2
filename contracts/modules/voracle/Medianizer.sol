@@ -154,6 +154,7 @@ contract Medianizer is Initializable, IMedianizer {
     }
 
     function setValidityPeriod(uint256 valueInSecond) onlyOwner external {
+        require(valueInSecond > 1, "Medianizer.setValidityPeriod: invalid validityPeriod");
         validityPeriod = valueInSecond;
     }
 }

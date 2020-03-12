@@ -27,5 +27,24 @@ contract("Medianizer test", async accounts => {
     });
   });
 
+  describe("SetValidityPeriod", async () => {
+    it("should setValidityPeriod correctly", async () => {
+      const validityPeriod = 300;
+      await medianizer.setValidityPeriod(validityPeriod);
+
+      assert.equal(validityPeriod, await medianizer.getValidityPeriod(),"medianizer.validityPeriod validityPeriod be 300");
+
+    });
+  });
+
+  describe("GetValidityPeriod", async () => {
+    it("should getValidityPeriod correctly", async () => {
+      const validityPeriod = 300;
+      await medianizer.setValidityPeriod(validityPeriod);
+
+      assert.equal(validityPeriod, await medianizer.getValidityPeriod(),"medianizer.validityPeriod validityPeriod be 300");
+
+    });
+  });
 
 });
