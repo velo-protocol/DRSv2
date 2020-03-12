@@ -22,6 +22,7 @@ contract Medianizer is Initializable, IMedianizer {
     uint256 public validityPeriod;
 
     event MedianSet(uint256 price, bool isErr);
+    event MedianVoid(address caller, address medianizer, bool isActive);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Medianizer.onlyOwner: The message sender is not found or does not have sufficient permission");
@@ -145,6 +146,7 @@ contract Medianizer is Initializable, IMedianizer {
     function void() onlyOwner external {
         price = 0;
         active = false;
+        emit MedianVoid(msg.sender, address(this), active);
     }
 
     function getValidityPeriod() external view returns (uint256) {
