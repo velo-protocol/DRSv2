@@ -21,7 +21,9 @@ contract Medianizer is Initializable, IMedianizer {
     uint8 public minFedPrices;
     uint256 public validityPeriod;
 
-    event MedianSet(uint256 price, bool isErr);
+    event FeederAdd(address caller, address feederAddress);
+    event FeederRemove(address caller, address feederAddress);
+    event MedianActivate(address caller, address medianizer, bool isActive);
     event MedianVoid(address caller, address medianizer, bool isActive);
 
     modifier onlyOwner() {
@@ -41,9 +43,8 @@ contract Medianizer is Initializable, IMedianizer {
     }
 
     function post() external {
-        (uint256 newMedPrice, bool isErr) = compute();
+        (uint256 newMedPrice,) = compute();
         _set(newMedPrice);
-        emit MedianSet(newMedPrice, isErr);
     }
 
     function compute() public view returns (uint256, bool) {
@@ -99,6 +100,7 @@ contract Medianizer is Initializable, IMedianizer {
 
     function addFeeder(address feeder) onlyOwner public {
         feeders.add(feeder);
+        emit FeederAdd(msg.sender, feeder);
     }
 
     function removeFeeder(address feeder) onlyOwner public {
@@ -117,6 +119,7 @@ contract Medianizer is Initializable, IMedianizer {
         require(found, "Medianizer.removeFeeder: address does not exist");
 
         feeders.remove(feeder, prevFeeder);
+        emit FeederRemove(msg.sender, feeder);
     }
 
     function getFeeders() public view returns (address[] memory) {
@@ -141,6 +144,7 @@ contract Medianizer is Initializable, IMedianizer {
         require(!active, "Medianizer.activate: the medianizer is active");
         require(price > 0, "Medianizer.activate: the medianizer does not have a valid price");
         active = true;
+        emit MedianActivate(msg.sender, address(this), active);
     }
 
     function void() onlyOwner external {
