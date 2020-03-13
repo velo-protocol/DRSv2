@@ -69,6 +69,29 @@ contract("Medianizer test", async accounts => {
       assert.equal(validityPeriod, await medianizer.getValidityPeriod(), "medianizer.validityPeriod validityPeriod be 300");
 
     });
+
+    it("should fail, validityPeriod must be greater than 0", async () => {
+      try {
+        await medianizer.setValidityPeriod(-1);
+      } catch (err) {
+        assert.equal(err.reason, "Medianizer.setValidityPeriod: validityPeriod must be greater than 0")
+      }
+    });
+
+    it("should fail, validityPeriod must be greater than 0", async () => {
+      try {
+        await medianizer.setValidityPeriod(-1999999393999999);
+      } catch (err) {
+        assert.equal(err.reason, "Medianizer.setValidityPeriod: validityPeriod must be greater than 0")
+      }
+    });
+    it("should fail, validityPeriod must be greater than 0", async () => {
+      try {
+        await medianizer.setValidityPeriod(1999999393999999);
+      } catch (err) {
+        assert.equal(err.reason, "Medianizer.setValidityPeriod: validityPeriod must not be greater than maxValidityPeriod")
+      }
+    });
   });
 
   describe("GetValidityPeriod", async () => {

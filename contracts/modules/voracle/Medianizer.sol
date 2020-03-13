@@ -20,6 +20,7 @@ contract Medianizer is Initializable, IMedianizer {
 
     uint8 public minFedPrices;
     uint256 public validityPeriod;
+    uint256 private maxValidityPeriod = 30 days;
 
     event FeederAdd(address caller, address medianizer, address feeder);
     event FeederRemove(address caller, address medianizer, address feeder);
@@ -157,8 +158,10 @@ contract Medianizer is Initializable, IMedianizer {
         return validityPeriod;
     }
 
-    function setValidityPeriod(uint256 valueInSecond) onlyOwner external {
-        require(valueInSecond > 1, "Medianizer.setValidityPeriod: invalid validityPeriod");
-        validityPeriod = valueInSecond;
+    function setValidityPeriod(int256 newValidityPeriod) onlyOwner external {
+        require(newValidityPeriod > 0, "Medianizer.setValidityPeriod: validityPeriod must be greater than 0");
+
+        require(uint256(newValidityPeriod) < maxValidityPeriod, "Medianizer.setValidityPeriod: validityPeriod must not be greater than maxValidityPeriod");
+        validityPeriod = uint256(newValidityPeriod);
     }
 }
