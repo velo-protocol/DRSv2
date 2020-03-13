@@ -21,8 +21,8 @@ contract Medianizer is Initializable, IMedianizer {
     uint8 public minFedPrices;
     uint256 public validityPeriod;
 
-    event FeederAdd(address caller, address feederAddress);
-    event FeederRemove(address caller, address feederAddress);
+    event FeederAdd(address caller, address medianizer, address feeder);
+    event FeederRemove(address caller, address medianizer, address feeder);
     event MedianActivate(address caller, address medianizer, bool isActive);
     event MedianVoid(address caller, address medianizer, bool isActive);
 
@@ -100,7 +100,7 @@ contract Medianizer is Initializable, IMedianizer {
 
     function addFeeder(address feeder) onlyOwner public {
         feeders.add(feeder);
-        emit FeederAdd(msg.sender, feeder);
+        emit FeederAdd(msg.sender, address(this), feeder);
     }
 
     function removeFeeder(address feeder) onlyOwner public {
@@ -119,7 +119,7 @@ contract Medianizer is Initializable, IMedianizer {
         require(found, "Medianizer.removeFeeder: address does not exist");
 
         feeders.remove(feeder, prevFeeder);
-        emit FeederRemove(msg.sender, feeder);
+        emit FeederRemove(msg.sender, address(this), feeder);
     }
 
     function getFeeders() public view returns (address[] memory) {
