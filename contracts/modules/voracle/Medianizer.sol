@@ -161,7 +161,7 @@ contract Medianizer is Initializable, IMedianizer {
 
     function setValidityPeriod(int256 newValidityPeriod) onlyOwner external {
         require(newValidityPeriod > 0, "Medianizer.setValidityPeriod: validityPeriod must be greater than 0");
-        require(uint256(newValidityPeriod) < maxValidityPeriod, "Medianizer.setValidityPeriod: validityPeriod must not be greater than maxValidityPeriod");
+        require(uint256(newValidityPeriod) <= maxValidityPeriod, "Medianizer.setValidityPeriod: validityPeriod must not be greater than maxValidityPeriod");
         validityPeriod = uint256(newValidityPeriod);
     }
 }
