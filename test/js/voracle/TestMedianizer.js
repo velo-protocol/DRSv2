@@ -14,6 +14,39 @@ contract("Medianizer test", async accounts => {
     await medianizer.initialize(accounts[0], usdBytes32, veloBytes32)
   });
 
+  describe("Add Feeder", async () => {
+    it("should add feeder correctly", async () => {
+      const result = await medianizer.addFeeder(accounts[1]);
+
+      truffleAssert.eventEmitted(result, 'FeederAdd', event => {
+        return event.caller === accounts[0]
+          && event.medianizer === medianizer.address
+          && event.feeder === accounts[1]
+      }, 'contract should emit the event correctly');
+    });
+  });
+
+  describe("Remove Feeder", async () => {
+    it("should remove feeder correctly", async () => {
+      await medianizer.addFeeder(accounts[1]);
+      const result = await medianizer.removeFeeder(accounts[1]);
+
+      truffleAssert.eventEmitted(result, 'FeederRemove', event => {
+        return event.caller === accounts[0]
+          && event.medianizer === medianizer.address
+          && event.feeder === accounts[1]
+      }, 'contract should emit the event correctly');
+    });
+
+    it("should fail, feeder address does not exist", async () => {
+      try {
+        await medianizer.removeFeeder(accounts[1]);
+      } catch (err) {
+        assert.equal(err.reason, "Medianizer.removeFeeder: address does not exist")
+      }
+    });
+  });
+
   describe("Void", async () => {
     it("should void correctly", async () => {
       const result = await medianizer.void();
@@ -21,7 +54,8 @@ contract("Medianizer test", async accounts => {
       assert.equal(false, await medianizer.active());
 
       truffleAssert.eventEmitted(result, 'MedianVoid', event => {
-        return event.medianizer === medianizer.address
+        return event.caller === accounts[0]
+          && event.medianizer === medianizer.address
           && event.isActive === false
       }, 'contract should emit the event correctly');
     });
@@ -32,7 +66,7 @@ contract("Medianizer test", async accounts => {
       const validityPeriod = 300;
       await medianizer.setValidityPeriod(validityPeriod);
 
-      assert.equal(validityPeriod, await medianizer.getValidityPeriod(),"medianizer.validityPeriod validityPeriod be 300");
+      assert.equal(validityPeriod, await medianizer.getValidityPeriod(), "medianizer.validityPeriod validityPeriod be 300");
 
     });
   });
@@ -42,7 +76,7 @@ contract("Medianizer test", async accounts => {
       const validityPeriod = 300;
       await medianizer.setValidityPeriod(validityPeriod);
 
-      assert.equal(validityPeriod, await medianizer.getValidityPeriod(),"medianizer.validityPeriod validityPeriod be 300");
+      assert.equal(validityPeriod, await medianizer.getValidityPeriod(), "medianizer.validityPeriod validityPeriod be 300");
 
     });
   });
