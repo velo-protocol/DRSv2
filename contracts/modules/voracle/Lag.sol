@@ -78,12 +78,12 @@ contract Lag {
         emit VoidLagEvent(msg.sender, address(this), active);
     }
 
-    function isLagTimePass() public view returns (bool) {
+    function isMinimumPeriodPass() public view returns (bool) {
         return getBlockTimestamp() >= timeLastUpdate.add(minimumPeriod);
     }
 
     function post() external mustBeActive {
-        require(isLagTimePass(), "Lag.post: minimum period for the post function has not passed");
+        require(isMinimumPeriodPass(), "Lag.post: minimum period for the post function has not passed");
         (uint256 medPrice, bool isActive, bool isErr) = IMedianizer(medianizerAddr).getWithError();
         if (!isActive) {
             currentPrice = nextPrice = MedPrice(0, true);
