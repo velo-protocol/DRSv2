@@ -24,8 +24,8 @@ contract Lag {
 
     address public medianizerAddr;
 
-    uint16 constant DEFAULT_LAG_TIME = 15 minutes;
-    uint16 public lagTime;
+    uint16 constant DEFAULT_MINIMUM_PERIOD = 15 minutes;
+    uint256 public minimumPeriod;
 
     struct MedPrice {
         uint256 price;
@@ -42,7 +42,8 @@ contract Lag {
     constructor(address _owner, address _medianizerAddr) public {
         medianizerAddr = _medianizerAddr;
         owner = _owner;
-        lagTime = uint16(DEFAULT_LAG_TIME);
+        minimumPeriod = uint16(DEFAULT_MINIMUM_PERIOD);
+        active = true;
     }
 
     function deactivate() external onlyOwner {
@@ -62,13 +63,13 @@ contract Lag {
     }
 
     function calLastUpdate(uint timestamp) internal view returns (uint256) {
-        require(lagTime > 0, "Lag | lagTime must more than 0");
-        return timestamp.sub(timestamp % lagTime);
+        require(minimumPeriod > 0, "Lag | lagTime must more than 0");
+        return timestamp.sub(timestamp % minimumPeriod);
     }
 
-    function setLagTime(uint16 newLagTime) external onlyOwner {
+    function setLagTime(uint256 newLagTime) external onlyOwner {
         require(newLagTime > 0, "Lag | newLagTime must more than 0");
-        lagTime = newLagTime;
+        minimumPeriod = newLagTime;
     }
 
     function void() external onlyOwner {
@@ -77,12 +78,12 @@ contract Lag {
         emit VoidLagEvent(msg.sender, address(this), active);
     }
 
-    function isLagTimePass() public view returns (bool) {
-        return getBlockTimestamp() >= timeLastUpdate.add(lagTime);
+    function isMinimumPeriodPass() public view returns (bool) {
+        return getBlockTimestamp() >= timeLastUpdate.add(minimumPeriod);
     }
 
     function post() external mustBeActive {
-        require(isLagTimePass(), "Lag.post: lag time is not pass yet");
+        require(isMinimumPeriodPass(), "Lag.post: minimum period for the post function has not passed");
         (uint256 medPrice, bool isActive, bool isErr) = IMedianizer(medianizerAddr).getWithError();
         if (!isActive) {
             currentPrice = nextPrice = MedPrice(0, true);
