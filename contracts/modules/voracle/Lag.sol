@@ -37,7 +37,6 @@ contract Lag {
 
     uint256 timeLastUpdate;
 
-    event LogLaggedPrice(uint256 laggedPrice);
     event VoidLagEvent(address caller, address lagAddress, bool currentStatus);
 
     constructor(address _owner, address _medianizerAddr) public {
@@ -95,7 +94,6 @@ contract Lag {
             currentPrice = nextPrice;
             nextPrice = MedPrice(medPrice, isErr);
             timeLastUpdate = calLastUpdate(getBlockTimestamp());
-            emit LogLaggedPrice(currentPrice.price);
         }
     }
 
