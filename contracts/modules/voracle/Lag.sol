@@ -24,7 +24,7 @@ contract Lag {
 
     address public medianizerAddr;
 
-    uint16 constant DEFAULT_LAG_TIME = 15 minutes;
+    uint16 constant DEFAULT_MINIMUM_PERIOD = 15 minutes;
     uint256 public minimumPeriod;
 
     struct MedPrice {
@@ -42,7 +42,7 @@ contract Lag {
     constructor(address _owner, address _medianizerAddr) public {
         medianizerAddr = _medianizerAddr;
         owner = _owner;
-        minimumPeriod = uint16(DEFAULT_LAG_TIME);
+        minimumPeriod = uint16(DEFAULT_MINIMUM_PERIOD);
         active = true;
     }
 
