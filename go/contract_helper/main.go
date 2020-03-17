@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/ecdsa"
+	"encoding/json"
 	"fmt"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -15,6 +16,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/abi"
 	"github.com/velo-protocol/DRSv2/go/constants"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
+	"io/ioutil"
 )
 
 // Client struct
@@ -235,6 +237,29 @@ func (i *Client) GetPrice(priceFeederName, assetCode, currency string) string {
 		panic(err)
 	}
 	return utils.AmountToString(price)
+}
+
+type Addresses struct {
+	DrsAddress            string `json:"drsAddress"`
+	HeartAddress          string `json:"heartAddress"`
+	ReserveManagerAddress string `json:"reserveManagerAddress"`
+	CollateralAddress     string `json:"collateralAddress"`
+	PriceFeederAddress    string `json:"priceFeederAddress"`
+}
+
+func GetContractAddresses() *Addresses {
+
+	byteValue, err := ioutil.ReadFile("../contract-addresses.json")
+	if err != nil {
+		panic(err)
+	}
+	addresses := new(Addresses)
+	err = json.Unmarshal(byteValue, addresses)
+	if err != nil {
+		panic(err)
+	}
+
+	return addresses
 }
 
 func main() {

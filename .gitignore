@@ -4,6 +4,8 @@ coverage
 coverage.json
 .coverage.txt
 .env
+contract-addresses.json
+
 
 # IntelliJ project files
 .idea
