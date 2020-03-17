@@ -2,7 +2,7 @@ const fs = require("fs");
 
 module.exports = async function (contractName, address) {
 
-  const filePath = './contract_addresses.json';
+  const filePath = './contract-addresses.json';
 
   let addresses = {};
 
