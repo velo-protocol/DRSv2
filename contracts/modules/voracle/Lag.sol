@@ -37,7 +37,7 @@ contract Lag {
 
     uint256 timeLastUpdate;
 
-    event VoidLagEvent(address caller, address lagAddress, bool currentStatus);
+    event LagVoid(address caller, address lag, bool isActive);
 
     constructor(address _owner, address _medianizerAddr) public {
         medianizerAddr = _medianizerAddr;
@@ -75,7 +75,7 @@ contract Lag {
     function void() external onlyOwner {
         currentPrice = nextPrice = MedPrice(0, true);
         active = false;
-        emit VoidLagEvent(msg.sender, address(this), active);
+        emit LagVoid(msg.sender, address(this), active);
     }
 
     function isMinimumPeriodPass() public view returns (bool) {
