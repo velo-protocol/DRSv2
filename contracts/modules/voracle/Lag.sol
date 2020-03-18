@@ -82,24 +82,31 @@ contract Lag {
         return getBlockTimestamp() >= timeLastUpdate.add(minimumPeriod);
     }
 
-    function post() external mustBeActive {
+    function post() external mustBeActive returns (bool) {
         require(isMinimumPeriodPass(), "Lag.post: minimum period for the post function has not passed");
         (uint256 medPrice, bool isActive, bool isErr) = IMedianizer(medianizerAddr).getWithError();
         if (!isActive) {
-            currentPrice = nextPrice = MedPrice(0, true);
             active = false;
-            isErr = true;
+            nextPrice = MedPrice(nextPrice.price, isErr);
+            return true;
         }
 
-        if (!isErr) {
+        if (!isErr && medPrice > 0) {
             currentPrice = nextPrice;
             nextPrice = MedPrice(medPrice, isErr);
             timeLastUpdate = calLastUpdate(getBlockTimestamp());
+        } else {
+            nextPrice = MedPrice(nextPrice.price, true);
         }
+        return true;
     }
 
     function getWithError() external view returns (uint256, bool, bool) {
         return (currentPrice.price, active, currentPrice.isErr);
+    }
+
+    function getNextWithError() external view returns (uint256, bool, bool) {
+        return (nextPrice.price, active, nextPrice.isErr);
     }
 
     function get() external view returns (uint256) {

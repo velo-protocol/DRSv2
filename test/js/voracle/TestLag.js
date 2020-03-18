@@ -32,11 +32,152 @@ contract("Lag test", async accounts => {
     it("should post successfully", async () => {
       await mocks.medianizer.givenMethodReturn(
         helper.methodABI(medianizer, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], ['100000000', true, false]).toString("hex")
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, false]).toString("hex")
       );
-      const result = await lag.post();
+      await lag.post();
 
-      assert.equal(true, result.receipt.status);
+      const result = await lag.getNextWithError();
+      const BN = web3.utils.BN;
+      const nextPrice = new BN(result[0]).toNumber();
+      const isActive = result[1];
+      const isErr = result[2];
+
+      assert.equal(100000000, nextPrice);
+      assert.equal(true, isActive);
+      assert.equal(false, isErr);
+
+    });
+
+    it("should post successfully, getWithError return price = 0 isActive = true isErr = true", async () => {
+      await mocks.medianizer.givenMethodReturn(
+        helper.methodABI(medianizer, "getWithError"),
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [0, true, true]).toString("hex")
+      );
+      await lag.post();
+
+      const result = await lag.getNextWithError();
+      const BN = web3.utils.BN;
+      const nextPrice = new BN(result[0]).toNumber();
+      const isActive = result[1];
+      const isErr = result[2];
+
+      assert.equal(0, nextPrice);
+      assert.equal(true, isActive);
+      assert.equal(true, isErr);
+
+    });
+
+    it("should post successfully, getWithError return price = 0 isActive = true isErr = false", async () => {
+      await mocks.medianizer.givenMethodReturn(
+        helper.methodABI(medianizer, "getWithError"),
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [0, true, false]).toString("hex")
+      );
+      await lag.post();
+
+      const result = await lag.getNextWithError();
+      const BN = web3.utils.BN;
+      const nextPrice = new BN(result[0]).toNumber();
+      const isActive = result[1];
+      const isErr = result[2];
+
+      assert.equal(0, nextPrice);
+      assert.equal(true, isActive);
+      assert.equal(true, isErr);
+
+    });
+
+    it("should post successfully, getWithError return price = 0 isActive = false isErr = true", async () => {
+      await mocks.medianizer.givenMethodReturn(
+        helper.methodABI(medianizer, "getWithError"),
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [0, false, true]).toString("hex")
+      );
+      await lag.post();
+
+      const result = await lag.getNextWithError();
+      const BN = web3.utils.BN;
+      const nextPrice = new BN(result[0]).toNumber();
+      const isActive = result[1];
+      const isErr = result[2];
+
+      assert.equal(0, nextPrice);
+      assert.equal(false, isActive);
+      assert.equal(true, isErr);
+
+    });
+
+    it("should post successfully, getWithError return price = 0 isActive = false isErr = false", async () => {
+      await mocks.medianizer.givenMethodReturn(
+        helper.methodABI(medianizer, "getWithError"),
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [0, false, false]).toString("hex")
+      );
+      await lag.post();
+
+      const result = await lag.getNextWithError();
+      const BN = web3.utils.BN;
+      const nextPrice = new BN(result[0]).toNumber();
+      const isActive = result[1];
+      const isErr = result[2];
+
+      assert.equal(0, nextPrice);
+      assert.equal(false, isActive);
+      assert.equal(false, isErr);
+
+    });
+
+    it("should post successfully, getWithError return price = 10 isActive = true isErr = true", async () => {
+      await mocks.medianizer.givenMethodReturn(
+        helper.methodABI(medianizer, "getWithError"),
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [10, true, true]).toString("hex")
+      );
+      await lag.post();
+
+      const result = await lag.getNextWithError();
+      const BN = web3.utils.BN;
+      const nextPrice = new BN(result[0]).toNumber();
+      const isActive = result[1];
+      const isErr = result[2];
+
+      assert.equal(0, nextPrice);
+      assert.equal(true, isActive);
+      assert.equal(true, isErr);
+
+    });
+
+    it("should post successfully, getWithError return price = 10 isActive = false isErr = true", async () => {
+      await mocks.medianizer.givenMethodReturn(
+        helper.methodABI(medianizer, "getWithError"),
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [10, false, true]).toString("hex")
+      );
+      await lag.post();
+
+      const result = await lag.getNextWithError();
+      const BN = web3.utils.BN;
+      const nextPrice = new BN(result[0]).toNumber();
+      const isActive = result[1];
+      const isErr = result[2];
+
+      assert.equal(0, nextPrice);
+      assert.equal(false, isActive);
+      assert.equal(true, isErr);
+
+    });
+
+    it("should post successfully, getWithError return price = 10 isActive = false isErr = false", async () => {
+      await mocks.medianizer.givenMethodReturn(
+        helper.methodABI(medianizer, "getWithError"),
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [10, false, false]).toString("hex")
+      );
+      await lag.post();
+
+      const result = await lag.getNextWithError();
+      const BN = web3.utils.BN;
+      const nextPrice = new BN(result[0]).toNumber();
+      const isActive = result[1];
+      const isErr = result[2];
+
+      assert.equal(0, nextPrice);
+      assert.equal(false, isActive);
+      assert.equal(false, isErr);
 
     });
 
@@ -89,7 +230,7 @@ contract("Lag test", async accounts => {
 
       assert.equal(0, currPrice);
       assert.equal(false, isActive);
-      assert.equal(true, isErr);
+      assert.equal(false, isErr);
 
     });
 
