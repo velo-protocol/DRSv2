@@ -4,6 +4,7 @@ const MockContract = artifacts.require("MockContract");
 
 const helper = require('../testhelper');
 const abi = require('ethereumjs-abi');
+const truffleAssert = require('truffle-assertions');
 
 let lag, mocks;
 
@@ -231,6 +232,29 @@ contract("Lag test", async accounts => {
       assert.equal(0, currPrice);
       assert.equal(false, isActive);
       assert.equal(false, isErr);
+
+    });
+
+  });
+
+  describe("Void", async () => {
+    it("should void successfully", async () => {
+      const voidResult = await lag.void();
+
+      truffleAssert.eventEmitted(voidResult, 'LagVoid', event => {
+        return event.caller === accounts[0]
+          && event.lag === lag.address
+          && event.isActive === false
+      }, 'contract should emit the event correctly');
+
+    });
+
+    it("should fail, sender is not owner", async () => {
+      try {
+        await lag.void({from: accounts[1]});
+      } catch (err) {
+        assert.equal(err.reason, "Lag.onlyOwner: The message sender is not found or does not have sufficient permission")
+      }
 
     });
 

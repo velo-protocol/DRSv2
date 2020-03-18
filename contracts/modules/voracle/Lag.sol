@@ -73,7 +73,7 @@ contract Lag {
     }
 
     function void() external onlyOwner {
-        currentPrice = nextPrice = MedPrice(0, true);
+        currentPrice = MedPrice(0, true);
         active = false;
         emit LagVoid(msg.sender, address(this), active);
     }
