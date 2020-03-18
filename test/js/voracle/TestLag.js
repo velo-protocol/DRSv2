@@ -34,18 +34,9 @@ contract("Lag test", async accounts => {
         helper.methodABI(medianizer, "getWithError"),
         '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], ['100000000', true, false]).toString("hex")
       );
-      await lag.post();
+      const result = await lag.post();
 
-      const result = await lag.getNextWithError();
-      const BN = web3.utils.BN;
-      const nextPrice = new BN(result[0]).toNumber();
-      const isActive = result[1];
-      const isErr = result[2];
-
-      assert.equal(100000000, nextPrice);
-      assert.equal(true, isActive);
-      assert.equal(false, isErr);
-
+      assert.equal(true, result.receipt.status);
 
     });
 
