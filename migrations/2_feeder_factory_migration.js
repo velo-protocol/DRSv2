@@ -2,6 +2,8 @@ const FeederFactory = artifacts.require('FeederFactory');
 const Feeder = artifacts.require('Feeder');
 const MedianizerProxy = artifacts.require('MedianizerProxy');
 const Medianizer = artifacts.require('Medianizer');
+const Lag = artifacts.require('Lag');
+const LagProxy = artifacts.require('LagProxy');
 
 module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(FeederFactory);
@@ -78,9 +80,46 @@ module.exports = async (deployer, network, accounts) => {
     const medSGD = await Medianizer.at(medProxySGD.address);
     await medSGD.addFeeder(sgdFeeder.address);
 
-    console.log('medProxyUSD',medProxyUSD.address)
-    console.log('medProxyTHB',medProxyTHB.address)
-    console.log('medProxySGD',medProxySGD.address)
+    console.log('medProxyUSD', medProxyUSD.address);
+    console.log('medProxyTHB', medProxyTHB.address);
+    console.log('medProxySGD', medProxySGD.address);
+
+    await deployer.deploy(Lag);
+    const lagLogic = await Lag.deployed();
+
+    // Lag USD
+
+    await deployer.deploy(LagProxy, accounts[0]);
+    const lagProxyUSD = await LagProxy.deployed();
+
+    const lagInstanceUSD = new web3.eth.Contract(Lag.abi, lagLogic.address);
+    const initializeLagUSDCalldata = lagInstanceUSD.methods.initialize(accounts[0], medProxyUSD.address).encodeABI();
+
+    await lagProxyUSD.initialize(lagLogic.address, initializeLagUSDCalldata);
+
+    // Lag THB
+
+    await deployer.deploy(LagProxy, accounts[0]);
+    const lagProxyTHB = await LagProxy.deployed();
+
+    const lagInstanceTHB = new web3.eth.Contract(Lag.abi, lagLogic.address);
+    const initializeLagTHBCalldata = lagInstanceTHB.methods.initialize(accounts[0], medProxyUSD.address).encodeABI();
+
+    await lagProxyTHB.initialize(lagLogic.address, initializeLagTHBCalldata);
+
+    // Lag SGD
+
+    await deployer.deploy(LagProxy, accounts[0]);
+    const lagProxySGD = await LagProxy.deployed();
+
+    const lagInstanceSGD = new web3.eth.Contract(Lag.abi, lagLogic.address);
+    const initializeLagSGDCalldata = lagInstanceSGD.methods.initialize(accounts[0], medProxyUSD.address).encodeABI();
+
+    await lagProxySGD.initialize(lagLogic.address, initializeLagSGDCalldata);
+
+    console.log('lagProxyUSD', lagProxyUSD.address);
+    console.log('lagProxyTHB', lagProxyTHB.address);
+    console.log('lagProxySGD', lagProxySGD.address);
 
   }
 };
