@@ -3,8 +3,9 @@ pragma solidity ^0.5.0;
 import "../book-room/LL.sol";
 import "../interfaces/IMedianizer.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "../interfaces/ILag.sol";
 
-contract Lag {
+contract Lag is ILag {
     using SafeMath for uint256;
     using SafeMath for uint16;
 
