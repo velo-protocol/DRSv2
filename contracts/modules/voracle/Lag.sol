@@ -98,12 +98,8 @@ contract Lag {
         }
     }
 
-    function getWithError() external view returns (uint256, bool) {
-        return (currentPrice.price, currentPrice.isErr);
-    }
-
-    function getNextWithError() external view returns (uint256, bool) {
-        return (nextPrice.price, nextPrice.isErr);
+    function getWithError() external view returns (uint256, bool, bool) {
+        return (currentPrice.price, active, currentPrice.isErr);
     }
 
     function get() external view returns (uint256) {
