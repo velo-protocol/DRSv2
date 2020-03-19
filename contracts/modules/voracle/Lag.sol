@@ -40,6 +40,7 @@ contract Lag is Initializable, ILag {
     uint256 timeLastUpdate;
 
     event LagVoid(address caller, address lag, bool isActive);
+    event LagActivate(address caller, address lag, bool isActive);
 
     function initialize(address _owner, address _medianizerAddr) public initializer {
         medianizerAddr = _medianizerAddr;
@@ -54,6 +55,7 @@ contract Lag is Initializable, ILag {
 
     function activate() external onlyOwner {
         active = true;
+        emit LagActivate(msg.sender, address(this), active);
     }
 
     function setMedianizer(address newMedianizerAddr) external onlyOwner {
