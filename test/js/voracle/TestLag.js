@@ -18,7 +18,8 @@ contract("Lag test", async accounts => {
   });
 
   beforeEach(async () => {
-    lag = await Lag.new(accounts[0], medianizer.address);
+    lag = await Lag.new();
+    await lag.initialize(accounts[0], medianizer.address);
   });
 
   afterEach(async () => {

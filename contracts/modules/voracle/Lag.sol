@@ -2,9 +2,11 @@ pragma solidity ^0.5.0;
 
 import "../book-room/LL.sol";
 import "../interfaces/IMedianizer.sol";
+import "../interfaces/ILag.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
-contract Lag {
+contract Lag is Initializable, ILag {
     using SafeMath for uint256;
     using SafeMath for uint16;
 
@@ -39,7 +41,7 @@ contract Lag {
 
     event LagVoid(address caller, address lag, bool isActive);
 
-    constructor(address _owner, address _medianizerAddr) public {
+    function initialize(address _owner, address _medianizerAddr) public initializer {
         medianizerAddr = _medianizerAddr;
         owner = _owner;
         minimumPeriod = uint16(DEFAULT_MINIMUM_PERIOD);
