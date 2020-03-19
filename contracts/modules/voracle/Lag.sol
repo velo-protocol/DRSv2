@@ -54,6 +54,8 @@ contract Lag is Initializable, ILag {
     }
 
     function activate() external onlyOwner {
+        require(active == false, "Lag.activate: lag is active");
+        require(currentPrice.price > 0 && nextPrice.price > 0, "Lag.activate: price is not in a correct state");
         active = true;
         emit LagActivate(msg.sender, address(this), active);
     }
@@ -67,12 +69,11 @@ contract Lag is Initializable, ILag {
     }
 
     function calLastUpdate(uint timestamp) internal view returns (uint256) {
-        require(minimumPeriod > 0, "Lag | lagTime must more than 0");
         return timestamp.sub(timestamp % minimumPeriod);
     }
 
     function setLagTime(uint256 newLagTime) external onlyOwner {
-        require(newLagTime > 0, "Lag | newLagTime must more than 0");
+        require(newLagTime >= 0, "Lag | newLagTime must more than 0");
         minimumPeriod = newLagTime;
     }
 

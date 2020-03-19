@@ -260,4 +260,27 @@ contract("Lag test", async accounts => {
     });
 
   });
+
+  describe("Activate", async () => {
+    it("should activate successfully", async () => {
+      await mocks.medianizer.givenMethodReturn(
+        helper.methodABI(medianizer, "getWithError"),
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, false]).toString("hex")
+      );
+      await lag.post();
+      await lag.setLagTime(0);
+
+      await lag.post();
+      await lag.void();
+
+      const activateResult = await lag.activate();
+
+      truffleAssert.eventEmitted(activateResult, 'LagActivate', event => {
+        return event.caller === accounts[0]
+          && event.lag === lag.address
+          && event.isActive === true
+      }, 'contract should emit the event correctly');
+
+    });
+  });
 });
