@@ -55,6 +55,8 @@ contract Lag is Initializable, ILag {
     }
 
     function activate() external onlyOwner {
+        require(active == false, "Lag.activate: lag is active");
+        require(currentPrice.price > 0 && nextPrice.price > 0, "Lag.activate: price is not in a correct state");
         active = true;
         emit LagActivate(msg.sender, address(this), active);
     }

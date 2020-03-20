@@ -278,4 +278,49 @@ contract("Lag test", async accounts => {
     });
 
   });
+
+  describe("Activate", async () => {
+    it("should activate successfully", async () => {
+      await mocks.medianizer.givenMethodReturn(
+        helper.methodABI(medianizer, "getWithError"),
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, false]).toString("hex")
+      );
+      await lag.post();
+      await lag.setLagTime(0);
+      await lag.void();
+      await lag.post();
+
+      const activateResult = await lag.activate();
+
+      truffleAssert.eventEmitted(activateResult, 'LagActivate', event => {
+        return event.caller === accounts[0]
+          && event.lag === lag.address
+          && event.isActive === true
+      }, 'contract should emit the event correctly');
+
+    });
+
+    it("should fail, lag is active", async () => {
+
+      try {
+        await lag.activate();
+
+      } catch (err) {
+        assert.equal(err.reason, "Lag.activate: lag is active")
+      }
+
+    });
+
+    it("should fail, price is not in a correct state", async () => {
+
+      try {
+        await lag.void();
+        await lag.activate();
+
+      } catch (err) {
+        assert.equal(err.reason, "Lag.activate: price is not in a correct state")
+      }
+
+    });
+  });
 });
