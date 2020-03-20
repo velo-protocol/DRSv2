@@ -27,7 +27,7 @@ contract Lag is Initializable, ILag {
     address public medianizerAddr;
 
     uint256 public minimumPeriod;
-    uint256 public maximumPeriod;
+    uint256 public minimumPeriodLimit;
 
     struct MedPrice {
         uint256 price;
@@ -46,7 +46,7 @@ contract Lag is Initializable, ILag {
         medianizerAddr = _medianizerAddr;
         owner = _owner;
         minimumPeriod = 15 minutes;
-        maximumPeriod = 30 days;
+        minimumPeriodLimit = 30 days;
         active = true;
         currentPrice = MedPrice(0, true);
         nextPrice = MedPrice(0, true);
@@ -73,7 +73,7 @@ contract Lag is Initializable, ILag {
 
     function setMinimumPeriod(int256 newMinimumPeriod) external onlyOwner {
         require(newMinimumPeriod >= 0, "Lag.setMinimumPeriod: minimumPeriod value must not be less than 0");
-        require(uint256(newMinimumPeriod) <= maximumPeriod, "Lag.setMinimumPeriod: minimumPeriod value must not be greater than 2592000");
+        require(uint256(newMinimumPeriod) <= minimumPeriodLimit, "Lag.setMinimumPeriod: minimumPeriod value must not be greater than 2592000");
         minimumPeriod = uint256(newMinimumPeriod);
     }
 
