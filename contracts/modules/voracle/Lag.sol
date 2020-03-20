@@ -36,7 +36,7 @@ contract Lag is Initializable, ILag {
     MedPrice nextPrice;
     MedPrice currentPrice;
 
-    uint256 timeLastUpdate;
+    uint256 public timeLastUpdate;
 
     event LagVoid(address caller, address lag, bool isActive);
     event LagActivate(address caller, address lag, bool isActive);
@@ -67,13 +67,8 @@ contract Lag is Initializable, ILag {
         return block.timestamp;
     }
 
-    function calLastUpdate(uint timestamp) internal view returns (uint256) {
-        require(minimumPeriod > 0, "Lag | lagTime must more than 0");
-        return timestamp.sub(timestamp % minimumPeriod);
-    }
-
     function setLagTime(uint256 newLagTime) external onlyOwner {
-        require(newLagTime > 0, "Lag | newLagTime must more than 0");
+        require(newLagTime >= 0, "Lag | newLagTime must more than 0");
         minimumPeriod = newLagTime;
     }
 
@@ -87,21 +82,18 @@ contract Lag is Initializable, ILag {
         return getBlockTimestamp() >= timeLastUpdate.add(minimumPeriod);
     }
 
-    function post() external mustBeActive returns (bool) {
+    function post() external returns (bool) {
         require(isMinimumPeriodPass(), "Lag.post: minimum period for the post function has not passed");
         (uint256 medPrice, bool isActive, bool isErr) = IMedianizer(medianizerAddr).getWithError();
         if (!isActive) {
             active = false;
-            nextPrice = MedPrice(nextPrice.price, isErr);
             return true;
         }
 
         if (!isErr && medPrice > 0) {
             currentPrice = nextPrice;
             nextPrice = MedPrice(medPrice, isErr);
-            timeLastUpdate = calLastUpdate(getBlockTimestamp());
-        } else {
-            nextPrice = MedPrice(nextPrice.price, true);
+            timeLastUpdate = getBlockTimestamp();
         }
         return true;
     }
