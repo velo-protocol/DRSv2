@@ -299,5 +299,28 @@ contract("Lag test", async accounts => {
       }, 'contract should emit the event correctly');
 
     });
+
+    it("should fail, lag is active", async () => {
+
+      try {
+        await lag.activate();
+
+      } catch (err) {
+        assert.equal(err.reason, "Lag.activate: lag is active")
+      }
+
+    });
+
+    it("should fail, price is not in a correct state", async () => {
+
+      try {
+        await lag.void();
+        await lag.activate();
+
+      } catch (err) {
+        assert.equal(err.reason, "Lag.activate: price is not in a correct state")
+      }
+
+    });
   });
 });
