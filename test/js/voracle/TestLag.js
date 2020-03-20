@@ -186,7 +186,12 @@ contract("Lag test", async accounts => {
     it("should fail, minimum period for the post function has not passed", async () => {
 
       try {
-        await lag.setLagTime(25920000000);
+        await mocks.medianizer.givenMethodReturn(
+          helper.methodABI(medianizer, "getWithError"),
+          '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, false]).toString("hex")
+        );
+        await lag.post();
+        await lag.setMinimumPeriod(2592000);
         await lag.post();
       } catch (err) {
         assert.equal(err.reason, "Lag.post: minimum period for the post function has not passed")
@@ -202,7 +207,7 @@ contract("Lag test", async accounts => {
         '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], ['100000000', true, false]).toString("hex")
       );
       await lag.post();
-      await lag.setLagTime(0);
+      await lag.setMinimumPeriod(0);
       await lag.post();
 
       const result = await lag.getWithError();
@@ -238,7 +243,7 @@ contract("Lag test", async accounts => {
         '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], ['100000000', false, false]).toString("hex")
       );
       await lag.post();
-      await lag.setLagTime(1);
+      await lag.setMinimumPeriod(1);
       await lag.post();
 
       const result = await lag.getWithError();
@@ -286,7 +291,7 @@ contract("Lag test", async accounts => {
         '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, false]).toString("hex")
       );
       await lag.post();
-      await lag.setLagTime(0);
+      await lag.setMinimumPeriod(0);
       await lag.void();
       await lag.post();
 
@@ -322,5 +327,42 @@ contract("Lag test", async accounts => {
       }
 
     });
+  });
+
+  describe("SetMinimumPeriod", async () => {
+    it("should set minimum period successfully, with minimum period = 0", async () => {
+
+      await lag.setMinimumPeriod(0);
+
+      minimumPeriod = (await lag.minimumPeriod()).toString();
+
+      assert.equal(0, minimumPeriod);
+    });
+
+    it("should set minimum period successfully, with minimum period = 2592000", async () => {
+
+      await lag.setMinimumPeriod(2592000);
+
+      minimumPeriod = (await lag.minimumPeriod()).toString();
+
+      assert.equal(2592000, minimumPeriod);
+    });
+
+    it("should fail, minimum period < 0", async () => {
+      try {
+        await lag.setMinimumPeriod(-1);
+      } catch (err) {
+        assert.equal(err.reason, "Lag.setMinimumPeriod: minimumPeriod value must not be less than 0")
+      }
+    });
+
+    it("should fail, minimum period > 2592000", async () => {
+      try {
+        await lag.setMinimumPeriod(2592001);
+      } catch (err) {
+        assert.equal(err.reason, "Lag.setMinimumPeriod: minimumPeriod value must not be greater than 2592000")
+      }
+    });
+
   });
 });

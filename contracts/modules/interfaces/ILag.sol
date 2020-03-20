@@ -7,4 +7,8 @@ contract ILag {
 
     function void() external;
 
+    function activate() external;
+
+    function setMinimumPeriod(int256) external;
+
 }
