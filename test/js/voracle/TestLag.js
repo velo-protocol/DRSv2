@@ -202,25 +202,7 @@ contract("Lag test", async accounts => {
         '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], ['100000000', true, false]).toString("hex")
       );
       await lag.post();
-
-      const result = await lag.getWithError();
-
-      const BN = web3.utils.BN;
-      const currPrice = new BN(result[0]).toNumber();
-      const isActive = result[1];
-      const isErr = result[2];
-
-      assert.equal(0, currPrice);
-      assert.equal(true, isActive);
-      assert.equal(false, isErr);
-
-    });
-
-    it("should get with error successfully with in active flag", async () => {
-      await mocks.medianizer.givenMethodReturn(
-        helper.methodABI(medianizer, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], ['100000000', false, false]).toString("hex")
-      );
+      await lag.setLagTime(1);
       await lag.post();
 
       const result = await lag.getWithError();
@@ -230,11 +212,47 @@ contract("Lag test", async accounts => {
       const isActive = result[1];
       const isErr = result[2];
 
-      assert.equal(0, currPrice);
-      assert.equal(false, isActive);
+      assert.equal(100000000, currPrice);
+      assert.equal(true, isActive);
       assert.equal(false, isErr);
 
     });
+
+    it("should get with error successfully, when initial Lag contract", async () => {
+      const result = await lag.getWithError();
+
+      const BN = web3.utils.BN;
+      const currPrice = new BN(result[0]).toNumber();
+      const isActive = result[1];
+      const isErr = result[2];
+
+      assert.equal(0, currPrice);
+      assert.equal(true, isActive);
+      assert.equal(true, isErr);
+
+    });
+
+    // it("should get with error successfully with inactive flag", async () => {
+    //   await mocks.medianizer.givenMethodReturn(
+    //     helper.methodABI(medianizer, "getWithError"),
+    //     '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], ['100000000', false, false]).toString("hex")
+    //   );
+    //   await lag.post();
+    //   await lag.setLagTime(1);
+    //   await lag.post();
+    //
+    //   const result = await lag.getWithError();
+    //
+    //   const BN = web3.utils.BN;
+    //   const currPrice = new BN(result[0]).toNumber();
+    //   const isActive = result[1];
+    //   const isErr = result[2];
+    //
+    //   assert.equal(0, currPrice);
+    //   assert.equal(false, isActive);
+    //   assert.equal(false, isErr);
+    //
+    // });
 
   });
 

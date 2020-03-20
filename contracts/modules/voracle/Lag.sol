@@ -26,7 +26,6 @@ contract Lag is Initializable, ILag {
 
     address public medianizerAddr;
 
-    uint16 constant DEFAULT_MINIMUM_PERIOD = 15 minutes;
     uint256 public minimumPeriod;
 
     struct MedPrice {
@@ -45,8 +44,10 @@ contract Lag is Initializable, ILag {
     function initialize(address _owner, address _medianizerAddr) public initializer {
         medianizerAddr = _medianizerAddr;
         owner = _owner;
-        minimumPeriod = uint16(DEFAULT_MINIMUM_PERIOD);
+        minimumPeriod = 15 minutes;
         active = true;
+        currentPrice = MedPrice(0, true);
+        nextPrice = MedPrice(0, true);
     }
 
     function deactivate() external onlyOwner {
