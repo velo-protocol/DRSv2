@@ -60,7 +60,7 @@ module.exports = async (deployer, network, accounts) => {
     const medProxyTHB = await MedianizerProxy.deployed();
 
     const medInstanceTHB = new web3.eth.Contract(Medianizer.abi, medLogic.address);
-    const initializeTHBCalldata = medInstanceTHB.methods.initialize(accounts[0], usdBytes32, veloBytes32).encodeABI();
+    const initializeTHBCalldata = medInstanceTHB.methods.initialize(accounts[0], thbBytes32, veloBytes32).encodeABI();
 
     await medProxyTHB.initialize(medLogic.address, initializeTHBCalldata);
 
@@ -73,7 +73,7 @@ module.exports = async (deployer, network, accounts) => {
     const medProxySGD = await MedianizerProxy.deployed();
 
     const medInstanceSGD = new web3.eth.Contract(Medianizer.abi, medLogic.address);
-    const initializeSGDCalldata = medInstanceSGD.methods.initialize(accounts[0], usdBytes32, veloBytes32).encodeABI();
+    const initializeSGDCalldata = medInstanceSGD.methods.initialize(accounts[0], sgdBytes32, veloBytes32).encodeABI();
 
     await medProxySGD.initialize(medLogic.address, initializeSGDCalldata);
 
