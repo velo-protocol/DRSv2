@@ -103,7 +103,7 @@ module.exports = async (deployer, network, accounts) => {
     const lagProxyTHB = await LagProxy.deployed();
 
     const lagInstanceTHB = new web3.eth.Contract(Lag.abi, lagLogic.address);
-    const initializeLagTHBCalldata = lagInstanceTHB.methods.initialize(accounts[0], medProxyUSD.address).encodeABI();
+    const initializeLagTHBCalldata = lagInstanceTHB.methods.initialize(accounts[0], medProxyTHB.address).encodeABI();
 
     await lagProxyTHB.initialize(lagLogic.address, initializeLagTHBCalldata);
 
@@ -113,7 +113,7 @@ module.exports = async (deployer, network, accounts) => {
     const lagProxySGD = await LagProxy.deployed();
 
     const lagInstanceSGD = new web3.eth.Contract(Lag.abi, lagLogic.address);
-    const initializeLagSGDCalldata = lagInstanceSGD.methods.initialize(accounts[0], medProxyUSD.address).encodeABI();
+    const initializeLagSGDCalldata = lagInstanceSGD.methods.initialize(accounts[0], medProxySGD.address).encodeABI();
 
     await lagProxySGD.initialize(lagLogic.address, initializeLagSGDCalldata);
 
