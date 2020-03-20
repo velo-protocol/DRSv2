@@ -287,9 +287,8 @@ contract("Lag test", async accounts => {
       );
       await lag.post();
       await lag.setLagTime(0);
-
-      await lag.post();
       await lag.void();
+      await lag.post();
 
       const activateResult = await lag.activate();
 
