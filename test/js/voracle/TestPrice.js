@@ -260,4 +260,49 @@ contract("Price test", async accounts => {
     });
 
   });
+
+  describe("Activate", async () => {
+    it("should activate successfully", async () => {
+      await mocks.lag.givenMethodReturn(
+        helper.methodABI(lag, "getWithError"),
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, false]).toString("hex")
+      );
+
+      await price.void();
+      await price.post();
+
+      const activateResult = await price.activate();
+
+      truffleAssert.eventEmitted(activateResult, 'PriceActivate', event => {
+        return event.caller === accounts[0]
+          && event.price === price.address
+          && event.isActive === true
+      }, 'contract should emit the event correctly');
+
+    });
+
+    it("should fail, price is active", async () => {
+
+      try {
+        await price.activate();
+
+      } catch (err) {
+        assert.equal(err.reason, "Price.activate: price is active")
+      }
+
+    });
+
+    it("should fail, price is not in a correct state", async () => {
+
+      try {
+        await price.void();
+        await price.activate();
+
+      } catch (err) {
+        assert.equal(err.reason, "Price.activate: price is not in a correct state")
+      }
+
+    });
+
+  });
 });
