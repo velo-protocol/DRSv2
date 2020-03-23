@@ -8,11 +8,9 @@ contract TestLag {
     Lag public lag;
     Lag public lagNoneGov;
     MockMedianizer public mockMedianizer;
-    MockMedianizer public mockMedianizer2;
 
     function beforeEach() public {
         mockMedianizer = new MockMedianizer(10);
-        mockMedianizer2 = new MockMedianizer(11);
         lag = new Lag();
         lag.initialize(address(this), address(0));
     }
