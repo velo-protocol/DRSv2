@@ -7,4 +7,5 @@ contract IPrice {
 
     function void() external;
 
+    function activate() external;
 }
