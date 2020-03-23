@@ -26,8 +26,8 @@ contract Price is Initializable, IPrice {
     }
 
 
-    function initialize(address _owner, address _priceAddr) public initializer {
-        lagAddr = _priceAddr;
+    function initialize(address _owner, address _lagAddr) public initializer {
+        lagAddr = _lagAddr;
         owner = _owner;
         price = 0;
         active = true;
