@@ -48,4 +48,9 @@ contract Price is Initializable, IPrice {
         price = lagPrice;
 
     }
+
+    function getWithError() external view returns (uint256, bool, bool) {
+        return (price, active, isErr);
+    }
+
 }
