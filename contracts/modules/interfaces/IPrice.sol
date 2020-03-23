@@ -5,4 +5,6 @@ contract IPrice {
 
     function getWithError() external view returns (uint256, bool, bool);
 
+    function void() external;
+
 }
