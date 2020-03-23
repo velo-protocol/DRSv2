@@ -11,7 +11,7 @@ contract Price is Initializable, IPrice {
 
     address public owner;
     modifier onlyOwner {
-        require(msg.sender == owner, "Lag.onlyOwner: The message sender is not found or does not have sufficient permission");
+        require(msg.sender == owner, "Price.onlyOwner: The message sender is not found or does not have sufficient permission");
         _;
     }
 
@@ -20,6 +20,8 @@ contract Price is Initializable, IPrice {
     bool isErr;
 
     bool public active;
+
+    event PriceVoid(address caller, address price, bool isActive);
 
     function setLag(address newLagAddr) external onlyOwner {
         lagAddr = newLagAddr;
@@ -51,6 +53,12 @@ contract Price is Initializable, IPrice {
 
     function getWithError() external view returns (uint256, bool, bool) {
         return (price, active, isErr);
+    }
+
+    function void() external onlyOwner {
+        price = 0;
+        active = false;
+        emit PriceVoid(msg.sender, address(this), active);
     }
 
 }
