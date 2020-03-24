@@ -230,6 +230,18 @@ contract("Price test", async accounts => {
           && event.isActive === false
       }, 'contract should emit the event correctly');
 
+      const result = await price.getWithError();
+
+      const BN = web3.utils.BN;
+      const currPrice = new BN(result[0]).toNumber();
+      const isActive = result[1];
+      const isErr = result[2];
+
+      assert.equal(0, currPrice);
+      assert.equal(false, isActive);
+      assert.equal(true, isErr);
+
+
     });
 
     it("should void successfully, price is 100000000", async () => {
