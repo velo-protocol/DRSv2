@@ -118,10 +118,7 @@ contract("Medianizer Scenario Test", async accounts => {
     h.assert.equalNumber(feedResult5.price, 29000000);
 
 
-    const postResult = await medUSD.post();
-    h.assert.equalNumber(postResult.logs[0].args.price, 29000000);
-
+    await medUSD.post();
     h.assert.equalNumber(await medUSD.get(), 29000000);
-
   });
 });

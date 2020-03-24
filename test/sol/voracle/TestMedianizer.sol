@@ -8,30 +8,27 @@ import "truffle/DeployedAddresses.sol";
 contract TestMedianizer {
     MockIFeeder public mockIFeeder1;
     MockIFeeder public mockIFeeder2;
+    Medianizer med;
 
     constructor() public {
+        med = new Medianizer();
         mockIFeeder1 = new MockIFeeder(100);
         mockIFeeder2 = new MockIFeeder(120);
     }
 
     function testInitialize() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
         med.initialize(address(this), "USD", "VELO");
         Assert.equal(med.fiatCode(), "USD", "fiatCode must be USD");
         Assert.equal(med.collateralCode(), "VELO", "fiatCode must be VELO");
     }
 
     function testGetWhenPriceIsLessThanZero() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-
         (bool r,) = address(med).call(abi.encodePacked(med.get.selector));
 
         Assert.equal(r, false, "med.get() must throw error");
     }
 
     function testGetWithErrorWhenPriceIsLessThanZero() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-
         (uint256 price, bool isActive, bool isErr) = med.getWithError();
 
         Assert.equal(price, 0, "med.getWithError() must return price = 0");
@@ -40,7 +37,6 @@ contract TestMedianizer {
     }
 
     function testSetMinFedPrices() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
         med.setMinFedPrices(2);
         Assert.equal(uint(med.minFedPrices()), uint(2), "minFedPrices must be 2");
 
@@ -49,8 +45,6 @@ contract TestMedianizer {
     }
 
     function testAddFeeder() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-
         med.addFeeder(address(mockIFeeder1));
         med.addFeeder(address(mockIFeeder2));
 
@@ -62,8 +56,6 @@ contract TestMedianizer {
     }
 
     function testRemoveFeeder() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-
         address[] memory feeders = med.getFeeders();
         Assert.equal(feeders.length, 2, "feeders.length must be 2");
 
@@ -77,8 +69,6 @@ contract TestMedianizer {
     }
 
     function testComputeOddFeeder() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-
         med.addFeeder(address(mockIFeeder1));
         (uint256 median, bool isErr) = med.compute();
 
@@ -92,8 +82,6 @@ contract TestMedianizer {
     }
 
     function testComputeEvenFeeder() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-
         med.addFeeder(address(mockIFeeder1));
         med.addFeeder(address(mockIFeeder2));
 
@@ -106,8 +94,6 @@ contract TestMedianizer {
     }
 
     function testPost() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-
         med.addFeeder(address(mockIFeeder1));
         med.addFeeder(address(mockIFeeder2));
 
@@ -121,16 +107,12 @@ contract TestMedianizer {
     }
 
     function testGet() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-
         uint256 medianPrice = med.get();
 
         Assert.equal(medianPrice, 125, "med.get() should return 125");
     }
 
     function testGetWithError() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
-
         (uint256 medianPrice, bool isActive, bool isErr) = med.getWithError();
 
         Assert.equal(medianPrice, 125, "med.getWithError() should return 125");
@@ -139,7 +121,6 @@ contract TestMedianizer {
     }
 
     function testGetWithErrorWhenActiveIsFalse() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
         med.addFeeder(address(mockIFeeder1));
         med.addFeeder(address(mockIFeeder2));
 
@@ -156,26 +137,22 @@ contract TestMedianizer {
     }
 
     function testSetValidityPeriod() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
         med.setValidityPeriod(5 minutes);
         Assert.equal(med.validityPeriod(), 300, "validityPeriod must be 300 seconds");
     }
 
     function testGetValidityPeriod() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
         med.setValidityPeriod(25);
         Assert.equal(med.getValidityPeriod(), 25, "validityPeriod must be 25");
     }
 
     function testVoid() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
         med.void();
         Assert.equal(med.active(), false, "active must be false");
         Assert.equal(med.price(), 0, "price must be 0");
     }
 
     function testActivate() public {
-        Medianizer med = Medianizer(DeployedAddresses.Medianizer());
         med.post();
         med.activate();
         Assert.equal(med.active(), true, "active must be true");
