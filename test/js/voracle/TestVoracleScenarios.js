@@ -2,12 +2,16 @@ const FeederFactory = artifacts.require('FeederFactory');
 const Feeder = artifacts.require('Feeder');
 const MedianizerProxy = artifacts.require('MedianizerProxy');
 const Medianizer = artifacts.require('Medianizer');
+const Lag = artifacts.require('Lag');
+const LagProxy = artifacts.require('LagProxy');
+const Price = artifacts.require('Price');
+const PriceProxy = artifacts.require('PriceProxy');
 const h = require("../testhelper");
 
 const veloBytes32 = web3.utils.fromAscii("VELO");
 const usdBytes32 = web3.utils.fromAscii("USD");
 
-contract("Medianizer Scenario Test", async accounts => {
+contract("Voracle Scenario Test", async accounts => {
   it("should work!", async () => {
 
     const [deployer, pf1, pf2, pf3, pf4, pf5] = accounts;
@@ -41,8 +45,8 @@ contract("Medianizer Scenario Test", async accounts => {
     const medProxyUSD = await MedianizerProxy.new(medLogic.address);
 
     const medInstanceUSD = new web3.eth.Contract(Medianizer.abi, medLogic.address);
-    const initializeUSDCalldata = await medInstanceUSD.methods.initialize(deployer, usdBytes32, veloBytes32).encodeABI();
-    await medProxyUSD.initialize(medLogic.address, initializeUSDCalldata);
+    const initializeMedUSDCalldata = await medInstanceUSD.methods.initialize(deployer, usdBytes32, veloBytes32).encodeABI();
+    await medProxyUSD.initialize(medLogic.address, initializeMedUSDCalldata);
 
     const medUSD = await Medianizer.at(medProxyUSD.address);
     await medUSD.addFeeder(usdFeeder1.address);
@@ -120,5 +124,121 @@ contract("Medianizer Scenario Test", async accounts => {
 
     await medUSD.post();
     h.assert.equalNumber(await medUSD.get(), 29000000);
+
+    // Lag
+    const lagLogic = await Lag.new();
+
+    const lagProxyUSD = await LagProxy.new(lagLogic.address);
+
+    const lagInstanceUSD = new web3.eth.Contract(Lag.abi, lagLogic.address);
+    const initializeLagUSDCalldata = await lagInstanceUSD.methods.initialize(deployer, medProxyUSD.address).encodeABI();
+    await lagProxyUSD.initialize(lagLogic.address, initializeLagUSDCalldata);
+
+    const lagUSD = await Lag.at(lagProxyUSD.address);
+
+    await lagUSD.void();
+
+    let lagResult = await lagUSD.getNextWithError();
+    lagResult = {
+      price: lagResult['0'],
+      active: lagResult['1'],
+      isErr: lagResult['2']
+    };
+
+    h.assert.equalNumber(lagResult.price, 0);
+    h.assert.equalString(lagResult.active, false);
+    h.assert.equalString(lagResult.isErr, true);
+
+    await lagUSD.post();
+
+    lagResult = await lagUSD.getNextWithError();
+    lagResult = {
+      price: lagResult['0'],
+      active: lagResult['1'],
+      isErr: lagResult['2']
+    };
+
+    h.assert.equalNumber(lagResult.price, 29000000);
+    h.assert.equalString(lagResult.active, false);
+    h.assert.equalString(lagResult.isErr, false);
+
+    await lagUSD.setMinimumPeriod(0);
+
+    await lagUSD.post();
+
+    lagResult = await lagUSD.getWithError();
+    lagResult = {
+      price: lagResult['0'],
+      active: lagResult['1'],
+      isErr: lagResult['2']
+    };
+
+    h.assert.equalNumber(lagResult.price, 29000000);
+    h.assert.equalString(lagResult.active, false);
+    h.assert.equalString(lagResult.isErr, false);
+
+    await lagUSD.activate();
+
+    lagResult = await lagUSD.getWithError();
+    lagResult = {
+      price: lagResult['0'],
+      active: lagResult['1'],
+      isErr: lagResult['2']
+    };
+
+    h.assert.equalNumber(lagResult.price, 29000000);
+    h.assert.equalString(lagResult.active, true);
+    h.assert.equalString(lagResult.isErr, false);
+
+    // Price
+
+    const priceLogic = await Price.new();
+
+    const priceProxyUSD = await PriceProxy.new(priceLogic.address);
+
+    const priceInstanceUSD = new web3.eth.Contract(Price.abi, priceLogic.address);
+    const initializePriceUSDCalldata = await priceInstanceUSD.methods.initialize(deployer, lagProxyUSD.address).encodeABI();
+    await priceProxyUSD.initialize(priceLogic.address, initializePriceUSDCalldata);
+
+    const priceUSD = await Price.at(priceProxyUSD.address);
+
+    await priceUSD.void();
+
+    let priceResult = await priceUSD.getWithError();
+    priceResult = {
+      price: priceResult['0'],
+      active: priceResult['1'],
+      isErr: priceResult['2']
+    };
+
+    h.assert.equalNumber(priceResult.price, 0);
+    h.assert.equalString(priceResult.active, false);
+    h.assert.equalString(priceResult.isErr, true);
+
+    await priceUSD.post();
+
+    priceResult = await priceUSD.getWithError();
+    priceResult = {
+      price: priceResult['0'],
+      active: priceResult['1'],
+      isErr: priceResult['2']
+    };
+
+    h.assert.equalNumber(priceResult.price, 29000000);
+    h.assert.equalString(priceResult.active, false);
+    h.assert.equalString(priceResult.isErr, false);
+
+    await priceUSD.activate();
+
+    priceResult = await priceUSD.getWithError();
+    priceResult = {
+      price: priceResult['0'],
+      active: priceResult['1'],
+      isErr: priceResult['2']
+    };
+
+    h.assert.equalNumber(priceResult.price, 29000000);
+    h.assert.equalString(priceResult.active, true);
+    h.assert.equalString(priceResult.isErr, false);
   });
 });
