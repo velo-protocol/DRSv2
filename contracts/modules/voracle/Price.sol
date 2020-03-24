@@ -59,6 +59,7 @@ contract Price is Initializable, IPrice {
     function void() external onlyOwner {
         price = 0;
         active = false;
+        isErr = true;
         emit PriceVoid(msg.sender, address(this), active);
     }
 
