@@ -1,6 +1,13 @@
 require('dotenv').config();
 
-const PrivateKeyProvider = require("truffle-privatekey-provider");
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+
+const privateKeys = [
+  process.env.DEV_SCC_PK,
+  process.env.USD_VELO_PK,
+  process.env.THB_VELO_PK,
+  process.env.SGD_VELO_PK,
+];
 
 module.exports = {
   networks: {
@@ -10,7 +17,7 @@ module.exports = {
       network_id: "*"
     },
     dev: {
-      provider: () => new PrivateKeyProvider(process.env.DEV_SCC_PK, process.env.DEV_SCC_HOST),
+      provider: () => new HDWalletProvider(privateKeys, process.env.DEV_SCC_HOST,0,4),
       network_id: "*",
       gasPrice: 1000000000,
       gas: 6357193,
