@@ -16,6 +16,7 @@
   "dependencies": {
     "@openzeppelin/contracts": "^2.4.0",
     "@openzeppelin/upgrades": "^2.6.0",
+    "@truffle/hdwallet-provider": "^1.0.33",
     "dotenv": "^8.2.0",
     "ethereumjs-abi": "^0.6.8",
     "solidity-coverage": "^0.6.7",
