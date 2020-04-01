@@ -52,6 +52,13 @@ contract Price is Initializable, IPrice {
 
     }
 
+    function get() external view returns (uint256){
+        require(active == true, "Price.get: price is not active");
+        require(price > 0, "Price.get: invalid price");
+        require(isErr == false, "Price.get: price has an error");
+        return (price);
+    }
+
     function getWithError() external view returns (uint256, bool, bool) {
         return (price, active, isErr);
     }

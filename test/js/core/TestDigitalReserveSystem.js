@@ -1,6 +1,6 @@
 const DigitalReserveSystem = artifacts.require("DigitalReserveSystem");
 const Heart = artifacts.require("Heart");
-const PriceFeeders = artifacts.require('PriceFeeders');
+const Price = artifacts.require('Price');
 const StableCredit = artifacts.require("StableCredit");
 const Token = artifacts.require('Token');
 const ReserveManager = artifacts.require('ReserveManager');
@@ -11,7 +11,7 @@ const truffleAssert = require('truffle-assertions');
 const helper = require('../testhelper');
 const abi = require('ethereumjs-abi');
 
-let drs, heart, priceFeeder, reserveManager, veloCollateralAsset, otherCollateralAsset, stableCreditVTHB,
+let drs, heart, price, reserveManager, veloCollateralAsset, otherCollateralAsset, stableCreditVTHB,
   stableCreditVUSD, mocks;
 
 contract("DigitalReserveSystem test", async accounts => {
@@ -19,7 +19,7 @@ contract("DigitalReserveSystem test", async accounts => {
   before(async () => {
     mocks = {
       heart: await MockContract.new(),
-      priceFeeder: await MockContract.new(),
+      price: await MockContract.new(),
       reserveManager: await MockContract.new(),
       veloCollateralAsset: await MockContract.new(),
       otherCollateralAsset: await MockContract.new(),
@@ -28,7 +28,7 @@ contract("DigitalReserveSystem test", async accounts => {
     };
 
     heart = await Heart.at(mocks.heart.address);
-    priceFeeder = await PriceFeeders.at(mocks.priceFeeder.address);
+    price = await Price.at(mocks.price.address);
     reserveManager = await ReserveManager.at(mocks.reserveManager.address);
     veloCollateralAsset = await Token.at(mocks.veloCollateralAsset.address);
     otherCollateralAsset = await Token.at(mocks.otherCollateralAsset.address);
@@ -65,14 +65,6 @@ contract("DigitalReserveSystem test", async accounts => {
       await mocks.heart.givenMethodReturnBool(
         helper.methodABI(heart, "isLinkAllowed", [helper.address(0)]),
         true
-      );
-      await mocks.heart.givenMethodReturnAddress(
-        helper.methodABI(heart, "getPriceFeeders"),
-        priceFeeder.address
-      );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        helper.methodABI(priceFeeder, "getMedianPrice", [helper.address(0)]),
-        1
       );
 
       const result = await drs.setup(
@@ -222,14 +214,6 @@ contract("DigitalReserveSystem test", async accounts => {
         helper.methodABI(heart, "isLinkAllowed", [helper.address(0)]),
         true
       );
-      await mocks.heart.givenMethodReturnAddress(
-        helper.methodABI(heart, "getPriceFeeders"),
-        priceFeeder.address
-      );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        helper.methodABI(priceFeeder, "getMedianPrice", [helper.address(0)]),
-        0
-      );
 
       try {
         await drs.setup(
@@ -287,12 +271,12 @@ contract("DigitalReserveSystem test", async accounts => {
       );
 
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
 
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         10000000
       );
 
@@ -410,11 +394,12 @@ contract("DigitalReserveSystem test", async accounts => {
         veloCollateralAsset.address
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         10000000
       );
       await mocks.stableCreditVTHB.givenMethodReturnAddress(
@@ -484,11 +469,12 @@ contract("DigitalReserveSystem test", async accounts => {
         veloCollateralAsset.address
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         0
       );
       try {
@@ -534,14 +520,13 @@ contract("DigitalReserveSystem test", async accounts => {
         stableCreditVUSD.contract.methods.collateral().encodeABI(),
         veloCollateralAsset.address
       );
-
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
 
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii('')).encodeABI(),
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         10000000
       );
 
@@ -688,11 +673,12 @@ contract("DigitalReserveSystem test", async accounts => {
         veloCollateralAsset.address
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         0
       );
       try {
@@ -726,11 +712,11 @@ contract("DigitalReserveSystem test", async accounts => {
         veloCollateralAsset.address
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         18000000
       );
       await mocks.heart.givenMethodReturnAddress(
@@ -825,11 +811,12 @@ contract("DigitalReserveSystem test", async accounts => {
         stableCreditVUSD.address
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         10000000
       );
 
@@ -852,11 +839,12 @@ contract("DigitalReserveSystem test", async accounts => {
         veloCollateralAsset.address
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         0
       );
 
@@ -883,11 +871,12 @@ contract("DigitalReserveSystem test", async accounts => {
         veloCollateralAsset.address
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         10000000
       );
 
@@ -954,11 +943,12 @@ contract("DigitalReserveSystem test", async accounts => {
         veloCollateralAsset.address
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         0
       );
 
@@ -1006,11 +996,12 @@ contract("DigitalReserveSystem test", async accounts => {
         100000000
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         10000000
       );
 
@@ -1064,11 +1055,12 @@ contract("DigitalReserveSystem test", async accounts => {
         stableCreditVUSD.address
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         10000000
       );
 
@@ -1113,11 +1105,12 @@ contract("DigitalReserveSystem test", async accounts => {
         100000000
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         10000000
       );
       await mocks.heart.givenMethodReturnAddress(
@@ -1171,11 +1164,12 @@ contract("DigitalReserveSystem test", async accounts => {
         200000000
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         10000000
       );
       await mocks.heart.givenMethodReturnAddress(
@@ -1238,11 +1232,12 @@ contract("DigitalReserveSystem test", async accounts => {
         stableCreditVUSD.address
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         10000000
       );
 
@@ -1285,11 +1280,12 @@ contract("DigitalReserveSystem test", async accounts => {
         150000000
       );
       await mocks.heart.givenMethodReturnAddress(
-        heart.contract.methods.getPriceFeeders().encodeABI(),
-        priceFeeder.address
+        heart.contract.methods.getPriceContract(Web3.utils.fromAscii("")).encodeABI(),
+        price.address
       );
-      await mocks.priceFeeder.givenMethodReturnUint(
-        priceFeeder.contract.methods.getMedianPrice(Web3.utils.fromAscii("")).encodeABI(),
+
+      await mocks.price.givenMethodReturnUint(
+        price.contract.methods.get().encodeABI(),
         10000000
       );
       await mocks.heart.givenMethodReturnAddress(

@@ -3,22 +3,23 @@ pragma solidity ^0.5.0;
 import "../../../contracts/modules/core/Heart.sol";
 import "../mocks/MockIRM.sol";
 import "../mocks/MockIERC20.sol";
-import "../mocks/MockIPF.sol";
+import "../mocks/MockIPrice.sol";
 import "truffle/Assert.sol";
+import "../../../contracts/modules/book-room/Hasher.sol";
 
 contract TestHeart1 {
 
     Heart public heart;
     MockIRM public mockIRM;
     MockIERC20 public mockIERC20;
-    MockIPF public mockIPF;
+    MockIPrice public mockIPrice;
 
     function beforeEach() public {
         heart = new Heart();
     }
 
     constructor() public {
-        mockIPF = new MockIPF();
+        mockIPrice = new MockIPrice();
         mockIRM = new MockIRM();
         mockIERC20 = new MockIERC20();
     }
@@ -167,16 +168,18 @@ contract TestHeart1 {
         Assert.isTrue(heart.isTrustedPartner(address(1)), "heart.isTrustedPartner() from address(1) should be true");
     }
 
-    function testSetPriceFeeders_Success() public {
-        heart.setPriceFeeders(address(mockIPF));
+    function testAddPrice_Success() public {
+        bytes32 linkId = Hasher.linkId("VELO", "USD");
+        heart.addPrice(linkId, mockIPrice);
 
-        Assert.equal(address(heart.getPriceFeeders()), address(mockIPF), "heart.setPriceFeeders() should set price feeder properly");
+        Assert.equal(address(heart.getPriceContract(linkId)), address(mockIPrice), "heart.addPrice() should add price properly");
     }
 
-    function testGetPriceFeeders_Success() public {
-        heart.setPriceFeeders(address(mockIPF));
+    function testGetPrice_Success() public {
+        bytes32 linkId = Hasher.linkId("VELO", "USD");
+        heart.addPrice(linkId, mockIPrice);
 
-        Assert.equal(address(heart.getPriceFeeders()), address(mockIPF), "heart.getPriceFeeders() should return price feeder correctly");
+        Assert.equal(address(heart.getPriceContract(linkId)), address(mockIPrice), "heart.getPriceContract() should return price correctly");
     }
 
     function testCollectFee_Success() public {

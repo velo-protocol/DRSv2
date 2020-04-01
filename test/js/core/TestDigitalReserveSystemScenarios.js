@@ -1,19 +1,28 @@
 const Heart = artifacts.require('Heart');
 const ReserveManager = artifacts.require('ReserveManager');
-const PriceFeeders = artifacts.require('PriceFeeders');
+const Price = artifacts.require('Price');
 const DRS = artifacts.require('DigitalReserveSystem');
 const Token = artifacts.require('Token');
 const Hasher = artifacts.require('Hasher');
 const StableCredit = artifacts.require('StableCredit');
 const h = require("../testhelper");
+const MockContract = artifacts.require("MockContract");
 
-let drs, heart, priceFeeder, reserveManager, veloCollateralAsset, otherCollateralAsset, stableCreditVUSD, mocks;
+let drs, heart, price, reserveManager, veloCollateralAsset, otherCollateralAsset, stableCreditVUSD, mocks;
 
 const velo = "VELO";
 const veloBytes32 = web3.utils.padRight(web3.utils.fromAscii(velo), 64);
 const usdBytes32 = web3.utils.padRight(web3.utils.fromAscii("USD"), 64);
 
 contract("DigitalReserveSystem Scenario Test", async accounts => {
+
+  before(async () => {
+    mocks = {
+      price: await MockContract.new(),
+    }
+    price = await Price.at(mocks.price.address);
+  });
+
   it("should work!", async () => {
     const calInputs = {
       issuanceFeeRate: h.decimal7(0.05), // 0.05 (5%)
@@ -26,24 +35,22 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
 
     // Setup the whole ecosystem
     heart = await Heart.new();
-    priceFeeder = await PriceFeeders.new();
     drs = await DRS.new(heart.address);
     reserveManager = await ReserveManager.new(heart.address);
     veloCollateralAsset = await Token.new(velo, velo, 7);
 
+    await mocks.price.givenMethodReturnUint(
+      price.contract.methods.get().encodeABI(),
+      calInputs.price
+    );
+
     // Setup heart
-    heart.setPriceFeeders(priceFeeder.address);
+    heart.addPrice(web3.utils.soliditySha3(veloBytes32, usdBytes32), price.address);
     heart.setReserveManager(reserveManager.address);
     heart.setDrsAddress(drs.address);
 
     // Mint VELO for Bob, so he can spend VELO afterward
     await veloCollateralAsset.mint(bob, 10000000000000);
-
-    // Setup PriceFeeder
-    await priceFeeder.setAsset(veloBytes32, veloCollateralAsset.address);
-    await priceFeeder.addAssetFiat(veloBytes32, usdBytes32);
-    await priceFeeder.addPriceFeeder(veloBytes32, usdBytes32, pf);
-    await priceFeeder.setPrice(veloBytes32, usdBytes32, calInputs.price, {from: pf});
 
     // Setup Heart
     await heart.setCollateralAsset(veloBytes32, veloCollateralAsset.address, calInputs.collateralRatio);
@@ -142,10 +149,6 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
 
     // 7. Test drs.rebalance
 
-    // feed new price
-    const newPrice = h.decimal7(15.0);
-    await priceFeeder.setPrice(veloBytes32, usdBytes32, newPrice, {from: pf});
-
     // change collateral ratio
     const newRatio = h.decimal7(1.2);
     await heart.setCollateralRatio(veloBytes32, newRatio);
@@ -154,7 +157,7 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
     const rebalanceEvent = rebalanceResult.logs[0].args;
     h.assert.equalString(rebalanceEvent.assetCode, "vUSD");
     h.assert.equalByteString(rebalanceEvent.collateralAssetCode, velo);
-    h.assert.equalNumber(rebalanceEvent.requiredAmount.toString(), 12861538); // vUSD balance * peggedValue * collateralRatio / price: 160769230 * 1 * 1.2 / 15
+    h.assert.equalNumber(rebalanceEvent.requiredAmount.toString(), 19292307); // vUSD balance * peggedValue * collateralRatio / price: 160769230 * 1 * 1.2 / 10
     h.assert.equalNumber(rebalanceEvent.presentAmount.toString(), 20900000);
 
   });
