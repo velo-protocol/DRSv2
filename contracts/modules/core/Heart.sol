@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "../interfaces/IPF.sol";
+import "../interfaces/IPrice.sol";
 import "../interfaces/IHeart.sol";
 import "../interfaces/IRM.sol";
 import "../interfaces/IStableCredit.sol";
@@ -14,7 +14,7 @@ contract Heart is IHeart {
     using SafeMath for uint256;
 
     address public drsAddr;
-    IPF public priceFeeders;
+    mapping(bytes32 => IPrice) public prices;
     IRM public reserveManager;
 
     /*
@@ -155,12 +155,14 @@ contract Heart is IHeart {
         return governor[addr];
     }
 
-    function setPriceFeeders(address newPriceFeeders) external onlyGovernor {
-        priceFeeders = IPF(newPriceFeeders);
+    function addPrice(bytes32 linkId, IPrice newPrice) external onlyGovernor {
+        require(address(newPrice) != address(0), "newPrice address must not be 0");
+        require(address(prices[linkId]) == address(0), "Price has already existed");
+        prices[linkId] = IPrice(newPrice);
     }
 
-    function getPriceFeeders() external view returns (IPF) {
-        return priceFeeders;
+    function getPrice(bytes32 linkId) external view returns (IPrice) {
+        return prices[linkId];
     }
 
     function collectFee(uint256 fee, bytes32 collateralAssetCode) external {
