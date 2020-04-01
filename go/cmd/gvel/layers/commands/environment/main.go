@@ -33,6 +33,10 @@ func (envCommand *CommandHandler) Command() *cobra.Command {
 				console.ExitWithError(console.ExitError, errors.New("config file not found, please run `gvel init`"))
 			}
 		},
+		Run: func(cmd *cobra.Command, args []string) {
+			console.Logger.Printf("The current env is %s", envCommand.AppConfig.GetCurrentEnv())
+			console.Logger.Printf("You can set the env by using command `gvel env set`")
+		},
 	}
 
 	command.AddCommand(
