@@ -172,14 +172,14 @@ contract TestHeart1 {
         bytes32 linkId = Hasher.linkId("VELO", "USD");
         heart.addPrice(linkId, mockIPrice);
 
-        Assert.equal(address(heart.getPrice(linkId)), address(mockIPrice), "heart.addPrice() should add price properly");
+        Assert.equal(address(heart.getPriceContract(linkId)), address(mockIPrice), "heart.addPrice() should add price properly");
     }
 
     function testGetPrice_Success() public {
         bytes32 linkId = Hasher.linkId("VELO", "USD");
         heart.addPrice(linkId, mockIPrice);
 
-        Assert.equal(address(heart.getPrice(linkId)), address(mockIPrice), "heart.getPrice() should return price correctly");
+        Assert.equal(address(heart.getPriceContract(linkId)), address(mockIPrice), "heart.getPriceContract() should return price correctly");
     }
 
     function testCollectFee_Success() public {

@@ -41,7 +41,7 @@ interface IHeart {
 
     function addPrice(bytes32 linkId, IPrice newPrice) external;
 
-    function getPrice(bytes32 linkId) external view returns (IPrice);
+    function getPriceContract(bytes32 linkId) external view returns (IPrice);
 
     function collectFee(uint256 fee, bytes32 collateralAssetCode) external;
 

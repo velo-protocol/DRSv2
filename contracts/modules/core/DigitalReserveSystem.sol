@@ -102,7 +102,7 @@ contract DigitalReserveSystem is IDRS {
 
         (uint256 mintAmount, uint256 actualCollateralAmount, uint256 reserveCollateralAmount, uint256 fee) = _calMintAmountFromCollateral(
             netCollateralAmount,
-            heart.getPrice(linkId).get(),
+            heart.getPriceContract(linkId).get(),
             heart.getCreditIssuanceFee(),
             heart.getCollateralRatio(collateralAssetCode),
             stableCredit.peggedValue(),
@@ -135,7 +135,7 @@ contract DigitalReserveSystem is IDRS {
 
         (uint256 netCollateralAmount, uint256 actualCollateralAmount, uint256 reserveCollateralAmount, uint256 fee) = _calMintAmountFromStableCredit(
             mintAmount,
-            heart.getPrice(linkId).get(),
+            heart.getPriceContract(linkId).get(),
             heart.getCreditIssuanceFee(),
             heart.getCollateralRatio(collateralAssetCode),
             stableCredit.peggedValue(),
@@ -164,7 +164,7 @@ contract DigitalReserveSystem is IDRS {
         require(collateralAsset == stableCredit.collateral(), "DigitalReserveSystem._validateAssetCode: collateralAsset must be the same");
 
         bytes32 linkId = Hasher.linkId(collateralAssetCode, stableCredit.peggedCurrency());
-        require(heart.getPrice(linkId).get() > 0, "DigitalReserveSystem._validateAssetCode: valid price not found");
+        require(heart.getPriceContract(linkId).get() > 0, "DigitalReserveSystem._validateAssetCode: valid price not found");
 
         return (stableCredit, collateralAsset, collateralAssetCode, linkId);
     }
@@ -329,12 +329,12 @@ contract DigitalReserveSystem is IDRS {
 
     function _calCollateral(IStableCredit credit, bytes32 linkId, uint256 creditAmount, uint256 collateralRatio) private view returns (uint256) {
         // collateral = (creditAmount * peggedValue * collateralRatio) / priceInCurrencyPerAssetUnit
-        return creditAmount.mul(credit.peggedValue().mul(collateralRatio)).div(heart.getPrice(linkId).get());
+        return creditAmount.mul(credit.peggedValue().mul(collateralRatio)).div(heart.getPriceContract(linkId).get());
     }
 
     function _calExchangeRate(IStableCredit credit, bytes32 linkId, uint256 stableCreditAmount) private view returns (uint256) {
         // priceInCollateral = (collateralRatio * peggedValue * stableCreditAmount) / priceInCurrencyPerAssetUnit
-        uint256 priceInCollateralPerAssetUnit = heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()).mul(stableCreditAmount).div(heart.getPrice(linkId).get()).div(10000000);
+        uint256 priceInCollateralPerAssetUnit = heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()).mul(stableCreditAmount).div(heart.getPriceContract(linkId).get()).div(10000000);
         return (priceInCollateralPerAssetUnit);
     }
 }

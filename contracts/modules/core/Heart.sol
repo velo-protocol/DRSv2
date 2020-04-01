@@ -161,7 +161,7 @@ contract Heart is IHeart {
         prices[linkId] = IPrice(newPrice);
     }
 
-    function getPrice(bytes32 linkId) external view returns (IPrice) {
+    function getPriceContract(bytes32 linkId) external view returns (IPrice) {
         return prices[linkId];
     }
 
