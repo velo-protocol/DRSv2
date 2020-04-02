@@ -35,14 +35,11 @@ module.exports = async (deployer, network, accounts) => {
     console.log(`SGD Feeder: ${sgdFeederAddr}`);
 
     // 2. Feed the price
-    const usdFeeder = await Feeder.at(usdFeederAddr);
-    await usdFeeder.post(12000000); // 1.2 USD/VELO
+    const feederUSD = await Feeder.at(usdFeederAddr);
 
-    const thbFeeder = await Feeder.at(thbFeederAddr);
-    await thbFeeder.post(53000000); // 5.3 THB/VELO
+    const feederTHB = await Feeder.at(thbFeederAddr);
 
-    const sgdFeeder = await Feeder.at(sgdFeederAddr);
-    await sgdFeeder.post(27000000); // 2.7 THB/VELO
+    const feederSGD = await Feeder.at(sgdFeederAddr);
 
     await deployer.deploy(Medianizer);
     const medLogic = await Medianizer.deployed();
@@ -57,7 +54,7 @@ module.exports = async (deployer, network, accounts) => {
     await medProxyUSD.initialize(medLogic.address, initializeUSDCalldata);
 
     const medUSD = await Medianizer.at(medProxyUSD.address);
-    await medUSD.addFeeder(usdFeeder.address, {from: usdDeployer});
+    await medUSD.addFeeder(feederUSD.address, {from: usdDeployer});
 
     // Medianizer THB
 
@@ -70,7 +67,7 @@ module.exports = async (deployer, network, accounts) => {
     await medProxyTHB.initialize(medLogic.address, initializeTHBCalldata);
 
     const medTHB = await Medianizer.at(medProxyTHB.address);
-    await medTHB.addFeeder(thbFeeder.address, {from: thbDeployer});
+    await medTHB.addFeeder(feederTHB.address, {from: thbDeployer});
 
     // Medianizer SGD
 
@@ -83,7 +80,7 @@ module.exports = async (deployer, network, accounts) => {
     await medProxySGD.initialize(medLogic.address, initializeSGDCalldata);
 
     const medSGD = await Medianizer.at(medProxySGD.address);
-    await medSGD.addFeeder(sgdFeeder.address, {from: sgdDeployer});
+    await medSGD.addFeeder(feederSGD.address, {from: sgdDeployer});
 
     console.log('medProxyUSD', medProxyUSD.address);
     console.log('medProxyTHB', medProxyTHB.address);
@@ -162,5 +159,15 @@ module.exports = async (deployer, network, accounts) => {
     console.log('priceProxyUSD', priceProxyUSD.address);
     console.log('priceProxyTHB', priceProxyTHB.address);
     console.log('priceProxySGD', priceProxySGD.address);
+
+    process.migration = {
+      contractAddress: {
+        priceProxyUSD: priceProxyUSD.address,
+        priceProxyTHB: priceProxyTHB.address,
+        priceProxySGD: priceProxySGD.address,
+      }
+    }
+
   }
+
 };

@@ -14,8 +14,6 @@ module.exports = async function (deployer, network, accounts) {
 
   await deployer.deploy(Heart);
   const heartInstance = await Heart.deployed();
-  await deployer.deploy(Price);
-  const priceInstance = await Price.deployed();
   await deployer.deploy(DRS, heartInstance.address);
   const drsInstance = await DRS.deployed();
   await deployer.deploy(ReserveManager, heartInstance.address);
@@ -27,8 +25,16 @@ module.exports = async function (deployer, network, accounts) {
 
     const veloBytes32 = Web3.utils.fromAscii("VELO");
     const usdBytes32 = Web3.utils.fromAscii("USD");
+    const thbBytes32 = Web3.utils.fromAscii("THB");
+    const sgdBytes32 = Web3.utils.fromAscii("SGD");
 
-    heartInstance.addPrice(await hasher.linkId(veloBytes32, usdBytes32), priceInstance.address);
+    const priceUSD = await Price.at(process.migration.contractAddress.priceProxyUSD);
+    const priceTHB = await Price.at(process.migration.contractAddress.priceProxyTHB);
+    const priceSGD = await Price.at(process.migration.contractAddress.priceProxySGD);
+
+    heartInstance.addPrice(await hasher.linkId(veloBytes32, usdBytes32), priceUSD.address);
+    heartInstance.addPrice(await hasher.linkId(veloBytes32, thbBytes32), priceTHB.address);
+    heartInstance.addPrice(await hasher.linkId(veloBytes32, sgdBytes32), priceSGD.address);
     heartInstance.setReserveManager(reserveManagerInstance.address);
     heartInstance.setDrsAddress(drsInstance.address);
 
@@ -48,4 +54,3 @@ module.exports = async function (deployer, network, accounts) {
     await veloToken.approve(drsInstance.address, 10000000000);
   }
 };
-
