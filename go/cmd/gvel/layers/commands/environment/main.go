@@ -8,6 +8,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/layers/logic"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/config"
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
+	"strings"
 )
 
 type CommandHandler struct {
@@ -34,7 +35,7 @@ func (envCommand *CommandHandler) Command() *cobra.Command {
 			}
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			console.Logger.Printf("The current env is %s", envCommand.AppConfig.GetCurrentEnv())
+			console.Logger.Printf("The current env is %s", strings.ToUpper(envCommand.AppConfig.GetCurrentEnv()))
 			console.Logger.Printf("You can set the env by using command `gvel env set`")
 		},
 	}
