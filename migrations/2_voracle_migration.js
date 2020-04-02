@@ -160,8 +160,14 @@ module.exports = async (deployer, network, accounts) => {
     console.log('priceProxyTHB', priceProxyTHB.address);
     console.log('priceProxySGD', priceProxySGD.address);
 
-    process.env['priceUSD'] = priceProxyUSD.address;
-    process.env['priceTHB'] = priceProxyTHB.address;
-    process.env['priceSGD'] = priceProxySGD.address;
+    process.migration = {
+      contractAddress: {
+        priceProxyUSD: priceProxyUSD.address,
+        priceProxyTHB: priceProxyTHB.address,
+        priceProxySGD: priceProxySGD.address,
+      }
+    }
+
   }
+
 };

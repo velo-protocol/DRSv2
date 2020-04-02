@@ -28,9 +28,9 @@ module.exports = async function (deployer, network, accounts) {
     const thbBytes32 = Web3.utils.fromAscii("THB");
     const sgdBytes32 = Web3.utils.fromAscii("SGD");
 
-    const priceUSD = await Price.at(process.env.priceUSD);
-    const priceTHB = await Price.at(process.env.priceTHB);
-    const priceSGD = await Price.at(process.env.priceSGD);
+    const priceUSD = await Price.at(process.migration.contractAddress.priceProxyUSD);
+    const priceTHB = await Price.at(process.migration.contractAddress.priceProxyTHB);
+    const priceSGD = await Price.at(process.migration.contractAddress.priceProxySGD);
 
     heartInstance.addPrice(await hasher.linkId(veloBytes32, usdBytes32), priceUSD.address);
     heartInstance.addPrice(await hasher.linkId(veloBytes32, thbBytes32), priceTHB.address);
@@ -54,4 +54,3 @@ module.exports = async function (deployer, network, accounts) {
     await veloToken.approve(drsInstance.address, 10000000000);
   }
 };
-
