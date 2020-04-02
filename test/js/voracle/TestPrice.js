@@ -185,7 +185,6 @@ contract("Price test", async accounts => {
 
   });
 
-
   describe("GetWithError", async () => {
     it("should get with error successfully", async () => {
       await mocks.lag.givenMethodReturn(
@@ -217,6 +216,57 @@ contract("Price test", async accounts => {
       assert.equal(true, isActive);
       assert.equal(true, isErr);
 
+    });
+  });
+
+  describe("Get", async () => {
+    it("should get successfully", async () => {
+      await mocks.lag.givenMethodReturn(
+        helper.methodABI(lag, "getWithError"),
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, false]).toString("hex")
+      );
+      await price.post();
+      const BN = web3.utils.BN;
+      const result = await price.get();
+      const currPrice = new BN(result).toNumber();
+
+      assert.equal(100000000, currPrice);
+    });
+
+    it("should fail, when initial Price contract", async () => {
+      try {
+        await price.get();
+      } catch (err) {
+        assert.equal(err, "Error: Returned error: VM Exception while processing transaction: revert Price.get: invalid price")
+      }
+    });
+
+    it("should fail, active = false", async () => {
+      await mocks.lag.givenMethodReturn(
+        helper.methodABI(lag, "getWithError"),
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, false, false]).toString("hex")
+      );
+      await price.post();
+
+      try {
+        await price.get();
+      } catch (err) {
+        assert.equal(err, "Error: Returned error: VM Exception while processing transaction: revert Price.get: price is not active")
+      }
+    });
+
+    it("should fail, isErr = true", async () => {
+      await mocks.lag.givenMethodReturn(
+        helper.methodABI(lag, "getWithError"),
+        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, true]).toString("hex")
+      );
+      await price.post();
+
+      try {
+        await price.get();
+      } catch (err) {
+        assert.equal(err, "Error: Returned error: VM Exception while processing transaction: revert Price.get: price has an error")
+      }
     });
   });
 
