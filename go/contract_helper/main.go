@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -26,7 +25,7 @@ type Client struct {
 	publicKey    common.Address
 	drs          *vabi.DigitalReserveSystem
 	heart        *vabi.Heart
-	priceFeeder  map[string]*vabi.PriceFeeders
+	prices       map[string]*vabi.Price
 	collateral   map[string]*vabi.Token
 	stableCredit map[string]*vabi.StableCredit
 }
@@ -63,7 +62,7 @@ func NewClient(contractUrl, drsAddress, heartAddress, privateKey string) Client 
 		conn:         conn,
 		privateKey:   privKey,
 		publicKey:    crypto.PubkeyToAddress(*pubKeyECDSA),
-		priceFeeder:  map[string]*vabi.PriceFeeders{},
+		prices:       map[string]*vabi.Price{},
 		collateral:   map[string]*vabi.Token{},
 		stableCredit: map[string]*vabi.StableCredit{},
 	}
@@ -99,12 +98,12 @@ func HexToPrivateKey(hex string) *ecdsa.PrivateKey {
 	return privKey
 }
 
-func (i *Client) AddPriceFeeder(name string, address string) {
-	priceFeederContract, err := vabi.NewPriceFeeders(common.HexToAddress(address), i.conn)
+func (i *Client) AddPriceContract(name string, address string) {
+	pricesContract, err := vabi.NewPrice(common.HexToAddress(address), i.conn)
 	if err != nil {
 		panic(err)
 	}
-	i.priceFeeder[name] = priceFeederContract
+	i.prices[name] = pricesContract
 }
 
 func (i *Client) AddStableCredit(name string, address string) {
@@ -194,49 +193,20 @@ func (i *Client) GetStableCreditTotalSupply(stableCreditName string) string {
 	return utils.AmountToString(result)
 }
 
-func (i *Client) SetPrice(priceFeederName, assetCode, currency, price string) string {
-
-	intRatio, _ := utils.StringToAmount(price)
-
-	opt := bind.NewKeyedTransactor(i.privateKey)
-	opt.GasLimit = constants.GasLimit
-	result, err := i.priceFeeder[priceFeederName].SetPrice(opt, utils.StringToByte32(assetCode), utils.StringToByte32(currency), intRatio)
-	if err != nil {
-		panic(err)
-	}
-
-	err = ConfirmTx(context.Background(), i, result, i.publicKey)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return result.Hash().String()
-
-}
-
-func (i *Client) GetPrice(priceFeederName, assetCode, currency string) string {
-	bytes32Ty, _ := abi.NewType("bytes32", "", nil)
-
-	arguments := abi.Arguments{
-		{
-			Type: bytes32Ty,
-		},
-		{
-			Type: bytes32Ty,
-		},
-	}
-	bytes, _ := arguments.Pack(
-		utils.StringToByte32(assetCode),
-		utils.StringToByte32(currency),
-	)
-
-	hash := crypto.Keccak256(bytes)
-
-	linkId := utils.BytesToBytes32(hash)
-	price, err := i.priceFeeder[priceFeederName].GetMedianPrice(nil, linkId)
+func (i *Client) GetPrice(priceContractName string) string {
+	price, err := i.prices[priceContractName].Get(nil)
 	if err != nil {
 		panic(err)
 	}
 	return utils.AmountToString(price)
+}
+
+func (i *Client) GetPriceWithError(priceContractName string) (string, bool, bool) {
+	price, isActive, isErr, err := i.prices[priceContractName].GetWithError(nil)
+	if err != nil {
+		panic(err)
+	}
+	return utils.AmountToString(price), isActive, isErr
 }
 
 type Addresses struct {
@@ -244,7 +214,7 @@ type Addresses struct {
 	HeartAddress          string `json:"heartAddress"`
 	ReserveManagerAddress string `json:"reserveManagerAddress"`
 	CollateralAddress     string `json:"collateralAddress"`
-	PriceFeederAddress    string `json:"priceFeederAddress"`
+	PriceAddress          string `json:"priceAddress"`
 }
 
 func GetContractAddresses() *Addresses {
@@ -270,9 +240,12 @@ func main() {
 		"91c351a1080a4eb4e63ff2e376f3360ddc469f032fdd6d2b136357a6849758dc",
 	)
 	// price
-	client.AddPriceFeeder("<priceFeederName>", "<priceFeederAddress>")
-	client.SetPrice("<priceFeederName>", "VELO", "USD", "1.5")
-	fmt.Println(client.GetPrice("<priceFeederName>", "VELO", "USD"))
+	client.AddPriceContract("<priceName>", "<priceAddress>")
+	fmt.Println(client.GetPrice("<priceName>"))
+	price, isActive, isErr := client.GetPriceWithError("<priceName>")
+	fmt.Println(price)
+	fmt.Println(isActive)
+	fmt.Println(isErr)
 
 	// collateral
 	fmt.Println(client.GetCollateralRatio("VELO"))
