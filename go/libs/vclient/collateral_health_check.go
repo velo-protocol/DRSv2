@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"math/big"
+	"strings"
 )
 
 type CollateralHealthCheckInput struct {
@@ -78,6 +79,9 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 			toAbiInput.AssetCode,
 		)
 		if err != nil {
+			if strings.Contains(err.Error(), "valid price not found") || strings.Contains(err.Error(), "invalid price") {
+				return nil, errors.Wrap(errors.New("valid price not found"), "smart contract call error")
+			}
 			return nil, err
 		}
 
