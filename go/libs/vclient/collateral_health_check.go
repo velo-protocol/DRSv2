@@ -1,8 +1,8 @@
 package vclient
 
 import (
-	"errors"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/pkg/errors"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 	"math/big"
 	"strings"
