@@ -79,7 +79,11 @@ func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]Col
 			toAbiInput.AssetCode,
 		)
 		if err != nil {
-			if strings.Contains(err.Error(), "valid price not found") || strings.Contains(err.Error(), "invalid price") {
+			msg := err.Error()
+			if strings.Contains(msg, "valid price not found") ||
+				strings.Contains(msg, "invalid price") ||
+				strings.Contains(msg, "price is not active") ||
+				strings.Contains(msg, "price has an error") {
 				return nil, errors.Wrap(errors.New("valid price not found"), "smart contract call error")
 			}
 			return nil, err

@@ -54,7 +54,10 @@ func (c *Client) GetExchangeRate(input *GetExchangeRateInput) (*GetExchangeRateO
 		switch {
 		case strings.Contains(msg, "stableCredit not exist"):
 			return nil, errors.Wrap(errors.Errorf("the stable credit %s does not exist", input.AssetCode), "smart contract call error")
-		case strings.Contains(msg, "valid price not found") || strings.Contains(msg, "invalid price"):
+		case strings.Contains(msg, "valid price not found") ||
+			strings.Contains(msg, "invalid price") ||
+			strings.Contains(msg, "price is not active") ||
+			strings.Contains(msg, "price has an error"):
 			return nil, errors.Wrap(errors.New("valid price not found"), "smart contract call error")
 		default:
 			return nil, err
