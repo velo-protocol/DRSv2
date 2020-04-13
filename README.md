@@ -4,16 +4,33 @@
 <br>
 
 # Introduction
-This repository contains the implementation of Velo Protocol in Solidity.
+This repository contains the implementation of Velo Protocol version 2, which includes
+* Smart contract
+* Golang implementations
+  * Go SDK (vclient)
+  * Go CLI (gvel)
 
-# Get Started
+# Getting Started with Smart Contract
+
+## Project Structure
+├── contracts          - solidity smart contract code stays here
+├── migrations         - migration script
+├── test               - smart contract test
+├── truffle-config.js  - config truffle env and behaviour here
+├── package.json
+├── yarn.lock
+...
+└── go (Golang implementations, more detail in later section)
+
+
 ## Installation
 
 To install DRSv2, you need to install 
+NodeJs 10.16.3,
 [Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation) and 
 [Ganache](https://www.trufflesuite.com/ganache) first.
 
-1. You can use the command below to install [Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation). Please note that Truffle requires NodeJS v8.9.4 or later.
+1. You can use the command below to install [Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation).
 
 ```sh
 $ yarn global add truffle
@@ -29,8 +46,10 @@ $ yarn install
 
 4. After that you can run the command below to deploy Velo Protocol smart contracts to your local network
 ```sh
-$ truffle migrate --reset --network development
+$ yarn run reset
 ```
+5. Now you can interact with the smart contract via `truffle console` 
+6. Modify the migration script in `./migrations` to control the how the smart contract should be setup.
 
 ## Script usage
 #### Deployment
@@ -39,7 +58,7 @@ $ truffle migrate --reset --network development
 $ yarn run reset
 ```
 
-##### 2. Deploy to dev environment (required DEV_SCC_HOST, DEV_SCC_PK configured correctly)
+##### 2. Deploy to dev environment (required variables from .env configured properly, Env File section)
 ```sh
 $ yarn run reset:dev
 ```
@@ -69,6 +88,31 @@ $ yarn run test:all
 ```
 
 ##### 5. Test all files and generate a coverage report
-```sh
+```shell script
 $ yarn run test:cov
 ```
+
+#### Utils
+
+##### Create Smart Contract .bin and .abi
+After smart contract compilation, it yields ABI in .json format. Golang's `abigen` tool requires
+ABI in .bin and .abi to generate Go smart contract function. (see more in Go abigen section)
+```shell script
+# compile your smart contract before proceed (yarn run reset)
+$ yarn run abi:extract
+```
+
+## Env File
+Please copy `.env.example` and rename it to `.env`, config its value properly
+```
+DEV_SCC_HOST - the rpc url to the Ethereum based chain
+DEV_SCC_PK - the private key of the smart contract deployer account (the account must own some ETH balance)
+USD_VELO_PK, THB_VELO_PK, SGD_VELO_PK - the private key of the VOracle Module deployer account of each currency pair, this
+key can be the same as DEV_SCC_PK for testing purpose
+```
+
+
+
+
+
+

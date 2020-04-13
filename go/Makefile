@@ -21,7 +21,6 @@ format:
 ci_test:
 	go test --tags="unit" ./... -v -coverprofile .coverage.txt
 
-
 mockgen/all:
 	mockgen \
 		-source=./libs/vclient/interface.go \
