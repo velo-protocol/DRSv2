@@ -7,9 +7,13 @@ import (
 )
 
 type Contract struct {
-	drs      DRSContract
-	heart    HeartContract
-	drsAbi   *abi.ABI
+	// The DRS contract interface
+	drs DRSContract
+	// The heart contract interface
+	heart HeartContract
+	// The DRS contract abi
+	drsAbi *abi.ABI
+	// The heart contract abi
 	heartAbi *abi.ABI
 }
 

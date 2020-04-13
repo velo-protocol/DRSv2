@@ -11,6 +11,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
 )
 
+// RebalanceInput required input fields of rebalance
 type RebalanceInput struct {
 	// add more if need to add more features.
 }
@@ -25,6 +26,7 @@ type RebalanceTransaction struct {
 	Receipt             *types.Receipt
 }
 
+// RebalanceOutput output fields of rebalance
 type RebalanceOutput struct {
 	RebalanceTransactions []*RebalanceTransaction
 }
@@ -41,6 +43,7 @@ func (i *RebalanceTransaction) ToRebalanceOutput(eventAbi *vabi.DigitalReserveSy
 	i.Receipt = receipt
 }
 
+// Rebalance calls Rebalance on Velo smart contract.
 func (c *Client) Rebalance(ctx context.Context, input *RebalanceInput) (*RebalanceOutput, error) {
 	rebalanceOutput := &RebalanceOutput{
 		RebalanceTransactions: []*RebalanceTransaction{},

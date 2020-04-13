@@ -1,8 +1,11 @@
+/*
+Package vclient provides client access to a Velo smart contract.
+For more information and further examples, see https://docs.velo.org/.
+*/
 package vclient
 
 import (
 	"crypto/ecdsa"
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -10,20 +13,20 @@ import (
 	"github.com/velo-protocol/DRSv2/go/abi"
 )
 
-// Client struct
+// Client struct contains data for connecting to the Velo Smart Contract
 type Client struct {
-	rpcUrl     string
+	// The url which is used to connect to Velo smart contract
+	rpcUrl string
+	// A private key that will be used to sign every transaction when submitting to smart contract
 	privateKey ecdsa.PrivateKey
-	publicKey  common.Address
-	conn       Connection
-	contract   *Contract
-	txHelper   TxHelper
-
-	// Contracts
-	drs      *vabi.DigitalReserveSystem
-	drsAbi   *abi.ABI
-	heart    *vabi.Heart
-	heartAbi *abi.ABI
+	// A public key of private key
+	publicKey common.Address
+	// A connection that is used by Velo.
+	conn Connection
+	// The smart contracts that are used by Velo
+	contract *Contract
+	// The transaction helper that are used by Velo
+	txHelper TxHelper
 }
 
 type ContractAddress struct {
@@ -31,6 +34,7 @@ type ContractAddress struct {
 	HeartAddress string
 }
 
+// NewClient creates a default client instance.
 func NewClient(rpcUrl string, privateKey string, contractAddress ContractAddress) (*Client, error) {
 	conn, err := ethclient.Dial(rpcUrl)
 	if err != nil {
@@ -72,14 +76,21 @@ func NewClient(rpcUrl string, privateKey string, contractAddress ContractAddress
 	}, nil
 }
 
+// ClientOptions struct contains data for connecting to the Velo Smart Contract
 type ClientOptions struct {
-	PrivateKey    ecdsa.PrivateKey
-	Conn          Connection
-	DRSContract   DRSContract
+	// A private key that will be used to sign every transaction when submitting to smart contract
+	PrivateKey ecdsa.PrivateKey
+	// A connection that is used by Velo.
+	Conn Connection
+	// The DRS contract interface
+	DRSContract DRSContract
+	// The heart contract interface
 	HeartContract HeartContract
-	TxHelper      TxHelper
+	// The transaction helper that are used by Velo
+	TxHelper TxHelper
 }
 
+// NewClientWithOptions creates a client with config option instance.
 func NewClientWithOptions(options *ClientOptions) *Client {
 	return &Client{
 		privateKey: options.PrivateKey,
@@ -100,10 +111,12 @@ func validateContractAddress(contractAddress ContractAddress) error {
 	return nil
 }
 
+// Contract return contracts of client
 func (c *Client) Contract() *Contract {
 	return c.contract
 }
 
+// Conn return connection of client
 func (c *Client) Conn() Connection {
 	return c.conn
 }

@@ -13,11 +13,14 @@ import (
 	"strings"
 )
 
+// RedeemStableCreditInput required input fields of redeem stable credit
 type RedeemStableCreditInput struct {
 	RedeemAmount string
 	AssetCode    string
 }
 
+// Validation function for RedeemStableCredit. Validates the required struct fields. It returns an error if any of the fields are
+// invalid. Otherwise, it returns nil.
 func (i *RedeemStableCreditInput) Validate() error {
 	// validate RedeemAmount
 	if i.RedeemAmount == "" {
@@ -70,12 +73,14 @@ type RedeemStableCreditEvent struct {
 	Raw                    *types.Log
 }
 
+// RedeemStableCreditOutput output fields of redeem stable credit
 type RedeemStableCreditOutput struct {
 	Tx      *types.Transaction
 	Receipt *types.Receipt
 	Event   *RedeemStableCreditEvent
 }
 
+// RedeemStableCredit calls Redeem on Velo smart contract.
 func (c *Client) RedeemStableCredit(ctx context.Context, input *RedeemStableCreditInput) (*RedeemStableCreditOutput, error) {
 	err := input.Validate()
 	if err != nil {
