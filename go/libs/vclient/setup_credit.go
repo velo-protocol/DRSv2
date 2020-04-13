@@ -14,6 +14,7 @@ import (
 	"strings"
 )
 
+// SetupCreditInput required input fields of setup credit
 type SetupCreditInput struct {
 	CollateralAssetCode string
 	PeggedCurrency      string
@@ -21,6 +22,8 @@ type SetupCreditInput struct {
 	PeggedValue         string
 }
 
+// Validation function for SetupCredit. Validates the required struct fields. It returns an error if any of the fields are
+// invalid. Otherwise, it returns nil.
 func (i *SetupCreditInput) Validate() error {
 	if len(i.CollateralAssetCode) == 0 {
 		return errors.Errorf("%s must not be blank", "collateralAssetCode")
@@ -94,6 +97,7 @@ func (i *SetupCreditEvent) ToEventOutput(eventAbi *vabi.DigitalReserveSystemSetu
 	i.Raw = &eventAbi.Raw
 }
 
+// SetupCreditOutput output fields of setup credit
 type SetupCreditOutput struct {
 	Tx      *types.Transaction
 	Receipt *types.Receipt
@@ -111,6 +115,7 @@ func SetupCreditReplaceError(prefix string, abiInput *SetupCreditAbiInput, err e
 	return errors.Wrap(err, prefix)
 }
 
+// SetupCredit calls Setup on Velo smart contract.
 func (c *Client) SetupCredit(ctx context.Context, input *SetupCreditInput) (*SetupCreditOutput, error) {
 	err := input.Validate()
 	if err != nil {

@@ -7,10 +7,12 @@ import (
 	"strings"
 )
 
+// GetExchangeRateInput required input fields of get exchange rate
 type GetExchangeRateInput struct {
 	AssetCode string
 }
 
+// GetExchangeRateOutput output fields of get exchange rate
 type GetExchangeRateOutput struct {
 	AssetCode                     string
 	CollateralAssetCode           string
@@ -21,6 +23,8 @@ type GetExchangeRateAbiInput struct {
 	AssetCode string
 }
 
+// Validation function for GetExchangeRate. Validates the required struct fields. It returns an error if any of the fields are
+// invalid. Otherwise, it returns nil.
 func (i *GetExchangeRateInput) Validate() error {
 	if len(i.AssetCode) == 0 {
 		return errors.New("assetCode must not be blank")
@@ -39,6 +43,7 @@ func (i *GetExchangeRateInput) ToAbiInput() GetExchangeRateAbiInput {
 	}
 }
 
+// GetExchangeRate calls GetExchange on Velo smart contract.
 func (c *Client) GetExchangeRate(input *GetExchangeRateInput) (*GetExchangeRateOutput, error) {
 	err := input.Validate()
 	if err != nil {

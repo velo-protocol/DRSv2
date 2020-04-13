@@ -10,10 +10,12 @@ import (
 	"strings"
 )
 
+// WhitelistGovernorInput required input fields of whitelist governor
 type WhitelistGovernorInput struct {
 	Address string
 }
 
+// WhitelistGovernorOutput output fields of whitelist governor
 type WhitelistGovernorOutput struct {
 	Tx      *types.Transaction
 	Receipt *types.Receipt
@@ -23,6 +25,8 @@ type WhitelistGovernorAbiInput struct {
 	Address common.Address
 }
 
+// Validation function for WhitelistGovernor. Validates the required struct fields. It returns an error if any of the fields are
+// invalid. Otherwise, it returns nil.
 func (i *WhitelistGovernorInput) Validate() error {
 	if len(i.Address) == 0 {
 		return errors.New("address must not be blank")
@@ -48,6 +52,7 @@ func WhitelistGovernorReplaceError(prefix string, err error) error {
 	return errors.Wrap(err, prefix)
 }
 
+// WhitelistGovernor calls SetGovernor on Velo smart contract.
 func (c *Client) WhitelistGovernor(ctx context.Context, input *WhitelistGovernorInput) (*WhitelistGovernorOutput, error) {
 	err := input.Validate()
 	if err != nil {

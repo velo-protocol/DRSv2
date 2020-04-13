@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// CollateralHealthCheckInput required input fields of collateral health check
 type CollateralHealthCheckInput struct {
 	// to be implement more in the future
 }
@@ -24,6 +25,7 @@ type CollateralHealthCheckAbiOutput struct {
 	IndexKey               int
 }
 
+// CollateralHealthCheckOutput output fields of collateral health check
 type CollateralHealthCheckOutput struct {
 	CollateralAssetAddress string
 	CollateralAssetCode    string
@@ -31,6 +33,7 @@ type CollateralHealthCheckOutput struct {
 	PresentAmount          string
 }
 
+// CollateralHealthCheck calls CollateralHealthCheck on Velo smart contract.
 func (c *Client) CollateralHealthCheck(input *CollateralHealthCheckInput) ([]CollateralHealthCheckOutput, error) {
 	var collateralOutputs []CollateralHealthCheckAbiOutput
 

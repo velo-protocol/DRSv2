@@ -10,10 +10,13 @@ import (
 	"strings"
 )
 
+// WhitelistTrustedPartnerInput required input fields of whitelist trusted partner
 type WhitelistTrustedPartnerInput struct {
 	Address string
 }
 
+// Validation function for WhitelistTrustedPartner. Validates the required struct fields. It returns an error if any of the fields are
+// invalid. Otherwise, it returns nil.
 func (i *WhitelistTrustedPartnerInput) Validate() error {
 	if !common.IsHexAddress(i.Address) {
 		return errors.New("invalid address format")
@@ -32,6 +35,7 @@ func (i *WhitelistTrustedPartnerInput) ToAbiInput() WhitelistTrustedPartnerAbiIn
 	}
 }
 
+// WhitelistTrustedPartnerOutput output fields of whitelist trusted partner
 type WhitelistTrustedPartnerOutput struct {
 	Tx      *types.Transaction
 	Receipt *types.Receipt

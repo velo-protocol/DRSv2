@@ -14,11 +14,14 @@ import (
 	"strings"
 )
 
+// MintFromCollateralAmountInput required input fields of mint from collateral amount
 type MintFromCollateralAmountInput struct {
 	AssetCode        string
 	CollateralAmount string
 }
 
+// Validation function for MintFromCollateralAmount. Validates the required struct fields. It returns an error if any of the fields are
+// invalid. Otherwise, it returns nil.
 func (i *MintFromCollateralAmountInput) Validate() error {
 	if i.AssetCode == "" {
 		return errors.New("assetCode must not be blank")
@@ -76,6 +79,7 @@ func (i *MintFromCollateralAmountEvent) ToEventOutput(eventAbi *vabi.DigitalRese
 	i.Raw = &eventAbi.Raw
 }
 
+// MintFromCollateralAmountCreditOutput output fields of mint from collateral amount
 type MintFromCollateralAmountCreditOutput struct {
 	Tx      *types.Transaction
 	Receipt *types.Receipt
@@ -100,6 +104,7 @@ func MintFromCollateralAmountReplaceError(prefix string, abiInput *MintFromColla
 	}
 }
 
+// MintFromCollateralAmount calls MintFromCollateralAmount on Velo smart contract.
 func (c *Client) MintFromCollateralAmount(ctx context.Context, input *MintFromCollateralAmountInput) (*MintFromCollateralAmountCreditOutput, error) {
 	err := input.Validate()
 	if err != nil {
