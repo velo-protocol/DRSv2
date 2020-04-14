@@ -8,6 +8,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
 
+// Default a function to process getting a default account
 func (accountCommand *CommandHandler) Default(_ *cobra.Command, _ []string) {
 	accounts, err := accountCommand.Logic.ListAccount()
 	if err != nil {

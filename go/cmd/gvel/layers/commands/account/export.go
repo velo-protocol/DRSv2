@@ -8,6 +8,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
 
+// Export a function to process exporting an account
 func (accountCommand *CommandHandler) Export(_ *cobra.Command, _ []string) {
 	accounts, err := accountCommand.Logic.ListAccount()
 	if err != nil {

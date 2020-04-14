@@ -6,6 +6,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
 
+// MintByCollateral a function to process minting credit by collateral
 func (creditCommand *CommandHandler) MintByCollateral(_ *cobra.Command, _ []string) {
 	mintCreditByCollateralInput := &entity.MintCreditByCollateralInput{
 		AssetCode:        creditCommand.Prompt.RequestString("Please input asset code of credit to be minted", nil),

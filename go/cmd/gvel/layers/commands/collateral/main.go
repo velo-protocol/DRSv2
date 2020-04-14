@@ -16,6 +16,7 @@ type CommandHandler struct {
 	AppConfig config.Configuration
 }
 
+// NewCommandHandler creates a collateral command handler instance.
 func NewCommandHandler(logic logic.Logic, prompt console.Prompt, config config.Configuration) *CommandHandler {
 	return &CommandHandler{
 		Logic:     logic,
@@ -24,6 +25,7 @@ func NewCommandHandler(logic logic.Logic, prompt console.Prompt, config config.C
 	}
 }
 
+// Command function generates all collateral commands
 func (collateralCommand *CommandHandler) Command() *cobra.Command {
 	command := &cobra.Command{
 		Use:   fmt.Sprintf("%s %s", constants.CmdCollateral, "<arg>"),
@@ -47,6 +49,7 @@ func (collateralCommand *CommandHandler) Command() *cobra.Command {
 	return command
 }
 
+// GetHealthCheckCommand function return get health check command
 func (collateralCommand *CommandHandler) GetHealthCheckCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   constants.CmdCollateralHealthCheck,
@@ -56,6 +59,7 @@ func (collateralCommand *CommandHandler) GetHealthCheckCommand() *cobra.Command 
 	return command
 }
 
+// GetRebalanceCommand function return get rebalance command
 func (collateralCommand *CommandHandler) GetRebalanceCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   constants.CmdCollateralRebalance,

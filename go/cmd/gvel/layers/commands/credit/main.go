@@ -16,6 +16,7 @@ type CommandHandler struct {
 	AppConfig config.Configuration
 }
 
+// NewCommandHandler creates a credit command handler instance.
 func NewCommandHandler(logic logic.Logic, prompt console.Prompt, config config.Configuration) *CommandHandler {
 	return &CommandHandler{
 		Logic:     logic,
@@ -24,6 +25,7 @@ func NewCommandHandler(logic logic.Logic, prompt console.Prompt, config config.C
 	}
 }
 
+// Command function generates all credit commands
 func (creditCommand *CommandHandler) Command() *cobra.Command {
 	command := &cobra.Command{
 		Use:   fmt.Sprintf("%s %s", constants.CmdCredit, "<arg>"),
@@ -50,6 +52,7 @@ func (creditCommand *CommandHandler) Command() *cobra.Command {
 	return command
 }
 
+// GetSetupCommand function return credit setup command
 func (creditCommand *CommandHandler) GetSetupCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   constants.CmdCreditSetup,
@@ -60,6 +63,7 @@ func (creditCommand *CommandHandler) GetSetupCommand() *cobra.Command {
 	return command
 }
 
+// GetMintCreditByCollateralCommand function return credit mint by collateral command
 func (creditCommand *CommandHandler) GetMintCreditByCollateralCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   constants.CmdCreditMintByCollateral,
@@ -70,6 +74,7 @@ func (creditCommand *CommandHandler) GetMintCreditByCollateralCommand() *cobra.C
 	return command
 }
 
+// GetMintByCreditCommand function return credit mint by credit command
 func (creditCommand *CommandHandler) GetMintByCreditCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   constants.CmdCreditMintByCredit,
@@ -80,6 +85,7 @@ func (creditCommand *CommandHandler) GetMintByCreditCommand() *cobra.Command {
 	return command
 }
 
+// GetExchangeCommand function return credit exchange command
 func (creditCommand *CommandHandler) GetExchangeCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   constants.CmdCreditGetExchange,
@@ -90,6 +96,7 @@ func (creditCommand *CommandHandler) GetExchangeCommand() *cobra.Command {
 	return command
 }
 
+// GetRedeemCreditCommand function return credit redeem command
 func (creditCommand *CommandHandler) GetRedeemCreditCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   constants.CmdCreditRedeem,

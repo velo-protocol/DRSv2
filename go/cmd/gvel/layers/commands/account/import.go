@@ -7,6 +7,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/validation"
 )
 
+// Import a function to process importing an existing account
 func (accountCommand *CommandHandler) Import(cmd *cobra.Command, _ []string) {
 	setAsDefault, err := cmd.Flags().GetBool("default")
 	if err != nil {

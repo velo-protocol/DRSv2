@@ -6,6 +6,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
 
+// Setup a function to process setup new credit
 func (creditCommand *CommandHandler) Setup(_ *cobra.Command, _ []string) {
 	setupCreditInput := &entity.SetupCreditInput{
 		AssetCode:           creditCommand.Prompt.RequestString("Please input asset code", nil),

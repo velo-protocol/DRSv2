@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// Rebalance a function to process rebalancing  collateral
 func (collateralCommand *CommandHandler) Rebalance(_ *cobra.Command, _ []string) {
 	rebalanceCreditInput := &entity.RebalanceCollateralInput{
 		Passphrase: collateralCommand.Prompt.RequestHiddenString("🔑 Please input passphrase", nil),

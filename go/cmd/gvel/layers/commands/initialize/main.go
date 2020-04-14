@@ -14,6 +14,7 @@ type CommandHandler struct {
 	AppConfig config.Configuration
 }
 
+// NewCommandHandler creates a initialize command handler instance.
 func NewCommandHandler(logic logic.Logic, prompt console.Prompt, config config.Configuration) *CommandHandler {
 	return &CommandHandler{
 		Logic:     logic,
@@ -22,6 +23,7 @@ func NewCommandHandler(logic logic.Logic, prompt console.Prompt, config config.C
 	}
 }
 
+// Command function generates all initialize commands
 func (initCommand *CommandHandler) Command() *cobra.Command {
 	return &cobra.Command{
 		Use:   constants.CmdInit,

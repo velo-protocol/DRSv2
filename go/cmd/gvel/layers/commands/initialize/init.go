@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// Init a function to process initialing environment
 func (initCommand *CommandHandler) Init(_ *cobra.Command, _ []string) {
 	if initCommand.AppConfig.Exists() {
 		console.ExitWithError(console.ExitError, errors.Errorf("gvel has already been initialized, configuration can be found at %s", constants.FsBaseDir))

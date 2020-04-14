@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// Set a function to process setting environment
 func (envCommand *CommandHandler) Set(_ *cobra.Command, _ []string) {
 	envList := envCommand.AppConfig.GetEnvList()
 	if envList == nil || len(envList) == 0 {
