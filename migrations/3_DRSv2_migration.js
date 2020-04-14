@@ -34,11 +34,11 @@ module.exports = async function (deployer, network, accounts) {
     const priceTHB = await Price.at(process.migration.contractAddress.priceProxyTHB);
     const priceSGD = await Price.at(process.migration.contractAddress.priceProxySGD);
 
-    heartInstance.addPrice(await hasher.linkId(veloBytes32, usdBytes32), priceUSD.address);
-    heartInstance.addPrice(await hasher.linkId(veloBytes32, thbBytes32), priceTHB.address);
-    heartInstance.addPrice(await hasher.linkId(veloBytes32, sgdBytes32), priceSGD.address);
-    heartInstance.setReserveManager(reserveManagerInstance.address);
-    heartInstance.setDrsAddress(drsInstance.address);
+    await heartInstance.addPrice(await hasher.linkId(veloBytes32, usdBytes32), priceUSD.address);
+    await heartInstance.addPrice(await hasher.linkId(veloBytes32, thbBytes32), priceTHB.address);
+    await heartInstance.addPrice(await hasher.linkId(veloBytes32, sgdBytes32), priceSGD.address);
+    await heartInstance.setReserveManager(reserveManagerInstance.address);
+    await heartInstance.setDrsAddress(drsInstance.address);
 
     const adminAddress = accounts[0];
 

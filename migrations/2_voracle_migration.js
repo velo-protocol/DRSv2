@@ -7,7 +7,7 @@ const LagProxy = artifacts.require('LagProxy');
 const Price = artifacts.require('Price');
 const PriceProxy = artifacts.require('PriceProxy');
 
-module.exports = async (deployer, network, accounts) => {
+module.exports = async function (deployer, network, accounts) {
   await deployer.deploy(FeederFactory);
 
   if (network === 'development' || network === 'local' || network === 'dev') {
@@ -49,7 +49,7 @@ module.exports = async (deployer, network, accounts) => {
     const medProxyUSD = await MedianizerProxy.deployed();
 
     const medInstanceUSD = new web3.eth.Contract(Medianizer.abi, medLogic.address);
-    const initializeUSDCalldata = medInstanceUSD.methods.initialize(usdDeployer, usdBytes32, veloBytes32).encodeABI();
+    const initializeUSDCalldata = await medInstanceUSD.methods.initialize(usdDeployer, usdBytes32, veloBytes32).encodeABI();
 
     await medProxyUSD.initialize(medLogic.address, initializeUSDCalldata);
 
@@ -62,7 +62,7 @@ module.exports = async (deployer, network, accounts) => {
     const medProxyTHB = await MedianizerProxy.deployed();
 
     const medInstanceTHB = new web3.eth.Contract(Medianizer.abi, medLogic.address);
-    const initializeTHBCalldata = medInstanceTHB.methods.initialize(thbDeployer, thbBytes32, veloBytes32).encodeABI();
+    const initializeTHBCalldata = await medInstanceTHB.methods.initialize(thbDeployer, thbBytes32, veloBytes32).encodeABI();
 
     await medProxyTHB.initialize(medLogic.address, initializeTHBCalldata);
 
@@ -75,7 +75,7 @@ module.exports = async (deployer, network, accounts) => {
     const medProxySGD = await MedianizerProxy.deployed();
 
     const medInstanceSGD = new web3.eth.Contract(Medianizer.abi, medLogic.address);
-    const initializeSGDCalldata = medInstanceSGD.methods.initialize(sgdDeployer, sgdBytes32, veloBytes32).encodeABI();
+    const initializeSGDCalldata = await medInstanceSGD.methods.initialize(sgdDeployer, sgdBytes32, veloBytes32).encodeABI();
 
     await medProxySGD.initialize(medLogic.address, initializeSGDCalldata);
 
@@ -95,7 +95,7 @@ module.exports = async (deployer, network, accounts) => {
     const lagProxyUSD = await LagProxy.deployed();
 
     const lagInstanceUSD = new web3.eth.Contract(Lag.abi, lagLogic.address);
-    const initializeLagUSDCalldata = lagInstanceUSD.methods.initialize(usdDeployer, medProxyUSD.address).encodeABI();
+    const initializeLagUSDCalldata = await lagInstanceUSD.methods.initialize(usdDeployer, medProxyUSD.address).encodeABI();
 
     await lagProxyUSD.initialize(lagLogic.address, initializeLagUSDCalldata);
 
@@ -105,7 +105,7 @@ module.exports = async (deployer, network, accounts) => {
     const lagProxyTHB = await LagProxy.deployed();
 
     const lagInstanceTHB = new web3.eth.Contract(Lag.abi, lagLogic.address);
-    const initializeLagTHBCalldata = lagInstanceTHB.methods.initialize(thbDeployer, medProxyTHB.address).encodeABI();
+    const initializeLagTHBCalldata = await lagInstanceTHB.methods.initialize(thbDeployer, medProxyTHB.address).encodeABI();
 
     await lagProxyTHB.initialize(lagLogic.address, initializeLagTHBCalldata);
 
@@ -115,7 +115,7 @@ module.exports = async (deployer, network, accounts) => {
     const lagProxySGD = await LagProxy.deployed();
 
     const lagInstanceSGD = new web3.eth.Contract(Lag.abi, lagLogic.address);
-    const initializeLagSGDCalldata = lagInstanceSGD.methods.initialize(sgdDeployer, medProxySGD.address).encodeABI();
+    const initializeLagSGDCalldata = await lagInstanceSGD.methods.initialize(sgdDeployer, medProxySGD.address).encodeABI();
 
     await lagProxySGD.initialize(lagLogic.address, initializeLagSGDCalldata);
 
@@ -132,7 +132,7 @@ module.exports = async (deployer, network, accounts) => {
     const priceProxyUSD = await PriceProxy.deployed();
 
     const priceInstanceUSD = new web3.eth.Contract(Price.abi, priceLogic.address);
-    const initializePriceUSDCalldata = priceInstanceUSD.methods.initialize(usdDeployer, lagProxyUSD.address).encodeABI();
+    const initializePriceUSDCalldata = await priceInstanceUSD.methods.initialize(usdDeployer, lagProxyUSD.address).encodeABI();
 
     await priceProxyUSD.initialize(priceLogic.address, initializePriceUSDCalldata);
 
@@ -142,7 +142,7 @@ module.exports = async (deployer, network, accounts) => {
     const priceProxyTHB = await PriceProxy.deployed();
 
     const priceInstanceTHB = new web3.eth.Contract(Price.abi, priceLogic.address);
-    const initializePriceTHBCalldata = priceInstanceTHB.methods.initialize(thbDeployer, lagProxyTHB.address).encodeABI();
+    const initializePriceTHBCalldata = await priceInstanceTHB.methods.initialize(thbDeployer, lagProxyTHB.address).encodeABI();
 
     await priceProxyTHB.initialize(priceLogic.address, initializePriceTHBCalldata);
 
@@ -152,7 +152,7 @@ module.exports = async (deployer, network, accounts) => {
     const priceProxySGD = await PriceProxy.deployed();
 
     const priceInstanceSGD = new web3.eth.Contract(Price.abi, priceLogic.address);
-    const initializePriceSGDCalldata = priceInstanceSGD.methods.initialize(sgdDeployer, lagProxySGD.address).encodeABI();
+    const initializePriceSGDCalldata = await priceInstanceSGD.methods.initialize(sgdDeployer, lagProxySGD.address).encodeABI();
 
     await priceProxySGD.initialize(priceLogic.address, initializePriceSGDCalldata);
 
