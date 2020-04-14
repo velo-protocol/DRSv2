@@ -6,6 +6,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
 
+// Create a function to process creating a new account
 func (accountCommand *CommandHandler) Create(cmd *cobra.Command, _ []string) {
 	setAsDefault, err := cmd.Flags().GetBool("default")
 	if err != nil {

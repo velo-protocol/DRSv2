@@ -6,6 +6,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
 
+// Redeem a function to process redeeming credit
 func (creditCommand *CommandHandler) Redeem(_ *cobra.Command, _ []string) {
 	redeemStableCreditInput := &entity.RedeemCreditInput{
 		RedeemAmount: creditCommand.Prompt.RequestString("Please input amount of stable credit", nil),

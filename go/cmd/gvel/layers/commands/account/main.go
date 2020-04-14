@@ -16,6 +16,7 @@ type CommandHandler struct {
 	AppConfig config.Configuration
 }
 
+// NewCommandHandler creates an account command handler instance.
 func NewCommandHandler(logic logic.Logic, prompt console.Prompt, config config.Configuration) *CommandHandler {
 	return &CommandHandler{
 		Logic:     logic,
@@ -24,6 +25,7 @@ func NewCommandHandler(logic logic.Logic, prompt console.Prompt, config config.C
 	}
 }
 
+// Command function generates all account commands
 func (accountCommand *CommandHandler) Command() *cobra.Command {
 	command := &cobra.Command{
 		Use:   fmt.Sprintf("%s %s", constants.CmdAccount, "<arg>"),
@@ -45,6 +47,7 @@ func (accountCommand *CommandHandler) Command() *cobra.Command {
 	return command
 }
 
+// GetCreateCommand function return account create command
 func (accountCommand *CommandHandler) GetCreateCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   constants.CmdAccountCreate,
@@ -56,6 +59,7 @@ func (accountCommand *CommandHandler) GetCreateCommand() *cobra.Command {
 	return command
 }
 
+// GetImportCommand function return account import command
 func (accountCommand *CommandHandler) GetImportCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   constants.CmdAccountImport,
@@ -67,6 +71,7 @@ func (accountCommand *CommandHandler) GetImportCommand() *cobra.Command {
 	return command
 }
 
+// GetListCommand function return account list command
 func (accountCommand *CommandHandler) GetListCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   constants.CmdAccountList,
@@ -75,6 +80,7 @@ func (accountCommand *CommandHandler) GetListCommand() *cobra.Command {
 	}
 }
 
+// GetDefaultCommand function return account default command
 func (accountCommand *CommandHandler) GetDefaultCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   constants.CmdAccountDefault,
@@ -83,6 +89,7 @@ func (accountCommand *CommandHandler) GetDefaultCommand() *cobra.Command {
 	}
 }
 
+// GetExportCommand function return account export command
 func (accountCommand *CommandHandler) GetExportCommand() *cobra.Command {
 	command := &cobra.Command{
 		Use:   constants.CmdAccountExport,

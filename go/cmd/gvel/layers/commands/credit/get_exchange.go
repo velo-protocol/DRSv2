@@ -6,6 +6,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
 
+// GetExchange a function to process getting credit exchange
 func (creditCommand *CommandHandler) GetExchange(_ *cobra.Command, _ []string) {
 	getExchangeInput := &entity.GetCreditExchangeInput{
 		AssetCode:  creditCommand.Prompt.RequestString("Please input asset code of the stable credit", nil),

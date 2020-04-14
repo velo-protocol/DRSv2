@@ -17,6 +17,7 @@ type CommandHandler struct {
 	AppConfig config.Configuration
 }
 
+// NewCommandHandler creates an environment command handler instance.
 func NewCommandHandler(logic logic.Logic, prompt console.Prompt, config config.Configuration) *CommandHandler {
 	return &CommandHandler{
 		Logic:     logic,
@@ -25,6 +26,7 @@ func NewCommandHandler(logic logic.Logic, prompt console.Prompt, config config.C
 	}
 }
 
+// Command function generates all environment commands
 func (envCommand *CommandHandler) Command() *cobra.Command {
 	command := &cobra.Command{
 		Use:   fmt.Sprintf("%s %s", constants.CmdEnv, "<arg>"),
@@ -46,6 +48,7 @@ func (envCommand *CommandHandler) Command() *cobra.Command {
 	return command
 }
 
+// GetSetCommand function return set environment command
 func (envCommand *CommandHandler) GetSetCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   constants.CmdEnvSet,

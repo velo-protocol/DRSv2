@@ -6,6 +6,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/cmd/gvel/utils/console"
 )
 
+// List a function to process listing all accounts
 func (accountCommand *CommandHandler) List(cmd *cobra.Command, _ []string) {
 	accounts, err := accountCommand.Logic.ListAccount()
 	if err != nil {
