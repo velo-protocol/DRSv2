@@ -13,6 +13,7 @@ This repository contains the implementation of Velo Protocol version 2, which in
 # Getting Started with Smart Contract
 
 ## Project Structure
+```
 ├── contracts          - solidity smart contract code stays here
 ├── migrations         - migration script
 ├── test               - smart contract test
@@ -20,8 +21,9 @@ This repository contains the implementation of Velo Protocol version 2, which in
 ├── package.json
 ├── yarn.lock
 ...
-└── go (Golang implementations, more detail in later section)
-
+└── go (Golang implementations)
+```
+See [Golang implementations](./go/README.md) here
 
 ## Installation
 
