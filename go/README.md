@@ -1,5 +1,6 @@
 # Getting Started with Golang Implementation
 ## Project Structure
+```
 ├── README.md
 ├── abi              - Go's code generated from `abigen`
 ├── cmd/gvel         - `gvel` cli stays here
@@ -8,6 +9,7 @@
 ├── Makefile         - a bunch of shortcuts (see detail in later section)
 ├── go.mod
 └── go.sum
+```
 
 ## Prerequisite
 * Golang 1.12 or higher
