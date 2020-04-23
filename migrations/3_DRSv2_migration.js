@@ -34,11 +34,11 @@ module.exports = async function (deployer, network, accounts) {
     const priceTHB = await Price.at(process.migration.contractAddress.priceProxyTHB);
     const priceSGD = await Price.at(process.migration.contractAddress.priceProxySGD);
 
-    heartInstance.addPrice(await hasher.linkId(veloBytes32, usdBytes32), priceUSD.address);
-    heartInstance.addPrice(await hasher.linkId(veloBytes32, thbBytes32), priceTHB.address);
-    heartInstance.addPrice(await hasher.linkId(veloBytes32, sgdBytes32), priceSGD.address);
-    heartInstance.setReserveManager(reserveManagerInstance.address);
-    heartInstance.setDrsAddress(drsInstance.address);
+    await heartInstance.addPrice(await hasher.linkId(veloBytes32, usdBytes32), priceUSD.address);
+    await heartInstance.addPrice(await hasher.linkId(veloBytes32, thbBytes32), priceTHB.address);
+    await heartInstance.addPrice(await hasher.linkId(veloBytes32, sgdBytes32), priceSGD.address);
+    await heartInstance.setReserveManager(reserveManagerInstance.address);
+    await heartInstance.setDrsAddress(drsInstance.address);
 
     const adminAddress = accounts[0];
 
@@ -47,14 +47,14 @@ module.exports = async function (deployer, network, accounts) {
     await veloToken.mint(adminAddress, veloMintAmount);
 
     console.log("Set Collateral assets");
-    // await heartInstance.setCollateralAsset(veloBytes32, veloToken.address, 13000000); // 1.3
+    await heartInstance.setCollateralAsset(veloBytes32, veloToken.address, 13000000); // 1.3
     await heartInstance.setTrustedPartner(adminAddress);
     await heartInstance.setCreditIssuanceFee(500000);  // 0.05 (5%)
-    // await heartInstance.setAllowedLink(await hasher.linkId(veloBytes32, usdBytes32), true);
-    // await heartInstance.setAllowedLink(await hasher.linkId(veloBytes32, thbBytes32), true);
-    // await heartInstance.setAllowedLink(await hasher.linkId(veloBytes32, sgdBytes32), true);
-    //
-    // console.log("Approve DRS to spend VELO");
-    // await veloToken.approve(drsInstance.address, veloMintAmount);
+    await heartInstance.setAllowedLink(await hasher.linkId(veloBytes32, usdBytes32), true);
+    await heartInstance.setAllowedLink(await hasher.linkId(veloBytes32, thbBytes32), true);
+    await heartInstance.setAllowedLink(await hasher.linkId(veloBytes32, sgdBytes32), true);
+
+    console.log("Approve DRS to spend VELO");
+    await veloToken.approve(drsInstance.address, veloMintAmount);
   }
 };
