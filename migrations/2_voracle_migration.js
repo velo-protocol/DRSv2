@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const FeederFactory = artifacts.require('FeederFactory');
 const Feeder = artifacts.require('Feeder');
 const MedianizerProxy = artifacts.require('MedianizerProxy');
@@ -11,8 +13,6 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(FeederFactory);
 
   if (network === 'development' || network === 'local' || network === 'dev') {
-
-    const [defaultDeployer, usdDeployer, thbDeployer, sgdDeployer] = accounts;
 
     const feederFactory = await FeederFactory.deployed();
 
@@ -34,53 +34,37 @@ module.exports = async (deployer, network, accounts) => {
     const sgdFeederAddr = result.logs[0].args.feedAddr;
     console.log(`SGD Feeder: ${sgdFeederAddr}`);
 
-    // 2. Feed the price
-    const feederUSD = await Feeder.at(usdFeederAddr);
-
-    const feederTHB = await Feeder.at(thbFeederAddr);
-
-    const feederSGD = await Feeder.at(sgdFeederAddr);
-
     await deployer.deploy(Medianizer);
     const medLogic = await Medianizer.deployed();
 
     // Medianizer USD
-    await deployer.deploy(MedianizerProxy, usdDeployer);
+    await deployer.deploy(MedianizerProxy, process.env.USD_VELO_ADDRESS);
     const medProxyUSD = await MedianizerProxy.deployed();
 
     const medInstanceUSD = new web3.eth.Contract(Medianizer.abi, medLogic.address);
-    const initializeUSDCalldata = medInstanceUSD.methods.initialize(usdDeployer, usdBytes32, veloBytes32).encodeABI();
+    const initializeUSDCalldata = medInstanceUSD.methods.initialize(process.env.USD_VELO_ADDRESS, usdBytes32, veloBytes32).encodeABI();
 
     await medProxyUSD.initialize(medLogic.address, initializeUSDCalldata);
 
-    const medUSD = await Medianizer.at(medProxyUSD.address);
-    await medUSD.addFeeder(feederUSD.address, {from: usdDeployer});
-
     // Medianizer THB
 
-    await deployer.deploy(MedianizerProxy, thbDeployer);
+    await deployer.deploy(MedianizerProxy, process.env.THB_VELO_ADDRESS);
     const medProxyTHB = await MedianizerProxy.deployed();
 
     const medInstanceTHB = new web3.eth.Contract(Medianizer.abi, medLogic.address);
-    const initializeTHBCalldata = medInstanceTHB.methods.initialize(thbDeployer, thbBytes32, veloBytes32).encodeABI();
+    const initializeTHBCalldata = medInstanceTHB.methods.initialize(process.env.THB_VELO_ADDRESS, thbBytes32, veloBytes32).encodeABI();
 
     await medProxyTHB.initialize(medLogic.address, initializeTHBCalldata);
 
-    const medTHB = await Medianizer.at(medProxyTHB.address);
-    await medTHB.addFeeder(feederTHB.address, {from: thbDeployer});
-
     // Medianizer SGD
 
-    await deployer.deploy(MedianizerProxy, sgdDeployer);
+    await deployer.deploy(MedianizerProxy, process.env.SGD_VELO_ADDRESS);
     const medProxySGD = await MedianizerProxy.deployed();
 
     const medInstanceSGD = new web3.eth.Contract(Medianizer.abi, medLogic.address);
-    const initializeSGDCalldata = medInstanceSGD.methods.initialize(sgdDeployer, sgdBytes32, veloBytes32).encodeABI();
+    const initializeSGDCalldata = medInstanceSGD.methods.initialize(process.env.SGD_VELO_ADDRESS, sgdBytes32, veloBytes32).encodeABI();
 
     await medProxySGD.initialize(medLogic.address, initializeSGDCalldata);
-
-    const medSGD = await Medianizer.at(medProxySGD.address);
-    await medSGD.addFeeder(feederSGD.address, {from: sgdDeployer});
 
     console.log('medProxyUSD', medProxyUSD.address);
     console.log('medProxyTHB', medProxyTHB.address);
@@ -91,31 +75,31 @@ module.exports = async (deployer, network, accounts) => {
 
     // Lag USD
 
-    await deployer.deploy(LagProxy, usdDeployer);
+    await deployer.deploy(LagProxy, process.env.USD_VELO_ADDRESS);
     const lagProxyUSD = await LagProxy.deployed();
 
     const lagInstanceUSD = new web3.eth.Contract(Lag.abi, lagLogic.address);
-    const initializeLagUSDCalldata = lagInstanceUSD.methods.initialize(usdDeployer, medProxyUSD.address).encodeABI();
+    const initializeLagUSDCalldata = lagInstanceUSD.methods.initialize(process.env.USD_VELO_ADDRESS, medProxyUSD.address).encodeABI();
 
     await lagProxyUSD.initialize(lagLogic.address, initializeLagUSDCalldata);
 
     // Lag THB
 
-    await deployer.deploy(LagProxy, thbDeployer);
+    await deployer.deploy(LagProxy, process.env.THB_VELO_ADDRESS);
     const lagProxyTHB = await LagProxy.deployed();
 
     const lagInstanceTHB = new web3.eth.Contract(Lag.abi, lagLogic.address);
-    const initializeLagTHBCalldata = lagInstanceTHB.methods.initialize(thbDeployer, medProxyTHB.address).encodeABI();
+    const initializeLagTHBCalldata = lagInstanceTHB.methods.initialize(process.env.THB_VELO_ADDRESS, medProxyTHB.address).encodeABI();
 
     await lagProxyTHB.initialize(lagLogic.address, initializeLagTHBCalldata);
 
     // Lag SGD
 
-    await deployer.deploy(LagProxy, sgdDeployer);
+    await deployer.deploy(LagProxy, process.env.SGD_VELO_ADDRESS);
     const lagProxySGD = await LagProxy.deployed();
 
     const lagInstanceSGD = new web3.eth.Contract(Lag.abi, lagLogic.address);
-    const initializeLagSGDCalldata = lagInstanceSGD.methods.initialize(sgdDeployer, medProxySGD.address).encodeABI();
+    const initializeLagSGDCalldata = lagInstanceSGD.methods.initialize(process.env.SGD_VELO_ADDRESS, medProxySGD.address).encodeABI();
 
     await lagProxySGD.initialize(lagLogic.address, initializeLagSGDCalldata);
 
@@ -128,31 +112,31 @@ module.exports = async (deployer, network, accounts) => {
 
     // Price USD
 
-    await deployer.deploy(PriceProxy, usdDeployer);
+    await deployer.deploy(PriceProxy, process.env.USD_VELO_ADDRESS);
     const priceProxyUSD = await PriceProxy.deployed();
 
     const priceInstanceUSD = new web3.eth.Contract(Price.abi, priceLogic.address);
-    const initializePriceUSDCalldata = priceInstanceUSD.methods.initialize(usdDeployer, lagProxyUSD.address).encodeABI();
+    const initializePriceUSDCalldata = priceInstanceUSD.methods.initialize(process.env.USD_VELO_ADDRESS, lagProxyUSD.address).encodeABI();
 
     await priceProxyUSD.initialize(priceLogic.address, initializePriceUSDCalldata);
 
     // Price THB
 
-    await deployer.deploy(PriceProxy, thbDeployer);
+    await deployer.deploy(PriceProxy, process.env.THB_VELO_ADDRESS);
     const priceProxyTHB = await PriceProxy.deployed();
 
     const priceInstanceTHB = new web3.eth.Contract(Price.abi, priceLogic.address);
-    const initializePriceTHBCalldata = priceInstanceTHB.methods.initialize(thbDeployer, lagProxyTHB.address).encodeABI();
+    const initializePriceTHBCalldata = priceInstanceTHB.methods.initialize(process.env.THB_VELO_ADDRESS, lagProxyTHB.address).encodeABI();
 
     await priceProxyTHB.initialize(priceLogic.address, initializePriceTHBCalldata);
 
     // Price SGD
 
-    await deployer.deploy(PriceProxy, sgdDeployer);
+    await deployer.deploy(PriceProxy, process.env.SGD_VELO_ADDRESS);
     const priceProxySGD = await PriceProxy.deployed();
 
     const priceInstanceSGD = new web3.eth.Contract(Price.abi, priceLogic.address);
-    const initializePriceSGDCalldata = priceInstanceSGD.methods.initialize(sgdDeployer, lagProxySGD.address).encodeABI();
+    const initializePriceSGDCalldata = priceInstanceSGD.methods.initialize(process.env.SGD_VELO_ADDRESS, lagProxySGD.address).encodeABI();
 
     await priceProxySGD.initialize(priceLogic.address, initializePriceSGDCalldata);
 
