@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "main": "index.js",
   "scripts": {
-    "reset": "truffle migrate --reset --network local",
-    "reset:dev": "truffle migrate --reset --network dev",
+    "reset": "truffle migrate --f 1 --to 3 --network local",
+    "reset:dev": "truffle migrate --f 1 --to 3 --network dev",
     "test": "truffle test --network local",
     "test:js": "truffle test --network local test/js/**/Test**.js",
     "test:sol": "truffle test --network local test/sol/**/Test**.sol",
@@ -16,13 +16,11 @@
   "dependencies": {
     "@openzeppelin/contracts": "^2.4.0",
     "@openzeppelin/upgrades": "^2.6.0",
-    "@truffle/hdwallet-provider": "^1.0.33",
     "dotenv": "^8.2.0",
     "ethereumjs-abi": "^0.6.8",
     "solidity-coverage": "^0.6.7",
-    "truffle-hdwallet-provider": "^1.0.17",
     "truffle-privatekey-provider": "^1.3.0",
-    "web3": "^1.2.1"
+    "web3": "^1.2.6"
   },
   "engines": {
     "node": "10.16.3"
