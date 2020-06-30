@@ -9,8 +9,14 @@
     "test:js": "truffle test --network local test/js/**/Test**.js",
     "test:sol": "truffle test --network local test/sol/**/Test**.sol",
     "test:all": "truffle test --network local",
+    "test:dev": "truffle test --network dev",
+    "test:dev:js": "truffle test --network dev test/js/**/Test**.js",
+    "test:dev:sol": "truffle test --network dev test/sol/**/Test**.sol",
+    "test:dev:all": "truffle test --network dev",
     "test:cov": "solidity-coverage",
-    "abi:extract": "node extract-abi.js"
+    "abi:extract": "node extract-abi.js",
+    "console": "truffle console --network local",
+    "console:dev": "truffle console --network dev"
   },
   "license": "GNU AGPLv3",
   "dependencies": {

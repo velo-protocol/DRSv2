@@ -20,7 +20,6 @@ var (
 	_ = big.NewInt
 	_ = strings.NewReader
 	_ = ethereum.NotFound
-	_ = abi.U256
 	_ = bind.Bind
 	_ = common.Big1
 	_ = types.BloomLookup
@@ -28,10 +27,10 @@ var (
 )
 
 // PriceABI is the input ABI used to generate the binding from.
-const PriceABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"price\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"isActive\",\"type\":\"bool\"}],\"name\":\"PriceActivate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"price\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"isActive\",\"type\":\"bool\"}],\"name\":\"PriceVoid\",\"type\":\"event\"},{\"constant\":true,\"inputs\":[],\"name\":\"active\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"lagAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"price\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"newLagAddr\",\"type\":\"address\"}],\"name\":\"setLag\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_lagAddr\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"post\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"get\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getWithError\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"void\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"activate\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const PriceABI = "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"price\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"isActive\",\"type\":\"bool\"}],\"name\":\"PriceActivate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"price\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"isActive\",\"type\":\"bool\"}],\"name\":\"PriceVoid\",\"type\":\"event\"},{\"constant\":true,\"inputs\":[],\"name\":\"active\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"feederAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"lagAddr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"price\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_feederAddr\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"post\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getWithError\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"get\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"void\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"activate\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // PriceBin is the compiled bytecode used for deploying new contracts.
-var PriceBin = "0x608060405234801561001057600080fd5b50610842806100206000396000f3fe608060405234801561001057600080fd5b50600436106100a95760003560e01c80636d4ce63c116100715780636d4ce63c146101325780638da5cb5b1461014c578063a035b1fe14610170578063ac4c25b214610178578063e34e380014610180578063fe0a55e1146101a6576100a9565b806302fb0c5e146100ae57806305c1f502146100ca5780630f15f4c0146100d4578063485cc955146100dc578063498b58281461010a575b600080fd5b6100b66101ae565b604080519115158252519081900360200190f35b6100d26101be565b005b6100d261029b565b6100d2600480360360408110156100f257600080fd5b506001600160a01b03813581169160200135166103e3565b6101126104d3565b604080519384529115156020840152151582820152519081900360600190f35b61013a6104f2565b60408051918252519081900360200190f35b610154610615565b604080516001600160a01b039092168252519081900360200190f35b61013a610624565b6100d261062a565b6100d26004803603602081101561019657600080fd5b50356001600160a01b03166106d9565b610154610744565b603554600160a81b900460ff1681565b6000806000603560009054906101000a90046001600160a01b03166001600160a01b031663498b58286040518163ffffffff1660e01b815260040160606040518083038186803b15801561021157600080fd5b505afa158015610225573d6000803e3d6000fd5b505050506040513d606081101561023b57600080fd5b5080516020820151604090920151909450909250905081610264576035805460ff60a81b191690555b6035805460ff60a01b1916600160a01b8315150217905582610294576035805460ff60a01b1916600160a01b1790555b5050603455565b6033546001600160a01b031633146102e45760405162461bcd60e51b81526004018080602001828103825260578152602001806107b76057913960600191505060405180910390fd5b603554600160a81b900460ff1615610343576040805162461bcd60e51b815260206004820152601f60248201527f50726963652e61637469766174653a2070726963652069732061637469766500604482015290519081900360640190fd5b6000603454116103845760405162461bcd60e51b815260040180806020018281038252602f81526020018061075a602f913960400191505060405180910390fd5b6035805460ff60a81b1916600160a81b90811791829055604080513381523060208201529190920460ff1615158183015290517f2e219088454a765156309a15f374957f610cefb0bab9c32ecf58446b3d94b8819181900360600190a1565b600054610100900460ff16806103fc57506103fc610753565b8061040a575060005460ff16155b6104455760405162461bcd60e51b815260040180806020018281038252602e815260200180610789602e913960400191505060405180910390fd5b600054610100900460ff16158015610470576000805460ff1961ff0019909116610100171660011790555b60358054603380546001600160a01b038781166001600160a01b031992831617909255600060345560ff60a01b1960ff60a81b19928716919093161716600160a81b1716600160a01b17905580156104ce576000805461ff00191690555b505050565b60345460355460ff600160a81b8204811691600160a01b900416909192565b603554600090600160a81b900460ff161515600114610558576040805162461bcd60e51b815260206004820152601e60248201527f50726963652e6765743a207072696365206973206e6f74206163746976650000604482015290519081900360640190fd5b6000603454116105af576040805162461bcd60e51b815260206004820152601860248201527f50726963652e6765743a20696e76616c69642070726963650000000000000000604482015290519081900360640190fd5b603554600160a01b900460ff161561060e576040805162461bcd60e51b815260206004820152601d60248201527f50726963652e6765743a2070726963652068617320616e206572726f72000000604482015290519081900360640190fd5b5060345490565b6033546001600160a01b031681565b60345481565b6033546001600160a01b031633146106735760405162461bcd60e51b81526004018080602001828103825260578152602001806107b76057913960600191505060405180910390fd5b60006034556035805461ffff60a01b1916600160a01b179081905560408051338152306020820152600160a81b90920460ff16151582820152517fa1777e5c3fd82f369568fbd467e2cf87e4aa58a75621857a7714235c8ff9073b9181900360600190a1565b6033546001600160a01b031633146107225760405162461bcd60e51b81526004018080602001828103825260578152602001806107b76057913960600191505060405180910390fd5b603580546001600160a01b0319166001600160a01b0392909216919091179055565b6035546001600160a01b031681565b303b159056fe50726963652e61637469766174653a207072696365206973206e6f7420696e206120636f7272656374207374617465436f6e747261637420696e7374616e63652068617320616c7265616479206265656e20696e697469616c697a656450726963652e6f6e6c794f776e65723a20546865206d6573736167652073656e646572206973206e6f7420666f756e64206f7220646f6573206e6f7420686176652073756666696369656e74207065726d697373696f6ea265627a7a723158209fcda362e8420c476214553f7f1b276b7184f93075e955608e48354312a3fcfd64736f6c63430005100032"
+var PriceBin = "0x6080604052600060345534801561001557600080fd5b506107ae806100256000396000f3fe608060405234801561001057600080fd5b50600436106100a95760003560e01c80636d4ce63c116100715780636d4ce63c146101325780637f9bc0ff1461014c5780638da5cb5b14610170578063a035b1fe14610178578063ac4c25b214610180578063fe0a55e114610188576100a9565b806302fb0c5e146100ae57806305c1f502146100ca5780630f15f4c0146100d4578063485cc955146100dc578063498b58281461010a575b600080fd5b6100b6610190565b604080519115158252519081900360200190f35b6100d26101a0565b005b6100d2610263565b6100d2600480360360408110156100f257600080fd5b506001600160a01b03813581169160200135166103ab565b61011261049b565b604080519384529115156020840152151582820152519081900360600190f35b61013a6104ba565b60408051918252519081900360200190f35b6101546105dd565b604080516001600160a01b039092168252519081900360200190f35b6101546105ec565b61013a6105fb565b6100d2610601565b6101546106b0565b603654600160a81b900460ff1681565b6036546040805163d8cf24fd60e01b815281516000936001600160a01b03169263d8cf24fd9260048082019391829003018186803b1580156101e157600080fd5b505afa1580156101f5573d6000803e3d6000fd5b505050506040513d604081101561020b57600080fd5b5051905080610251576040805162461bcd60e51b815260206004820152600d60248201526c07072696365206e656564203e3609c1b604482015290519081900360640190fd5b6036805460ff60a01b19169055603455565b6033546001600160a01b031633146102ac5760405162461bcd60e51b81526004018080602001828103825260578152602001806107236057913960600191505060405180910390fd5b603654600160a81b900460ff161561030b576040805162461bcd60e51b815260206004820152601f60248201527f50726963652e61637469766174653a2070726963652069732061637469766500604482015290519081900360640190fd5b60006034541161034c5760405162461bcd60e51b815260040180806020018281038252602f8152602001806106c6602f913960400191505060405180910390fd5b6036805460ff60a81b1916600160a81b90811791829055604080513381523060208201529190920460ff1615158183015290517f2e219088454a765156309a15f374957f610cefb0bab9c32ecf58446b3d94b8819181900360600190a1565b600054610100900460ff16806103c457506103c46106bf565b806103d2575060005460ff16155b61040d5760405162461bcd60e51b815260040180806020018281038252602e8152602001806106f5602e913960400191505060405180910390fd5b600054610100900460ff16158015610438576000805460ff1961ff0019909116610100171660011790555b60368054603380546001600160a01b038781166001600160a01b031992831617909255600060345560ff60a01b1960ff60a81b19928716919093161716600160a81b1716600160a01b1790558015610496576000805461ff00191690555b505050565b60345460365460ff600160a81b8204811691600160a01b900416909192565b603654600090600160a81b900460ff161515600114610520576040805162461bcd60e51b815260206004820152601e60248201527f50726963652e6765743a207072696365206973206e6f74206163746976650000604482015290519081900360640190fd5b600060345411610577576040805162461bcd60e51b815260206004820152601860248201527f50726963652e6765743a20696e76616c69642070726963650000000000000000604482015290519081900360640190fd5b603654600160a01b900460ff16156105d6576040805162461bcd60e51b815260206004820152601d60248201527f50726963652e6765743a2070726963652068617320616e206572726f72000000604482015290519081900360640190fd5b5060345490565b6036546001600160a01b031681565b6033546001600160a01b031681565b60345481565b6033546001600160a01b0316331461064a5760405162461bcd60e51b81526004018080602001828103825260578152602001806107236057913960600191505060405180910390fd5b60006034556036805461ffff60a01b1916600160a01b179081905560408051338152306020820152600160a81b90920460ff16151582820152517fa1777e5c3fd82f369568fbd467e2cf87e4aa58a75621857a7714235c8ff9073b9181900360600190a1565b6035546001600160a01b031681565b303b159056fe50726963652e61637469766174653a207072696365206973206e6f7420696e206120636f7272656374207374617465436f6e747261637420696e7374616e63652068617320616c7265616479206265656e20696e697469616c697a656450726963652e6f6e6c794f776e65723a20546865206d6573736167652073656e646572206973206e6f7420666f756e64206f7220646f6573206e6f7420686176652073756666696369656e74207065726d697373696f6ea265627a7a723158209e1e785690f091e5bbc9eedec597e1ad6909172d1b4d50f9dfeb08e5b219c87f64736f6c634300050f0032"
 
 // DeployPrice deploys a new Ethereum contract, binding an instance of Price to it.
 func DeployPrice(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, *Price, error) {
@@ -191,7 +190,7 @@ func (_Price *PriceTransactorRaw) Transact(opts *bind.TransactOpts, method strin
 
 // Active is a free data retrieval call binding the contract method 0x02fb0c5e.
 //
-// Solidity: function active() constant returns(bool)
+// Solidity: function active() view returns(bool)
 func (_Price *PriceCaller) Active(opts *bind.CallOpts) (bool, error) {
 	var (
 		ret0 = new(bool)
@@ -203,21 +202,47 @@ func (_Price *PriceCaller) Active(opts *bind.CallOpts) (bool, error) {
 
 // Active is a free data retrieval call binding the contract method 0x02fb0c5e.
 //
-// Solidity: function active() constant returns(bool)
+// Solidity: function active() view returns(bool)
 func (_Price *PriceSession) Active() (bool, error) {
 	return _Price.Contract.Active(&_Price.CallOpts)
 }
 
 // Active is a free data retrieval call binding the contract method 0x02fb0c5e.
 //
-// Solidity: function active() constant returns(bool)
+// Solidity: function active() view returns(bool)
 func (_Price *PriceCallerSession) Active() (bool, error) {
 	return _Price.Contract.Active(&_Price.CallOpts)
 }
 
+// FeederAddr is a free data retrieval call binding the contract method 0x7f9bc0ff.
+//
+// Solidity: function feederAddr() view returns(address)
+func (_Price *PriceCaller) FeederAddr(opts *bind.CallOpts) (common.Address, error) {
+	var (
+		ret0 = new(common.Address)
+	)
+	out := ret0
+	err := _Price.contract.Call(opts, out, "feederAddr")
+	return *ret0, err
+}
+
+// FeederAddr is a free data retrieval call binding the contract method 0x7f9bc0ff.
+//
+// Solidity: function feederAddr() view returns(address)
+func (_Price *PriceSession) FeederAddr() (common.Address, error) {
+	return _Price.Contract.FeederAddr(&_Price.CallOpts)
+}
+
+// FeederAddr is a free data retrieval call binding the contract method 0x7f9bc0ff.
+//
+// Solidity: function feederAddr() view returns(address)
+func (_Price *PriceCallerSession) FeederAddr() (common.Address, error) {
+	return _Price.Contract.FeederAddr(&_Price.CallOpts)
+}
+
 // Get is a free data retrieval call binding the contract method 0x6d4ce63c.
 //
-// Solidity: function get() constant returns(uint256)
+// Solidity: function get() view returns(uint256)
 func (_Price *PriceCaller) Get(opts *bind.CallOpts) (*big.Int, error) {
 	var (
 		ret0 = new(*big.Int)
@@ -229,21 +254,21 @@ func (_Price *PriceCaller) Get(opts *bind.CallOpts) (*big.Int, error) {
 
 // Get is a free data retrieval call binding the contract method 0x6d4ce63c.
 //
-// Solidity: function get() constant returns(uint256)
+// Solidity: function get() view returns(uint256)
 func (_Price *PriceSession) Get() (*big.Int, error) {
 	return _Price.Contract.Get(&_Price.CallOpts)
 }
 
 // Get is a free data retrieval call binding the contract method 0x6d4ce63c.
 //
-// Solidity: function get() constant returns(uint256)
+// Solidity: function get() view returns(uint256)
 func (_Price *PriceCallerSession) Get() (*big.Int, error) {
 	return _Price.Contract.Get(&_Price.CallOpts)
 }
 
 // GetWithError is a free data retrieval call binding the contract method 0x498b5828.
 //
-// Solidity: function getWithError() constant returns(uint256, bool, bool)
+// Solidity: function getWithError() view returns(uint256, bool, bool)
 func (_Price *PriceCaller) GetWithError(opts *bind.CallOpts) (*big.Int, bool, bool, error) {
 	var (
 		ret0 = new(*big.Int)
@@ -261,21 +286,21 @@ func (_Price *PriceCaller) GetWithError(opts *bind.CallOpts) (*big.Int, bool, bo
 
 // GetWithError is a free data retrieval call binding the contract method 0x498b5828.
 //
-// Solidity: function getWithError() constant returns(uint256, bool, bool)
+// Solidity: function getWithError() view returns(uint256, bool, bool)
 func (_Price *PriceSession) GetWithError() (*big.Int, bool, bool, error) {
 	return _Price.Contract.GetWithError(&_Price.CallOpts)
 }
 
 // GetWithError is a free data retrieval call binding the contract method 0x498b5828.
 //
-// Solidity: function getWithError() constant returns(uint256, bool, bool)
+// Solidity: function getWithError() view returns(uint256, bool, bool)
 func (_Price *PriceCallerSession) GetWithError() (*big.Int, bool, bool, error) {
 	return _Price.Contract.GetWithError(&_Price.CallOpts)
 }
 
 // LagAddr is a free data retrieval call binding the contract method 0xfe0a55e1.
 //
-// Solidity: function lagAddr() constant returns(address)
+// Solidity: function lagAddr() view returns(address)
 func (_Price *PriceCaller) LagAddr(opts *bind.CallOpts) (common.Address, error) {
 	var (
 		ret0 = new(common.Address)
@@ -287,21 +312,21 @@ func (_Price *PriceCaller) LagAddr(opts *bind.CallOpts) (common.Address, error) 
 
 // LagAddr is a free data retrieval call binding the contract method 0xfe0a55e1.
 //
-// Solidity: function lagAddr() constant returns(address)
+// Solidity: function lagAddr() view returns(address)
 func (_Price *PriceSession) LagAddr() (common.Address, error) {
 	return _Price.Contract.LagAddr(&_Price.CallOpts)
 }
 
 // LagAddr is a free data retrieval call binding the contract method 0xfe0a55e1.
 //
-// Solidity: function lagAddr() constant returns(address)
+// Solidity: function lagAddr() view returns(address)
 func (_Price *PriceCallerSession) LagAddr() (common.Address, error) {
 	return _Price.Contract.LagAddr(&_Price.CallOpts)
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
 //
-// Solidity: function owner() constant returns(address)
+// Solidity: function owner() view returns(address)
 func (_Price *PriceCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
 	var (
 		ret0 = new(common.Address)
@@ -313,21 +338,21 @@ func (_Price *PriceCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
 //
-// Solidity: function owner() constant returns(address)
+// Solidity: function owner() view returns(address)
 func (_Price *PriceSession) Owner() (common.Address, error) {
 	return _Price.Contract.Owner(&_Price.CallOpts)
 }
 
 // Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
 //
-// Solidity: function owner() constant returns(address)
+// Solidity: function owner() view returns(address)
 func (_Price *PriceCallerSession) Owner() (common.Address, error) {
 	return _Price.Contract.Owner(&_Price.CallOpts)
 }
 
 // Price is a free data retrieval call binding the contract method 0xa035b1fe.
 //
-// Solidity: function price() constant returns(uint256)
+// Solidity: function price() view returns(uint256)
 func (_Price *PriceCaller) Price(opts *bind.CallOpts) (*big.Int, error) {
 	var (
 		ret0 = new(*big.Int)
@@ -339,14 +364,14 @@ func (_Price *PriceCaller) Price(opts *bind.CallOpts) (*big.Int, error) {
 
 // Price is a free data retrieval call binding the contract method 0xa035b1fe.
 //
-// Solidity: function price() constant returns(uint256)
+// Solidity: function price() view returns(uint256)
 func (_Price *PriceSession) Price() (*big.Int, error) {
 	return _Price.Contract.Price(&_Price.CallOpts)
 }
 
 // Price is a free data retrieval call binding the contract method 0xa035b1fe.
 //
-// Solidity: function price() constant returns(uint256)
+// Solidity: function price() view returns(uint256)
 func (_Price *PriceCallerSession) Price() (*big.Int, error) {
 	return _Price.Contract.Price(&_Price.CallOpts)
 }
@@ -374,23 +399,23 @@ func (_Price *PriceTransactorSession) Activate() (*types.Transaction, error) {
 
 // Initialize is a paid mutator transaction binding the contract method 0x485cc955.
 //
-// Solidity: function initialize(address _owner, address _lagAddr) returns()
-func (_Price *PriceTransactor) Initialize(opts *bind.TransactOpts, _owner common.Address, _lagAddr common.Address) (*types.Transaction, error) {
-	return _Price.contract.Transact(opts, "initialize", _owner, _lagAddr)
+// Solidity: function initialize(address _owner, address _feederAddr) returns()
+func (_Price *PriceTransactor) Initialize(opts *bind.TransactOpts, _owner common.Address, _feederAddr common.Address) (*types.Transaction, error) {
+	return _Price.contract.Transact(opts, "initialize", _owner, _feederAddr)
 }
 
 // Initialize is a paid mutator transaction binding the contract method 0x485cc955.
 //
-// Solidity: function initialize(address _owner, address _lagAddr) returns()
-func (_Price *PriceSession) Initialize(_owner common.Address, _lagAddr common.Address) (*types.Transaction, error) {
-	return _Price.Contract.Initialize(&_Price.TransactOpts, _owner, _lagAddr)
+// Solidity: function initialize(address _owner, address _feederAddr) returns()
+func (_Price *PriceSession) Initialize(_owner common.Address, _feederAddr common.Address) (*types.Transaction, error) {
+	return _Price.Contract.Initialize(&_Price.TransactOpts, _owner, _feederAddr)
 }
 
 // Initialize is a paid mutator transaction binding the contract method 0x485cc955.
 //
-// Solidity: function initialize(address _owner, address _lagAddr) returns()
-func (_Price *PriceTransactorSession) Initialize(_owner common.Address, _lagAddr common.Address) (*types.Transaction, error) {
-	return _Price.Contract.Initialize(&_Price.TransactOpts, _owner, _lagAddr)
+// Solidity: function initialize(address _owner, address _feederAddr) returns()
+func (_Price *PriceTransactorSession) Initialize(_owner common.Address, _feederAddr common.Address) (*types.Transaction, error) {
+	return _Price.Contract.Initialize(&_Price.TransactOpts, _owner, _feederAddr)
 }
 
 // Post is a paid mutator transaction binding the contract method 0x05c1f502.
@@ -412,27 +437,6 @@ func (_Price *PriceSession) Post() (*types.Transaction, error) {
 // Solidity: function post() returns()
 func (_Price *PriceTransactorSession) Post() (*types.Transaction, error) {
 	return _Price.Contract.Post(&_Price.TransactOpts)
-}
-
-// SetLag is a paid mutator transaction binding the contract method 0xe34e3800.
-//
-// Solidity: function setLag(address newLagAddr) returns()
-func (_Price *PriceTransactor) SetLag(opts *bind.TransactOpts, newLagAddr common.Address) (*types.Transaction, error) {
-	return _Price.contract.Transact(opts, "setLag", newLagAddr)
-}
-
-// SetLag is a paid mutator transaction binding the contract method 0xe34e3800.
-//
-// Solidity: function setLag(address newLagAddr) returns()
-func (_Price *PriceSession) SetLag(newLagAddr common.Address) (*types.Transaction, error) {
-	return _Price.Contract.SetLag(&_Price.TransactOpts, newLagAddr)
-}
-
-// SetLag is a paid mutator transaction binding the contract method 0xe34e3800.
-//
-// Solidity: function setLag(address newLagAddr) returns()
-func (_Price *PriceTransactorSession) SetLag(newLagAddr common.Address) (*types.Transaction, error) {
-	return _Price.Contract.SetLag(&_Price.TransactOpts, newLagAddr)
 }
 
 // Void is a paid mutator transaction binding the contract method 0xac4c25b2.

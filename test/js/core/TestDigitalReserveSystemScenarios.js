@@ -25,9 +25,9 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
 
   it("should work!", async () => {
     const calInputs = {
-      issuanceFeeRate: h.decimal7(0.05), // 0.05 (5%)
-      price: h.decimal7(10.00), // 10.00 USD/VELO
-      collateralRatio: h.decimal7(1.3), // 1.30
+      issuanceFeeRate: h.decimal7(500), // 0.05 (5%)
+      price: h.decimal7(100000.00), // 10.00 USD/VELO
+      collateralRatio: h.decimal7(13000), // 1.30
       peggedValue: h.decimal7(1.00) // 1.00
     };
 
@@ -80,29 +80,29 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
     const mintCResult = await drs.mintFromCollateralAmount(22000000, "vUSD", {from: bob});
     const mintCEvent = mintCResult.logs[0].args;
     assert.equal(mintCEvent.assetCode, "vUSD");
-    h.assert.equalNumber(mintCEvent.mintAmount, 160769230);
+    h.assert.equalNumber(mintCEvent.mintAmount, 1607692307692);
     assert.equal(mintCEvent.assetAddress, setupEvent.assetAddress);
     h.assert.equalByteString(mintCEvent.collateralAssetCode, velo);
     h.assert.equalNumber(mintCEvent.collateralAmount, 22000000);
 
     // Assert the credit that has been minted
-    h.assert.equalNumber(await vUSDStableCredit.balanceOf(bob), 160769230); // Bob's vUSD balance
+    h.assert.equalNumber(await vUSDStableCredit.balanceOf(bob), 1607692307692); // Bob's vUSD balance
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(bob), 10000000000000 - 22000000); // Bob's VELO balance
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(heart.address), 1100000); // fee
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(vUSDStableCredit.address), 16076923 + 4823077); // actualCollateralAmount + reserveCollateralAmount
 
     // 3. Test drs.mintFromStableCreditAmount
-    const mintSResult = await drs.mintFromStableCreditAmount(160769230, "vUSD", {from: bob});
+    const mintSResult = await drs.mintFromStableCreditAmount(1607692300000, "vUSD", {from: bob});
     const mintSEvent = mintSResult.logs[0].args;
     assert.equal(mintSEvent.assetCode, "vUSD");
-    h.assert.equalNumber(mintSEvent.mintAmount, 160769230);
+    h.assert.equalNumber(mintSEvent.mintAmount, 1607692300000);
     assert.equal(mintSEvent.assetAddress, setupEvent.assetAddress);
     h.assert.equalByteString(mintSEvent.collateralAssetCode, velo);
     h.assert.equalNumber(mintSEvent.collateralAmount, 21999998);
 
     // Assert the credit that has been minted
     // Noted that there is little calculation error
-    h.assert.equalNumber(await vUSDStableCredit.balanceOf(bob), 160769230 + 160769230); // Bob's vUSD balance
+    h.assert.equalNumber(await vUSDStableCredit.balanceOf(bob), 3215384607692); // Bob's vUSD balance
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(bob), 10000000000000 - 22000000 - 21999998); // Bob's VELO balance
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(heart.address), 1100000 + 1099999); // fee
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(vUSDStableCredit.address), 16076923 + 16076922 + 4823077 + 4823077); // actualCollateralAmount + reserveCollateralAmount
@@ -119,17 +119,17 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
     h.assert.equalNumber(getExchangeResult.priceInCollateralPerAssetUnit.toString(), 1300000);
 
     // 5. Test drs.redeem
-    const redeemResult = await drs.redeem(160769230, "vUSD", {from: bob});
+    const redeemResult = await drs.redeem(1607692300000, "vUSD", {from: bob});
     const redeemEvent = redeemResult.logs[0].args;
     assert.equal(redeemEvent.assetCode, "vUSD");
-    h.assert.equalNumber(redeemEvent.stableCreditAmount, 160769230);
+    h.assert.equalNumber(redeemEvent.stableCreditAmount, 1607692300000);
     assert.equal(redeemEvent.collateralAsset, veloCollateralAsset.assetAddress);
     h.assert.equalByteString(redeemEvent.collateralAssetCode, velo);
     h.assert.equalNumber(redeemEvent.collateralAmount, 20899999);
 
     // Assert the credit that has been redeemed
     // Noted that there is little calculation error
-    h.assert.equalNumber(await vUSDStableCredit.balanceOf(bob), 160769230 + 160769230 - 160769230); // Bob's vUSD balance
+    h.assert.equalNumber(await vUSDStableCredit.balanceOf(bob), 1607692307692); // Bob's vUSD balance
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(bob), 10000000000000 - 22000000 - 21999998 + 20899999); // Bob's VELO balance
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(vUSDStableCredit.address), 20899999 + 1); // actualCollateralAmount '1' from rebalance error
     h.assert.equalNumber(await veloCollateralAsset.balanceOf(reserveManager.address), 0); // reserveCollateralAmount
@@ -150,7 +150,7 @@ contract("DigitalReserveSystem Scenario Test", async accounts => {
     // 7. Test drs.rebalance
 
     // change collateral ratio
-    const newRatio = h.decimal7(1.2);
+    const newRatio = h.decimal7(12000);
     await heart.setCollateralRatio(veloBytes32, newRatio);
 
     const rebalanceResult = await drs.rebalance("vUSD");

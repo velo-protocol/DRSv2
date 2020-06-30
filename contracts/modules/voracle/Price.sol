@@ -1,12 +1,13 @@
 pragma solidity ^0.5.0;
 
 import "../interfaces/IPrice.sol";
-import "../interfaces/ILag.sol";
+import "../interfaces/IFeeder.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 contract Price is Initializable, IPrice {
+
     using SafeMath for uint256;
 
     address public owner;
@@ -15,8 +16,9 @@ contract Price is Initializable, IPrice {
         _;
     }
 
-    uint256 public price;
+    uint256 public price=0;
     address public lagAddr;
+    address  public  feederAddr;
     bool isErr;
 
     bool public active;
@@ -24,13 +26,9 @@ contract Price is Initializable, IPrice {
     event PriceVoid(address caller, address price, bool isActive);
     event PriceActivate(address caller, address price, bool isActive);
 
-    function setLag(address newLagAddr) external onlyOwner {
-        lagAddr = newLagAddr;
-    }
 
-
-    function initialize(address _owner, address _lagAddr) public initializer {
-        lagAddr = _lagAddr;
+    function initialize(address _owner, address _feederAddr) public initializer {
+        feederAddr = _feederAddr;
         owner = _owner;
         price = 0;
         active = true;
@@ -38,29 +36,21 @@ contract Price is Initializable, IPrice {
     }
 
     function post() external {
-        (uint256 lagPrice, bool isActive, bool lagIsErr) = ILag(lagAddr).getWithError();
-        if (!isActive) {
-            active = false;
-        }
-
-        isErr = lagIsErr;
-
-        if (lagPrice <= 0) {
-            isErr = true;
-        }
+        (uint lagPrice,) = IFeeder(feederAddr).getLastPrice();
+        require(lagPrice>0,"price need >0");
+        isErr=false;
         price = lagPrice;
-
     }
 
+
+    function getWithError() external view returns (uint256, bool, bool) {
+        return (price, active, isErr);
+    }
     function get() external view returns (uint256){
         require(active == true, "Price.get: price is not active");
         require(price > 0, "Price.get: invalid price");
         require(isErr == false, "Price.get: price has an error");
         return (price);
-    }
-
-    function getWithError() external view returns (uint256, bool, bool) {
-        return (price, active, isErr);
     }
 
     function void() external onlyOwner {

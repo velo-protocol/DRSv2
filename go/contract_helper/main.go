@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"crypto/ecdsa"
-	"encoding/json"
 	"fmt"
+	"log"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -15,7 +15,7 @@ import (
 	"github.com/velo-protocol/DRSv2/go/abi"
 	"github.com/velo-protocol/DRSv2/go/constants"
 	"github.com/velo-protocol/DRSv2/go/libs/utils"
-	"io/ioutil"
+	"math/big"
 )
 
 // Client struct
@@ -26,6 +26,7 @@ type Client struct {
 	drs          *vabi.DigitalReserveSystem
 	heart        *vabi.Heart
 	prices       map[string]*vabi.Price
+	feeders      map[string]*vabi.Feeder
 	collateral   map[string]*vabi.Token
 	stableCredit map[string]*vabi.StableCredit
 }
@@ -63,6 +64,7 @@ func NewClient(contractUrl, drsAddress, heartAddress, privateKey string) Client 
 		privateKey:   privKey,
 		publicKey:    crypto.PubkeyToAddress(*pubKeyECDSA),
 		prices:       map[string]*vabi.Price{},
+		feeders:      map[string]*vabi.Feeder{},
 		collateral:   map[string]*vabi.Token{},
 		stableCredit: map[string]*vabi.StableCredit{},
 	}
@@ -98,13 +100,51 @@ func HexToPrivateKey(hex string) *ecdsa.PrivateKey {
 	return privKey
 }
 
-func (i *Client) AddPriceContract(name string, address string) {
-	pricesContract, err := vabi.NewPrice(common.HexToAddress(address), i.conn)
-	if err != nil {
-		panic(err)
+func (i*Client)SetUp(collateralAssetCode string, peggedCurrency string, assetCode string, peggedValue *big.Int) (*types.Transaction,error) {
+	drs:=i.drs
+	opt := bind.NewKeyedTransactor(i.privateKey)
+	opt.GasLimit = constants.GasLimit
+	tran,err:= drs.Setup(opt,utils.StringToByte32(collateralAssetCode),utils.StringToByte32(peggedCurrency),assetCode,peggedValue)
+	if err!=nil {
+		return nil, err
 	}
-	i.prices[name] = pricesContract
+	return tran,nil
 }
+
+func (i*Client)MintFromCollateralAmount(netCollateralAmount *big.Int, assetCode string) (*types.Transaction,error) {
+	drs:=i.drs
+	opt := bind.NewKeyedTransactor(i.privateKey)
+	opt.GasLimit = constants.GasLimit
+	tran,err:= drs.MintFromCollateralAmount(opt,netCollateralAmount,assetCode)
+	if err!=nil {
+		return nil, err
+	}
+	return tran,nil
+}
+
+func (i*Client)MintFromStableCreditAmount( mintAmount *big.Int, assetCode string) (*types.Transaction,error) {
+	drs:=i.drs
+	opt := bind.NewKeyedTransactor(i.privateKey)
+	opt.GasLimit = constants.GasLimit
+	tran,err:= drs.MintFromStableCreditAmount(opt,mintAmount,assetCode)
+	if err!=nil {
+		return nil, err
+	}
+	return tran,nil
+}
+
+
+func (i*Client)Redeem(stableCreditAmount *big.Int, assetCode string) (bool,error) {
+	drs:=i.drs
+	opt := bind.NewKeyedTransactor(i.privateKey)
+	opt.GasLimit = constants.GasLimit
+	_,err:= drs.Redeem(opt,stableCreditAmount,assetCode)
+	if err!=nil {
+		return false, err
+	}
+	return true,nil
+}
+
 
 func (i *Client) AddStableCredit(name string, address string) {
 	stableCreditContract, err := vabi.NewStableCredit(common.HexToAddress(address), i.conn)
@@ -136,7 +176,7 @@ func (i *Client) SetCollateralRatio(assetCode, ratio, privateKey string) string 
 
 	err = ConfirmTx(context.Background(), i, result, i.publicKey)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	return result.Hash().String()
@@ -171,7 +211,7 @@ func (i *Client) ApproveCollateral(collateralName, spender, allowAmount string) 
 
 	err = ConfirmTx(context.Background(), i, result, i.publicKey)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	return result.Hash().String()
 
@@ -201,12 +241,21 @@ func (i *Client) GetPrice(priceContractName string) string {
 	return utils.AmountToString(price)
 }
 
+func (i *Client) PostPrice(priceContractName string) (bool,error) {
+	opt := bind.NewKeyedTransactor(i.privateKey)
+	opt.GasLimit = constants.GasLimit
+	_, err := i.prices[priceContractName].Post(opt)
+	if err != nil {
+		return false,err
+	}
+	return true,nil
+}
 func (i *Client) GetPriceWithError(priceContractName string) (string, bool, bool) {
 	price, isActive, isErr, err := i.prices[priceContractName].GetWithError(nil)
 	if err != nil {
 		panic(err)
 	}
-	return utils.AmountToString(price), isActive, isErr
+	return price.String(), isActive, isErr
 }
 
 type Addresses struct {
@@ -217,45 +266,28 @@ type Addresses struct {
 	PriceAddress          string `json:"priceAddress"`
 }
 
-func GetContractAddresses() *Addresses {
-
-	byteValue, err := ioutil.ReadFile("../contract-addresses.json")
-	if err != nil {
-		panic(err)
-	}
-	addresses := new(Addresses)
-	err = json.Unmarshal(byteValue, addresses)
-	if err != nil {
-		panic(err)
-	}
-
-	return addresses
-}
-
 func main() {
 	client := NewClient(
-		"http://127.0.0.1:7545",
-		"0xf93BF6d3bE161793F1688dFf38E51341552f5aA9",
-		"0xaC06374fc95955fb495cE3De37f18eCF241e62F7",
-		"91c351a1080a4eb4e63ff2e376f3360ddc469f032fdd6d2b136357a6849758dc",
+		"node rpc",
+		"xxxxxx",
+		"xxxx",
+		"xxxxx",
 	)
-	// price
-	client.AddPriceContract("<priceName>", "<priceAddress>")
-	fmt.Println(client.GetPrice("<priceName>"))
-	price, isActive, isErr := client.GetPriceWithError("<priceName>")
-	fmt.Println(price)
-	fmt.Println(isActive)
-	fmt.Println(isErr)
-
-	// collateral
 	fmt.Println(client.GetCollateralRatio("VELO"))
 	client.SetCollateralRatio("VELO", "1.0", "<privateKey>")
-
 	client.AddCollateral("<collateralName>", "<collateralAddress>")
 	fmt.Println(client.GetCollateralBalanceOf("<collateralName>", "<address>"))
 	fmt.Println(client.GetCollateralTotalSupply("<collateralName>"))
-
 	// stable credit
 	client.AddStableCredit("<stableCreditName>", "<stableCreditAddress>")
 	fmt.Println(client.GetStableCreditTotalSupply("<stableCreditName>"))
+	// drs
+	peggedCurrency,_:=new(big.Int).SetString("<value>", 10)
+	client.SetUp("","","",peggedCurrency)
+	netCollateralAmount,_:=new(big.Int).SetString("<value>", 10)
+	client.MintFromCollateralAmount(netCollateralAmount,"")
+	stableCreditAmount,_:=new(big.Int).SetString("<value>", 10)
+	client.Redeem(stableCreditAmount,"")
+
+
 }

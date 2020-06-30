@@ -6,42 +6,31 @@ import "truffle/Assert.sol";
 contract TestFeeder {
     Feeder public feeder;
 
+    address  pf1 = address(this);
+    address  pf2 = address(this);
+    address  pf3 = address(this);
+
     constructor() public {
-        feeder = new Feeder(address(this), "USD", "VELO");
+        feeder = new Feeder(pf1,pf1,pf1,address(this), "USD", "VELO");
     }
 
     function testInit() public {
-        Assert.equal(feeder.value(), 0, "feeds.value should be 0x0");
-        Assert.equal(feeder.active(), true, "feeds.active should be true");
         Assert.equal(feeder.owner(), address(this), "owner should be address(this)");
     }
 
-    function testPost() public {
-        uint256 expected = 120;
-        feeder.post(expected);
-        Assert.equal(feeder.value(), expected, "feeds.value should be 120");
-        Assert.equal(feeder.valueTimestamp(), block.timestamp, "feeder.valueTimestamp must be set to now timestamp");
+    function testStartOracle() public {
+        uint  expected = 120;
+        feeder.startOracle(expected);
+        (uint price,)=feeder.getLastPrice();
+        Assert.equal(price, expected, "feeds.value should be 120");
     }
 
-    function testGetWithError() public {
-        (uint256 value, uint256 valueTimestamp, bool isErr) = feeder.getWithError();
-        Assert.equal(value, feeder.value(), "value should be the same as feeds.value");
-        Assert.equal(valueTimestamp, feeder.valueTimestamp(), "valueTimestamp should be the same as feeds.valueTimestamp");
-        Assert.equal(isErr, false, "isErr should be false");
+    function testCommitPrice() public {
+        uint  expected = 200;
+        feeder.setValue(3,0);
+        feeder.commitPrice(expected);
+        (uint price,)=feeder.getLastPrice();
+        Assert.equal(price, 120, "feeds.value should be 120");
     }
 
-    function testGet() public {
-        uint256 value = feeder.get();
-        Assert.equal(value, feeder.value(), "value should be the same as feeds.value");
-    }
-
-    function testDisable() public {
-        feeder.disable();
-        Assert.isFalse(feeder.active(), "feeds.active should be false");
-    }
-
-    function testEnable() public {
-        feeder.enable();
-        Assert.isTrue(feeder.active(), "feeds.active should be true");
-    }
 }

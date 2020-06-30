@@ -11,14 +11,12 @@ const StableCredit = artifacts.require('StableCredit');
 module.exports = async function (deployer, network, accounts) {
   await deployer.deploy(Hasher);
   await deployer.link(Hasher, [DRS, Heart, StableCredit]);
-
   await deployer.deploy(Heart);
   const heartInstance = await Heart.deployed();
   await deployer.deploy(DRS, heartInstance.address);
   const drsInstance = await DRS.deployed();
   await deployer.deploy(ReserveManager, heartInstance.address);
   const reserveManagerInstance = await ReserveManager.deployed();
-
 
   if (network === 'development' || network === 'local' || network === 'dev') {
     const hasher = await Hasher.deployed();
@@ -47,9 +45,9 @@ module.exports = async function (deployer, network, accounts) {
     await veloToken.mint(adminAddress, veloMintAmount);
 
     console.log("Set Collateral assets");
-    await heartInstance.setCollateralAsset(veloBytes32, veloToken.address, 13000000); // 1.3
+    await heartInstance.setCollateralAsset(veloBytes32, veloToken.address, 130000000000); // 1.3
     await heartInstance.setTrustedPartner(adminAddress);
-    await heartInstance.setCreditIssuanceFee(500000);  // 0.05 (5%)
+    await heartInstance.setCreditIssuanceFee(5000000000);  // 0.05 (5%)
     await heartInstance.setAllowedLink(await hasher.linkId(veloBytes32, usdBytes32), true);
     await heartInstance.setAllowedLink(await hasher.linkId(veloBytes32, thbBytes32), true);
     await heartInstance.setAllowedLink(await hasher.linkId(veloBytes32, sgdBytes32), true);

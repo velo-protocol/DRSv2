@@ -1,5 +1,6 @@
-const Lag = artifacts.require('Lag');
+
 const Price = artifacts.require('Price');
+const Feeder = artifacts.require('Feeder');
 const MockContract = artifacts.require("MockContract");
 
 const helper = require('../testhelper');
@@ -9,17 +10,15 @@ const truffleAssert = require('truffle-assertions');
 let price, mocks;
 
 contract("Price test", async accounts => {
-
-  before(async () => {
-    mocks = {
-      lag: await MockContract.new(),
-    };
-    lag = await Lag.at(mocks.lag.address);
-  });
-
-  beforeEach(async () => {
+    before(async () => {
+        mocks = {
+            feeder: await MockContract.new(),
+        };
+        feeder = await Feeder.at(mocks.feeder.address);
+    });
+    beforeEach(async () => {
     price = await Price.new();
-    await price.initialize(accounts[0], lag.address);
+    await price.initialize(accounts[0],feeder.address);
   });
 
   afterEach(async () => {
@@ -32,9 +31,9 @@ contract("Price test", async accounts => {
 
   describe("Post", async () => {
     it("should post successfully", async () => {
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, false]).toString("hex")
+      await mocks.feeder.givenMethodReturn(
+        helper.methodABI(feeder, "getLastPrice"),
+        '0x' + abi.rawEncode(['uint','uint' ], [100000000, 0]).toString("hex")
       );
       await price.post();
 
@@ -50,147 +49,15 @@ contract("Price test", async accounts => {
 
     });
 
-    it("should post successfully, getWithError return price = 0 isActive = true isErr = true", async () => {
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [0, true, true]).toString("hex")
-      );
-      await price.post();
-
-      const result = await price.getWithError();
-      const BN = web3.utils.BN;
-      const currPrice = new BN(result[0]).toNumber();
-      const isActive = result[1];
-      const isErr = result[2];
-
-      assert.equal(0, currPrice);
-      assert.equal(true, isActive);
-      assert.equal(true, isErr);
-
-    });
-
-    it("should post successfully, getWithError return price = 0 isActive = true isErr = false", async () => {
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [0, true, false]).toString("hex")
-      );
-      await price.post();
-
-      const result = await price.getWithError();
-      const BN = web3.utils.BN;
-      const currPrice = new BN(result[0]).toNumber();
-      const isActive = result[1];
-      const isErr = result[2];
-
-      assert.equal(0, currPrice);
-      assert.equal(true, isActive);
-      assert.equal(true, isErr);
-
-    });
-
-    it("should post successfully, getWithError return price = 0 isActive = false isErr = true", async () => {
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [0, false, true]).toString("hex")
-      );
-      await price.post();
-
-      const result = await price.getWithError();
-      const BN = web3.utils.BN;
-      const currPrice = new BN(result[0]).toNumber();
-      const isActive = result[1];
-      const isErr = result[2];
-
-      assert.equal(0, currPrice);
-      assert.equal(false, isActive);
-      assert.equal(true, isErr);
-
-    });
-
-    it("should post successfully, getWithError return price = 0 isActive = false isErr = false", async () => {
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [0, false, false]).toString("hex")
-      );
-      await price.post();
-
-      const result = await price.getWithError();
-      const BN = web3.utils.BN;
-      const currPrice = new BN(result[0]).toNumber();
-      const isActive = result[1];
-      const isErr = result[2];
-
-      assert.equal(0, currPrice);
-      assert.equal(false, isActive);
-      assert.equal(true, isErr);
-
-    });
-
-    it("should post successfully, getWithError return price = 100000000 isActive = true isErr = true", async () => {
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, true]).toString("hex")
-      );
-      await price.post();
-
-      const result = await price.getWithError();
-      const BN = web3.utils.BN;
-      const currPrice = new BN(result[0]).toNumber();
-      const isActive = result[1];
-      const isErr = result[2];
-
-      assert.equal(100000000, currPrice);
-      assert.equal(true, isActive);
-      assert.equal(true, isErr);
-
-    });
-
-    it("should post successfully, getWithError return price = 100000000 isActive = false isErr = true", async () => {
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, false, true]).toString("hex")
-      );
-      await price.post();
-
-      const result = await price.getWithError();
-      const BN = web3.utils.BN;
-      const currPrice = new BN(result[0]).toNumber();
-      const isActive = result[1];
-      const isErr = result[2];
-
-      assert.equal(100000000, currPrice);
-      assert.equal(false, isActive);
-      assert.equal(true, isErr);
-
-    });
-
-    it("should post successfully, getWithError return price = 100000000 isActive = false isErr = false", async () => {
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, false, false]).toString("hex")
-      );
-      await price.post();
-
-      const result = await price.getWithError();
-      const BN = web3.utils.BN;
-      const currPrice = new BN(result[0]).toNumber();
-      const isActive = result[1];
-      const isErr = result[2];
-
-      assert.equal(100000000, currPrice);
-      assert.equal(false, isActive);
-      assert.equal(false, isErr);
-
-    });
 
   });
 
   describe("GetWithError", async () => {
     it("should get with error successfully", async () => {
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, false]).toString("hex")
-      );
+        await mocks.feeder.givenMethodReturn(
+            helper.methodABI(feeder, "getLastPrice"),
+            '0x' + abi.rawEncode(['uint','uint' ], [100000000, 0]).toString("hex")
+        );
       await price.post();
 
       const result = await price.getWithError();
@@ -206,7 +73,6 @@ contract("Price test", async accounts => {
 
     it("should get with error successfully, when initial Price contract", async () => {
       const result = await price.getWithError();
-
       const BN = web3.utils.BN;
       const currPrice = new BN(result[0]).toNumber();
       const isActive = result[1];
@@ -221,10 +87,10 @@ contract("Price test", async accounts => {
 
   describe("Get", async () => {
     it("should get successfully", async () => {
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, false]).toString("hex")
-      );
+        await mocks.feeder.givenMethodReturn(
+            helper.methodABI(feeder, "getLastPrice"),
+            '0x' + abi.rawEncode(['uint','uint' ], [100000000, 0]).toString("hex")
+        );
       await price.post();
       const BN = web3.utils.BN;
       const result = await price.get();
@@ -242,10 +108,10 @@ contract("Price test", async accounts => {
     });
 
     it("should fail, active = false", async () => {
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, false, false]).toString("hex")
-      );
+        await mocks.feeder.givenMethodReturn(
+            helper.methodABI(feeder, "getLastPrice"),
+            '0x' + abi.rawEncode(['uint','uint' ], [100000000, 0]).toString("hex")
+        );
       await price.post();
 
       try {
@@ -256,10 +122,10 @@ contract("Price test", async accounts => {
     });
 
     it("should fail, isErr = true", async () => {
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, true]).toString("hex")
-      );
+        await mocks.feeder.givenMethodReturn(
+            helper.methodABI(feeder, "getLastPrice"),
+            '0x' + abi.rawEncode(['uint','uint' ], [100000000, 0]).toString("hex")
+        );
       await price.post();
 
       try {
@@ -296,10 +162,10 @@ contract("Price test", async accounts => {
 
     it("should void successfully, price is 100000000", async () => {
 
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, false]).toString("hex")
-      );
+        await mocks.feeder.givenMethodReturn(
+            helper.methodABI(feeder, "getLastPrice"),
+            '0x' + abi.rawEncode(['uint','uint' ], [100000000, 0]).toString("hex")
+        );
       await price.post();
 
       const voidResult = await price.void();
@@ -325,10 +191,10 @@ contract("Price test", async accounts => {
 
   describe("Activate", async () => {
     it("should activate successfully", async () => {
-      await mocks.lag.givenMethodReturn(
-        helper.methodABI(lag, "getWithError"),
-        '0x' + abi.rawEncode(['uint256', 'bool', 'bool'], [100000000, true, false]).toString("hex")
-      );
+        await mocks.feeder.givenMethodReturn(
+            helper.methodABI(feeder, "getLastPrice"),
+            '0x' + abi.rawEncode(['uint','uint' ], [100000000, 0]).toString("hex")
+        );
 
       await price.void();
       await price.post();

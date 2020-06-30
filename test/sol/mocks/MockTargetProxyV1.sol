@@ -3,7 +3,7 @@ pragma solidity ^0.5.0;
 import "../../../contracts/modules/interfaces/IFeeder.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
-contract MockTargetProxyV1 is Initializable, IFeeder {
+contract MockTargetProxyV1 is Initializable {
 
     uint256 public value;
 

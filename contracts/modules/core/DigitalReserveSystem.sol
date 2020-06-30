@@ -106,7 +106,7 @@ contract DigitalReserveSystem is IDRS {
             heart.getCreditIssuanceFee(),
             heart.getCollateralRatio(collateralAssetCode),
             stableCredit.peggedValue(),
-            10000000
+            100000000000
         );
 
         _mint(collateralAsset, stableCredit, mintAmount, fee, actualCollateralAmount, reserveCollateralAmount);
@@ -139,7 +139,7 @@ contract DigitalReserveSystem is IDRS {
             heart.getCreditIssuanceFee(),
             heart.getCollateralRatio(collateralAssetCode),
             stableCredit.peggedValue(),
-            10000000
+            100000000000
         );
 
         _mint(collateralAsset, stableCredit, mintAmount, fee, actualCollateralAmount, reserveCollateralAmount);
@@ -173,10 +173,8 @@ contract DigitalReserveSystem is IDRS {
         bytes32 collateralAssetCode = stableCredit.collateralAssetCode();
         collateralAsset.transferFrom(msg.sender, address(heart), fee);
         collateralAsset.transferFrom(msg.sender, address(stableCredit), actualCollateralAmount.add(reserveCollateralAmount));
-
         stableCredit.mint(msg.sender, mintAmount);
         stableCredit.approveCollateral();
-
         heart.collectFee(fee, collateralAssetCode);
         return true;
     }
@@ -222,7 +220,7 @@ contract DigitalReserveSystem is IDRS {
 
         (IStableCredit stableCredit, , bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
 
-        (uint256 priceInCollateralPerAssetUnit) = _calExchangeRate(stableCredit, linkId, 10000000);
+        (uint256 priceInCollateralPerAssetUnit) = _calExchangeRate(stableCredit, linkId, 100000000000);
 
         return (assetCode, collateralAssetCode, priceInCollateralPerAssetUnit);
     }
@@ -231,14 +229,20 @@ contract DigitalReserveSystem is IDRS {
         string calldata assetCode
     ) external view returns (address, bytes32, uint256, uint256) {
         require(bytes(assetCode).length > 0 && bytes(assetCode).length <= 12, "DigitalReserveSystem.collateralHealthCheck: invalid assetCode format");
-
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
         require(address(collateralAsset) != address(0), "DigitalReserveSystem.collateralHealthCheck: collateralAssetCode does not exist");
-
-        uint256 requiredAmount = _calCollateral(stableCredit, linkId, stableCredit.totalSupply(), heart.getCollateralRatio(collateralAssetCode)).div(10000000);
+        uint256 requiredAmount = _calCollateral(stableCredit, linkId, stableCredit.totalSupply(), heart.getCollateralRatio(collateralAssetCode)).div(100000000000);
         uint256 presentAmount = stableCredit.collateral().balanceOf(address(stableCredit));
-
         return (address(collateralAsset), collateralAssetCode, requiredAmount, presentAmount);
+    }
+    function getStableCreditAmount(
+        string calldata assetCode
+    ) external view returns ( uint256) {
+        require(bytes(assetCode).length > 0 && bytes(assetCode).length <= 12, "DigitalReserveSystem.collateralHealthCheck: invalid assetCode format");
+
+        (IStableCredit stableCredit,,, ) = _validateAssetCode(assetCode);
+        return stableCredit.totalSupply();
+
     }
 
     function _rebalance(
@@ -248,8 +252,7 @@ contract DigitalReserveSystem is IDRS {
 
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
         require(address(collateralAsset) != address(0), "DigitalReserveSystem.rebalance: collateralAssetCode does not exist");
-
-        uint256 requiredAmount = _calCollateral(stableCredit, linkId, stableCredit.totalSupply(), heart.getCollateralRatio(collateralAssetCode)).div(10000000);
+        uint256 requiredAmount = _calCollateral(stableCredit, linkId, stableCredit.totalSupply(), heart.getCollateralRatio(collateralAssetCode)).div(100000000000);
         uint256 presentAmount = stableCredit.collateral().balanceOf(address(stableCredit));
 
         if (requiredAmount == presentAmount) {return false;}
@@ -334,7 +337,9 @@ contract DigitalReserveSystem is IDRS {
 
     function _calExchangeRate(IStableCredit credit, bytes32 linkId, uint256 stableCreditAmount) private view returns (uint256) {
         // priceInCollateral = (collateralRatio * peggedValue * stableCreditAmount) / priceInCurrencyPerAssetUnit
-        uint256 priceInCollateralPerAssetUnit = heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()).mul(stableCreditAmount).div(heart.getPriceContract(linkId).get()).div(10000000);
+        uint256 priceInCollateralPerAssetUnit = heart.getCollateralRatio(credit.collateralAssetCode()).mul(credit.peggedValue()).mul(stableCreditAmount).div(heart.getPriceContract(linkId).get()).div(100000000000);
         return (priceInCollateralPerAssetUnit);
     }
 }
+
+

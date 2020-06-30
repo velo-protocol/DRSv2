@@ -12,7 +12,7 @@ contract TestFeederFactory {
     }
 
     function testCreate() public {
-        address feederAddr = feederFactory.create("USD", "VELO");
+        address feederAddr = feederFactory.create(address(this),address(this),address(this),"USD", "VELO");
         Assert.notEqual(feederAddr, address(0), "feeds address should not be empty");
     }
 }

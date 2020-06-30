@@ -3,29 +3,16 @@ pragma solidity ^0.5.0;
 import "../../../contracts/modules/interfaces/IFeeder.sol";
 
 contract MockIFeeder is IFeeder {
-
-    uint256 public value;
-
-    constructor(uint256 _value) public {
-        value = _value;
+    uint  public value;
+    function commitPrice(uint priceInWei) external  returns (bool){
+        value=priceInWei;
+        return true;
     }
-
-    function getWithError() external view returns (uint256, uint256, bool) {
-        return (value, now, false);
+    function startOracle(uint priceInWei) external  returns (bool){
+        value=priceInWei;
+        return true;
     }
-
-    function get() external view returns (uint256) {
-        return value;
-    }
-    function post(uint256 newValue) external {
-        value = newValue;
-    }
-
-    function enable() external {
-        // do something
-    }
-
-    function disable() external {
-        // do something
+    function getLastPrice() external view returns(uint, uint){
+        return (value,1);
     }
 }
