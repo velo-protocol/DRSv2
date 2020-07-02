@@ -27,7 +27,7 @@ contract TestFeeder {
 
     function testCommitPrice() public {
         uint  expected = 200;
-        feeder.setValue(3,0);
+        feeder.setValue(2,0);
         feeder.commitPrice(expected);
         (uint price,)=feeder.getLastPrice();
         Assert.equal(price, 120, "feeds.value should be 120");

@@ -17,7 +17,7 @@ contract("Feeder test", async accounts => {
   it("should commitPrice setValue correctly", async () => {
     const expected = 120;
     await feeder.startOracle(expected);
-    await feeder.setValue(3,0);
+    await feeder.setValue(2,0);
     await feeder.commitPrice(200);
     const value = await feeder.getLastPrice();
     assert.equal(value[0], expected, "feeds.value should be 120");
@@ -26,7 +26,7 @@ contract("Feeder test", async accounts => {
   it("should commitPrice setValue correctly", async () => {
     const expected = 200;
     await feeder.startOracle(120);
-    await feeder.setValue(3,0);
+    await feeder.setValue(2,0);
     await feeder.commitPrice(expected);
     await sleep(3000)
     await feeder.commitPrice(expected);
