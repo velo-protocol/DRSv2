@@ -14,7 +14,6 @@ contract Feeder is IFeeder {
     FeedPrice public secondPrice;
     FeedPrice public lastPrice;
     uint public priceTolInBP = 500;
-    uint public priceFeedTolInBP = 100;
     uint constant BP_DENOMINATOR = 10000;
     uint public priceFeedTimeTol = 1 minutes;
     uint public priceUpdateCoolDown=1 minutes;
@@ -218,12 +217,9 @@ contract Feeder is IFeeder {
             oldValue = priceTolInBP;
             priceTolInBP = newValue;
         } else if (idx == 1) {
-            oldValue = priceFeedTolInBP;
-            priceFeedTolInBP = newValue;
-        } else if (idx == 2) {
             oldValue = priceFeedTimeTol;
             priceFeedTimeTol = newValue;
-        } else if (idx == 3) {
+        } else if (idx == 2) {
             oldValue = priceUpdateCoolDown;
             priceUpdateCoolDown = newValue;
         } else {
