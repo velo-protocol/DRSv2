@@ -61,6 +61,7 @@ contract Heart is IHeart {
         linkId => bool
     */
     mapping(bytes32 => bool) allowedLinks;
+    bool public active;
 
 
     modifier onlyGovernor() {
@@ -81,12 +82,13 @@ contract Heart is IHeart {
     /*
         reserveFreeze collateralAssetCode => seconds
     */
-    mapping(bytes32 => uint32) public reserveFreeze;
+    mapping(bytes32 => uint256) public reserveFreeze;
 
 
     constructor() public {
         governor[msg.sender] = true;
         stableCreditsLL.init();
+        active=false;
     }
 
     function setReserveManager(address newReserveManager) external onlyGovernor {
@@ -97,16 +99,20 @@ contract Heart is IHeart {
         return reserveManager;
     }
 
-    function setReserveFreeze(bytes32 assetCode, uint32 newSeconds) external {
+    function setReserveFreeze(bytes32 assetCode, uint256 newSeconds) external onlyGovernor{
         reserveFreeze[assetCode] = newSeconds;
     }
 
-    function getReserveFreeze(bytes32 assetCode) external view returns (uint32) {
+    function getReserveFreeze(bytes32 assetCode) external view returns (uint256) {
         return reserveFreeze[assetCode];
     }
 
     function setDrsAddress(address newDrsAddress) external onlyGovernor {
-        drsAddr = newDrsAddress;
+      if(active==false){
+          drsAddr = newDrsAddress;
+          active=true;
+      }
+
     }
 
     function getDrsAddress() external view returns (address) {

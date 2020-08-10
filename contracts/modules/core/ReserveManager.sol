@@ -20,6 +20,7 @@ contract ReserveManager is IRM {
         bytes32 assetCode;
         uint256 amount;
         uint256 blockNumber;
+        uint256 time;
     }
 
     /*
@@ -53,14 +54,15 @@ contract ReserveManager is IRM {
             from,
             assetCode,
             amount,
-            block.number
+            block.number,
+            now
         );
 
         emit LockReserve(lockedReserveId);
     }
 
     function releaseReserve(bytes32 lockedReserveId, bytes32 assetCode, uint256 amount) external {
-        require(block.number.sub(lockedReserves[lockedReserveId].blockNumber).mul(3) < heart.getReserveFreeze(assetCode), "release time not reach");
+        require(now.sub(lockedReserves[lockedReserveId].time) > heart.getReserveFreeze(assetCode), "release time not reach");
         require(lockedReserves[lockedReserveId].owner == msg.sender, "only owner can release reserve");
 
         heart.getCollateralAsset(assetCode).transfer(msg.sender, amount);
