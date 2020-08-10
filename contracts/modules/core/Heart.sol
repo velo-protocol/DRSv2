@@ -61,7 +61,7 @@ contract Heart is IHeart {
         linkId => bool
     */
     mapping(bytes32 => bool) allowedLinks;
-    bool public active;
+    bool  active;
 
 
     modifier onlyGovernor() {
