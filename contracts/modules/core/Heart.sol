@@ -61,6 +61,7 @@ contract Heart is IHeart {
         linkId => bool
     */
     mapping(bytes32 => bool) allowedLinks;
+    bool public active;
 
 
     modifier onlyGovernor() {
@@ -87,6 +88,7 @@ contract Heart is IHeart {
     constructor() public {
         governor[msg.sender] = true;
         stableCreditsLL.init();
+        active=false;
     }
 
     function setReserveManager(address newReserveManager) external onlyGovernor {
@@ -106,7 +108,11 @@ contract Heart is IHeart {
     }
 
     function setDrsAddress(address newDrsAddress) external onlyGovernor {
-        drsAddr = newDrsAddress;
+      if(active==false){
+          drsAddr = newDrsAddress;
+          active=true;
+      }
+
     }
 
     function getDrsAddress() external view returns (address) {
