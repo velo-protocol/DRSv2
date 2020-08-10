@@ -81,7 +81,7 @@ contract Heart is IHeart {
     /*
         reserveFreeze collateralAssetCode => seconds
     */
-    mapping(bytes32 => uint32) public reserveFreeze;
+    mapping(bytes32 => uint256) public reserveFreeze;
 
 
     constructor() public {
@@ -97,11 +97,11 @@ contract Heart is IHeart {
         return reserveManager;
     }
 
-    function setReserveFreeze(bytes32 assetCode, uint32 newSeconds) external {
+    function setReserveFreeze(bytes32 assetCode, uint256 newSeconds) external onlyGovernor{
         reserveFreeze[assetCode] = newSeconds;
     }
 
-    function getReserveFreeze(bytes32 assetCode) external view returns (uint32) {
+    function getReserveFreeze(bytes32 assetCode) external view returns (uint256) {
         return reserveFreeze[assetCode];
     }
 
