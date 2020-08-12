@@ -11,12 +11,12 @@ interface IDRS {
     function mintFromCollateralAmount(
         uint256 collateralAmount,
         string calldata assetCode
-    ) external payable returns (bool);
+    ) external  returns (bool);
 
     function mintFromStableCreditAmount(
         uint256 stableCreditAmount,
         string calldata assetCode
-    ) external payable returns (bool);
+    ) external  returns (bool);
 
     function redeem(
         uint256 amount,
@@ -25,7 +25,7 @@ interface IDRS {
 
     function rebalance(
         string calldata assetCode
-    ) external payable returns (bool);
+    ) external  returns (bool);
 
     function getExchange(
         string calldata assetCode
