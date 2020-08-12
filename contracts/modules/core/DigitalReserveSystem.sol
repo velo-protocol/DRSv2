@@ -247,7 +247,7 @@ contract DigitalReserveSystem is IDRS {
         require(bytes(assetCode).length > 0 && bytes(assetCode).length <= 12, "DigitalReserveSystem.rebalance: invalid assetCode format");
 
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
-        require(address(collateralAsset) != address(0), "DigitalReserveSystem.rebalance: collateralAssetCode does not exist");
+        require(address(collateralAsset) != address(0), "DigitalReserveSystem._rebalance: collateralAssetCode does not exist");
 
         uint256 requiredAmount = _calCollateral(stableCredit, linkId, stableCredit.totalSupply(), heart.getCollateralRatio(collateralAssetCode)).div(10000000);
         uint256 presentAmount = stableCredit.collateral().balanceOf(address(stableCredit));
