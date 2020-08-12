@@ -244,7 +244,7 @@ contract DigitalReserveSystem is IDRS {
     function _rebalance(
         string memory assetCode
     ) private returns (bool) {
-        require(bytes(assetCode).length > 0 && bytes(assetCode).length <= 12, "DigitalReserveSystem.rebalance: invalid assetCode format");
+        require(bytes(assetCode).length > 0 && bytes(assetCode).length <= 12, "DigitalReserveSystem._rebalance: invalid assetCode format");
 
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
         require(address(collateralAsset) != address(0), "DigitalReserveSystem._rebalance: collateralAssetCode does not exist");
