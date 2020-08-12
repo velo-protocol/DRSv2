@@ -53,6 +53,7 @@ contract ReserveManager is IRM,ReentrancyGuard {
         heart.getCollateralAsset(assetCode).transferFrom(from, address(this), amount);
 
         bytes32 lockedReserveId = keccak256(abi.encodePacked(from, assetCode, amount, block.number));
+        require(lockedReserves[lockedReserveId].owner==address(0));
         lockedReserves[lockedReserveId] = LockedReserve(
             from,
             assetCode,
