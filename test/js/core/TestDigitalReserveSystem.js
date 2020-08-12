@@ -1194,7 +1194,7 @@ contract("DigitalReserveSystem test", async accounts => {
     });
 
     it("should fail, invalid assetCode format", async () => {
-      const expectedErr = "DigitalReserveSystem.rebalance: invalid assetCode format";
+      const expectedErr = "DigitalReserveSystem._rebalance: invalid assetCode format";
 
       await helper.assert.throwsWithReason(async () => {
         await drs.rebalance("");
@@ -1243,7 +1243,7 @@ contract("DigitalReserveSystem test", async accounts => {
 
       await helper.assert.throwsWithReason(async () => {
         await drs.rebalance("vUSD");
-      }, 'DigitalReserveSystem.rebalance: collateralAssetCode does not exist');
+      }, 'DigitalReserveSystem._rebalance: collateralAssetCode does not exist');
     });
 
     it("should not rebalance, rebalance of collateral have been equal none require a rebalance", async () => {

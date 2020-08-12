@@ -3,11 +3,12 @@ pragma solidity ^0.5.0;
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/roles/WhitelistAdminRole.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../interfaces/IRM.sol";
 import "../interfaces/IHeart.sol";
 
 
-contract ReserveManager is IRM {
+contract ReserveManager is IRM,ReentrancyGuard {
     IHeart public heart;
     /*
         WARNINGS: DO NOT SEND TOKEN TO THIS CONTRACT DIRECTLY
@@ -47,9 +48,12 @@ contract ReserveManager is IRM {
     event LockReserve(bytes32 indexed lockedReserveId);
 
     function lockReserve(bytes32 assetCode, address from, uint256 amount) external {
+        uint256 balance= heart.getCollateralAsset(assetCode).balanceOf(from);
+        require(balance>amount,"balance is not enough");
         heart.getCollateralAsset(assetCode).transferFrom(from, address(this), amount);
 
         bytes32 lockedReserveId = keccak256(abi.encodePacked(from, assetCode, amount, block.number));
+        require(lockedReserves[lockedReserveId].owner==address(0));
         lockedReserves[lockedReserveId] = LockedReserve(
             from,
             assetCode,
@@ -61,10 +65,11 @@ contract ReserveManager is IRM {
         emit LockReserve(lockedReserveId);
     }
 
-    function releaseReserve(bytes32 lockedReserveId, bytes32 assetCode, uint256 amount) external {
+    function releaseReserve(bytes32 lockedReserveId, bytes32 assetCode, uint256 amount) external nonReentrant {
         require(now.sub(lockedReserves[lockedReserveId].time) > heart.getReserveFreeze(assetCode), "release time not reach");
         require(lockedReserves[lockedReserveId].owner == msg.sender, "only owner can release reserve");
-
+       uint256 balance= heart.getCollateralAsset(assetCode).balanceOf(address(this));
+        require(balance>amount,"balance is not enough");
         heart.getCollateralAsset(assetCode).transfer(msg.sender, amount);
 
         lockedReserves[lockedReserveId].amount = lockedReserves[lockedReserveId].amount.sub(amount);

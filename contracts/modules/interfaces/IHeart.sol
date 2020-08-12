@@ -11,9 +11,9 @@ interface IHeart {
 
     function getReserveManager() external view returns (IRM);
 
-    function setReserveFreeze(bytes32 assetCode, uint32 newSeconds) external;
+    function setReserveFreeze(bytes32 assetCode, uint256 newSeconds) external;
 
-    function getReserveFreeze(bytes32 assetCode) external view returns (uint32);
+    function getReserveFreeze(bytes32 assetCode) external view returns (uint256);
 
     function setDrsAddress(address newDrsAddress) external;
 

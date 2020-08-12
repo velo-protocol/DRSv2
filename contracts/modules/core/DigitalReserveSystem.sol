@@ -94,7 +94,7 @@ contract DigitalReserveSystem is IDRS {
     function mintFromCollateralAmount(
         uint256 netCollateralAmount,
         string calldata assetCode
-    ) external onlyTrustedPartner payable returns (bool) {
+    ) external onlyTrustedPartner  returns (bool) {
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
 
         // validate stable credit belong to the message sender
@@ -127,7 +127,7 @@ contract DigitalReserveSystem is IDRS {
     function mintFromStableCreditAmount(
         uint256 mintAmount,
         string calldata assetCode
-    ) external onlyTrustedPartner payable returns (bool) {
+    ) external onlyTrustedPartner  returns (bool) {
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
 
         // validate stable credit belong to the message sender
@@ -211,7 +211,7 @@ contract DigitalReserveSystem is IDRS {
 
     function rebalance(
         string calldata assetCode
-    ) external payable returns (bool) {
+    ) external  returns (bool) {
         return _rebalance(assetCode);
     }
 
@@ -244,10 +244,10 @@ contract DigitalReserveSystem is IDRS {
     function _rebalance(
         string memory assetCode
     ) private returns (bool) {
-        require(bytes(assetCode).length > 0 && bytes(assetCode).length <= 12, "DigitalReserveSystem.rebalance: invalid assetCode format");
+        require(bytes(assetCode).length > 0 && bytes(assetCode).length <= 12, "DigitalReserveSystem._rebalance: invalid assetCode format");
 
         (IStableCredit stableCredit, ICollateralAsset collateralAsset, bytes32 collateralAssetCode, bytes32 linkId) = _validateAssetCode(assetCode);
-        require(address(collateralAsset) != address(0), "DigitalReserveSystem.rebalance: collateralAssetCode does not exist");
+        require(address(collateralAsset) != address(0), "DigitalReserveSystem._rebalance: collateralAssetCode does not exist");
 
         uint256 requiredAmount = _calCollateral(stableCredit, linkId, stableCredit.totalSupply(), heart.getCollateralRatio(collateralAssetCode)).div(10000000);
         uint256 presentAmount = stableCredit.collateral().balanceOf(address(stableCredit));
