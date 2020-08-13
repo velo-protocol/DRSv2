@@ -47,11 +47,12 @@ contract ReserveManager is IRM,ReentrancyGuard {
     event InjectCollateral(bytes32 indexed assetCode, uint256 amount);
     event LockReserve(bytes32 indexed lockedReserveId);
 
-    function lockReserve(bytes32 assetCode, address from, uint256 amount) external {
-        uint256 balance= heart.getCollateralAsset(assetCode).balanceOf(from);
-        require(balance>amount,"balance is not enough");
-        heart.getCollateralAsset(assetCode).transferFrom(from, address(this), amount);
+    function lockReserve(bytes32 assetCode, address from, uint256 amount) external nonReentrant {
 
+        uint256 balance= heart.getCollateralAsset(assetCode).balanceOf(address(this));
+        heart.getCollateralAsset(assetCode).transferFrom(from, address(this), amount);
+        uint256 balance1= heart.getCollateralAsset(assetCode).balanceOf(address(this));
+        require(balance1==balance.add(amount),"");
         bytes32 lockedReserveId = keccak256(abi.encodePacked(from, assetCode, amount, block.number));
         require(lockedReserves[lockedReserveId].owner==address(0));
         lockedReserves[lockedReserveId] = LockedReserve(
@@ -68,8 +69,6 @@ contract ReserveManager is IRM,ReentrancyGuard {
     function releaseReserve(bytes32 lockedReserveId, bytes32 assetCode, uint256 amount) external nonReentrant {
         require(now.sub(lockedReserves[lockedReserveId].time) > heart.getReserveFreeze(assetCode), "release time not reach");
         require(lockedReserves[lockedReserveId].owner == msg.sender, "only owner can release reserve");
-       uint256 balance= heart.getCollateralAsset(assetCode).balanceOf(address(this));
-        require(balance>amount,"balance is not enough");
         heart.getCollateralAsset(assetCode).transfer(msg.sender, amount);
 
         lockedReserves[lockedReserveId].amount = lockedReserves[lockedReserveId].amount.sub(amount);
