@@ -14,7 +14,7 @@
   },
   "license": "GNU AGPLv3",
   "dependencies": {
-    "@openzeppelin/contracts": "^2.4.0",
+    "@openzeppelin/contracts": "^4.7.2",
     "@openzeppelin/upgrades": "^2.6.0",
     "dotenv": "^8.2.0",
     "ethereumjs-abi": "^0.6.8",
